@@ -1,0 +1,1277 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+
+    <!--[if lt IE 9]>
+        <style>body {display: none; background: none !important} </style>
+        <meta http-equiv="Refresh" Content="0; url=//outdatedbrowser.com/" />
+    <![endif]-->
+
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="format-detection" content="telephone=no" />
+<meta name="author" content="panwenhang" />
+
+
+
+<meta name="description" content="1.环境$ cat /etc/redhat-release
+CentOS Linux release 7.0.1406 (Core)
+$ uname -a
+Linux zhaopin-5-90 3.10.0-123.el7.x86_64 #1 SMP Mon Jun 30 12:09:22 UTC 2014 x86_64 x86_64 x86_64 GNU/Linux
+$ sudo pcs sta">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Pacemaker+Corosync+PostgreSQL集群故障测试和解决方案">
+<meta property="og:url" content="http://panwenhang.github.io/2016/07/05/PostgreSQL/2016-07-05-Pacemaker+Corosync+2016-07-05-PostgreSQL集群故障测试和解决方案/index.html">
+<meta property="og:site_name" content="panwenhang's blog">
+<meta property="og:description" content="1.环境$ cat /etc/redhat-release
+CentOS Linux release 7.0.1406 (Core)
+$ uname -a
+Linux zhaopin-5-90 3.10.0-123.el7.x86_64 #1 SMP Mon Jun 30 12:09:22 UTC 2014 x86_64 x86_64 x86_64 GNU/Linux
+$ sudo pcs sta">
+<meta property="og:updated_time" content="2016-09-01T16:53:41.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Pacemaker+Corosync+PostgreSQL集群故障测试和解决方案">
+<meta name="twitter:description" content="1.环境$ cat /etc/redhat-release
+CentOS Linux release 7.0.1406 (Core)
+$ uname -a
+Linux zhaopin-5-90 3.10.0-123.el7.x86_64 #1 SMP Mon Jun 30 12:09:22 UTC 2014 x86_64 x86_64 x86_64 GNU/Linux
+$ sudo pcs sta">
+
+<link rel="apple-touch-icon" href= "/apple-touch-icon.png">
+
+
+    <link rel="alternate" href="/atom.xml" title="panwenhang&#39;s blog" type="application/atom+xml">
+
+
+
+    <link rel="shortcut icon" href="/favicon.png">
+
+
+
+    <link href="//cdn.bootcss.com/animate.css/3.5.1/animate.min.css" rel="stylesheet">
+
+
+
+    <link href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.css" rel="stylesheet">
+
+
+
+    <script src="//cdn.bootcss.com/pace/1.0.2/pace.min.js"></script>
+    <link href="//cdn.bootcss.com/pace/1.0.2/themes/blue/pace-theme-minimal.css" rel="stylesheet">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+
+<link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+
+
+<title>Pacemaker+Corosync+PostgreSQL集群故障测试和解决方案 | panwenhang&#39;s blog</title>
+
+<script src="//cdn.bootcss.com/jquery/2.2.4/jquery.min.js"></script>
+<script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
+
+<script>
+    var yiliaConfig = {
+        fancybox: true,
+        animate: true,
+        isHome: false,
+        isPost: true,
+        isArchive: false,
+        isTag: false,
+        isCategory: false,
+        fancybox_js: "//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.js",
+        scrollreveal: "//cdn.bootcss.com/scrollReveal.js/3.1.4/scrollreveal.min.js",
+        search: undefined
+    }
+</script>
+
+
+    <script> yiliaConfig.jquery_ui = [false]; </script>
+
+
+
+    <script> yiliaConfig.rootUrl = "\/";</script>
+
+
+
+
+
+
+</head>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+    <header id="header" class="inner">
+        <a href="/" class="profilepic">
+            <img src="/img/avatar.png" class="animated zoomIn">
+        </a>
+        <hgroup>
+          <h1 class="header-author"><a href="/">panwenhang</a></h1>
+        </hgroup>
+
+        
+
+        
+
+
+        
+            <div id="switch-btn" class="switch-btn">
+                <div class="icon">
+                    <div class="icon-ctn">
+                        <div class="icon-wrap icon-house" data-idx="0">
+                            <div class="birdhouse"></div>
+                            <div class="birdhouse_holes"></div>
+                        </div>
+                        <div class="icon-wrap icon-ribbon hide" data-idx="1">
+                            <div class="ribbon"></div>
+                        </div>
+                        
+                        <div class="icon-wrap icon-link hide" data-idx="2">
+                            <div class="loopback_l"></div>
+                            <div class="loopback_r"></div>
+                        </div>
+                        
+                        
+                    </div>
+                    
+                </div>
+                <div class="tips-box hide">
+                    <div class="tips-arrow"></div>
+                    <ul class="tips-inner">
+                        <li>菜单</li>
+                        <li>标签</li>
+                        
+                        <li>友情链接</li>
+                        
+                        
+                    </ul>
+                </div>
+            </div>
+        
+
+        <div id="switch-area" class="switch-area">
+            <div class="switch-wrap">
+                <section class="switch-part switch-part1">
+                    <nav class="header-menu">
+                        <ul>
+                        
+                            <li><a href="/">主页</a></li>
+                        
+                            <li><a href="/archives/">所有文章</a></li>
+                        
+                            <li><a href="/tags/">标签云</a></li>
+                        
+                            <li><a href="/about/">关于我</a></li>
+                        
+                        </ul>
+                    </nav>
+                    <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fa Email" href="mailto:panwenhang92@gmail.com" title="Email"></a>
+                            
+                                <a class="fa GitHub" href="https://github.com/panwenhang" title="GitHub"></a>
+                            
+                                <a class="fa RSS" href="/atom.xml" title="RSS"></a>
+                            
+                        </ul>
+                    </nav>
+                </section>
+                
+                
+                <section class="switch-part switch-part2">
+                    <div class="widget tagcloud" id="js-tagcloud">
+                        
+                    </div>
+                </section>
+                
+                
+                
+                <section class="switch-part switch-part3">
+                    <div id="js-friends">
+                    
+                      <a class="main-nav-link switch-friends-link" href="https://hexo.io">Hexo</a>
+                    
+                      <a class="main-nav-link switch-friends-link" href="https://pages.github.com/">GitHub</a>
+                    
+                    </div>
+                </section>
+                
+
+                
+            </div>
+        </div>
+    </header>                
+</div>
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+      <div class="overlay">
+          <div class="slider-trigger"></div>
+          <h1 class="header-author js-mobile-header hide"><a href="/" title="回到主页">panwenhang</a></h1>
+      </div>
+    <div class="intrude-less">
+        <header id="header" class="inner">
+            <a href="/" class="profilepic">
+                <img src="/img/avatar.png" class="animated zoomIn">
+            </a>
+            <hgroup>
+              <h1 class="header-author"><a href="/" title="回到主页">panwenhang</a></h1>
+            </hgroup>
+            
+            <nav class="header-menu">
+                <ul>
+                
+                    <li><a href="/">主页</a></li>
+                
+                    <li><a href="/archives/">所有文章</a></li>
+                
+                    <li><a href="/tags/">标签云</a></li>
+                
+                    <li><a href="/about/">关于我</a></li>
+                
+                <div class="clearfix"></div>
+                </ul>
+            </nav>
+            <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fa Email" target="_blank" href="mailto:panwenhang92@gmail.com" title="Email"></a>
+                            
+                                <a class="fa GitHub" target="_blank" href="https://github.com/panwenhang" title="GitHub"></a>
+                            
+                                <a class="fa RSS" target="_blank" href="/atom.xml" title="RSS"></a>
+                            
+                        </ul>
+            </nav>
+        </header>                
+    </div>
+    <link class="menu-list" tags="标签" friends="友情链接" about="关于我"/>
+</nav>
+      <div class="body-wrap"><article id="post-PostgreSQL/2016-07-05-Pacemaker+Corosync+2016-07-05-PostgreSQL集群故障测试和解决方案" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2016/07/05/PostgreSQL/2016-07-05-Pacemaker+Corosync+2016-07-05-PostgreSQL集群故障测试和解决方案/" class="article-date">
+      <time datetime="2016-07-04T16:00:00.000Z" itemprop="datePublished">2016-07-05</time>
+</a>
+
+
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Pacemaker+Corosync+PostgreSQL集群故障测试和解决方案
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/PostgreSQL/">PostgreSQL</a>
+    </div>
+
+
+        
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        <h2 id="1-环境"><a href="#1-环境" class="headerlink" title="1.环境"></a>1.环境</h2><pre><code>$ cat /etc/redhat-release
+CentOS Linux release 7.0.1406 (Core)
+$ uname -a
+Linux zhaopin-5-90 3.10.0-123.el7.x86_64 #1 SMP Mon Jun 30 12:09:22 UTC 2014 x86_64 x86_64 x86_64 GNU/Linux
+$ sudo pcs status
+Cluster name: pgcluster
+WARNING: corosync and pacemaker node names do not match (IPs used in setup?)
+Last updated: Tue Oct 20 11:02:08 2015Last change: Tue Oct 20 10:57:37 2015 by root via crm_attribute on zhaopin-5-92
+Stack: corosync
+Current DC: zhaopin-5-92 (version 1.1.13-a14efad) - partition with quorum
+3 nodes and 5 resources configured
+Online: [ zhaopin-5-90 zhaopin-5-91 zhaopin-5-92 ]
+</code></pre><a id="more"></a>
+<p>  Full list of resources:<br>     Master/Slave Set: pgsql-master [pgsql]<br>         Masters: [ zhaopin-5-92 ]<br>         Slaves: [ zhaopin-5-90 zhaopin-5-91 ]<br>     Resource Group: master-group<br>         vip-master(ocf::heartbeat:IPaddr2):Started zhaopin-5-92<br>     Resource Group: slave-group<br>         vip-slave(ocf::heartbeat:IPaddr2):Started zhaopin-5-90<br>    PCSD Status:<br>      zhaopin-5-90 (172.17.5.90): Online<br>      zhaopin-5-91 (172.17.5.91): Online<br>      zhaopin-5-92 (172.17.5.92): Online<br>    Daemon Status:<br>      corosync: active/disabled<br>      pacemaker: active/disabled<br>      pcsd: active/enabled</p>
+<p>node1: 172.17.5.90<br>node2: 172.17.5.91<br>node3: 172.17.5.92<br>node4: 172.17.5.93 应急</p>
+<p>vip-master: 172.17.5.99<br>vip-slave:  172.17.5.98</p>
+<h2 id="2-PostgreSQL故障"><a href="#2-PostgreSQL故障" class="headerlink" title="2.PostgreSQL故障"></a>2.PostgreSQL故障</h2><h3 id="1-单节点故障"><a href="#1-单节点故障" class="headerlink" title="(1) 单节点故障"></a>(1) 单节点故障</h3><p>1）master故障</p>
+<p>在node3上执行:</p>
+<pre><code>$ ps aux | grep postgres | grep -v grep
+postgres  29482  0.0  0.2 103216  7900 ?        S    10:57   0:00 /usr/bin/postgres -D /data/postgresql/data -c config_file=/data/postgresql/data/postgresql.conf
+postgres  29524  0.0  0.0 103216  1980 ?        Ss   10:57   0:00 postgres: checkpointer process
+postgres  29525  0.0  0.0 103216  1988 ?        Ss   10:57   0:00 postgres: writer process
+postgres  29526  0.0  0.0 103216  1896 ?        Ss   10:57   0:00 postgres: wal writer process
+postgres  29527  0.0  0.0 104044  3008 ?        Ss   10:57   0:00 postgres: autovacuum launcher process
+postgres  29528  0.0  0.0  88912  1792 ?        Ss   10:57   0:00 postgres: archiver process   last was 00000001000000000000000E
+postgres  29529  0.0  0.0  89024  1920 ?        Ss   10:57   0:00 postgres: stats collector process
+postgres  29790  0.0  0.0 104060  3208 ?        Ss   10:57   0:00 postgres: wal sender process postgres 172.17.5.90(35734) streaming 0/F0000E0
+postgres  29791  0.0  0.0 104192  3392 ?        Ss   10:57   0:00 postgres: wal sender process postgres 172.17.5.91(60722) streaming 0/F0000E0
+$ psql -U postgres
+psql (9.2.13)
+Type &quot;help&quot; for help.
+postgres=# select * from pg_stat_replication ;
+  pid  | usesysid | usename  | application_name | client_addr | client_hostname | client_port |         backend_start         |   state   | sent_location | write_location | flush_location | replay_location | sync_priority | sync_state
+-------+----------+----------+------------------+-------------+-----------------+-------------+-------------------------------+-----------+---------------+----------------+----------------+-----------------+---------------+------------
+ 29790 |       10 | postgres | zhaopin-5-90     | 172.17.5.90 |                 |       35734 | 2015-10-20 02:57:25.718047+00 | streaming | 0/F0000E0     | 0/F0000E0      | 0/F0000E0      | 0/F0000E0       |             1 | sync
+ 29791 |       10 | postgres | zhaopin-5-91     | 172.17.5.91 |                 |       60722 | 2015-10-20 02:57:25.718566+00 | streaming | 0/F0000E0     | 0/F0000E0      | 0/F0000E0      | 0/F0000E0       |             2 | potential
+(2 rows)
+postgres=# \q
+</code></pre><p>杀掉PostgreSQL的进程</p>
+<pre><code>$ sudo killall postgres
+$ ps aux | grep postgres | grep -v grep
+</code></pre><p>PostgreSQL的进程已经没有了</p>
+<pre><code>$ sudo pcs status
+Cluster name: pgcluster
+WARNING: corosync and pacemaker node names do not match (IPs used in setup?)
+Last updated: Tue Oct 20 11:11:54 2015Last change: Tue Oct 20 11:10:31 2015 by root via crm_attribute on zhaopin-5-90
+Stack: corosync
+Current DC: zhaopin-5-92 (version 1.1.13-a14efad) - partition with quorum
+3 nodes and 5 resources configured
+Online: [ zhaopin-5-90 zhaopin-5-91 zhaopin-5-92 ]
+Full list of resources:
+ Master/Slave Set: pgsql-master [pgsql]
+     Masters: [ zhaopin-5-90 ]
+     Slaves: [ zhaopin-5-91 ]
+     Stopped: [ zhaopin-5-92 ]
+ Resource Group: master-group
+     vip-master(ocf::heartbeat:IPaddr2):Started zhaopin-5-90
+ Resource Group: slave-group
+     vip-slave(ocf::heartbeat:IPaddr2):Started zhaopin-5-91
+Failed Actions:
+* pgsql_start_0 on zhaopin-5-92 &apos;unknown error&apos; (1): call=33, status=complete, exitreason=&apos;My data may be inconsistent. You have to remove /var/lib/pgsql/tmp/PGSQL.lock file to force start.&apos;,
+    last-rc-change=&apos;Tue Oct 20 11:10:14 2015&apos;, queued=0ms, exec=389ms
+PCSD Status:
+  zhaopin-5-90 (172.17.5.90): Online
+  zhaopin-5-91 (172.17.5.91): Online
+  zhaopin-5-92 (172.17.5.92): Online
+Daemon Status:
+  corosync: active/disabled
+  pacemaker: active/disabled
+  pcsd: active/enabled
+</code></pre><p>查看集群状态可见,master和vip-master已经切换到node1上了</p>
+<p>在node1上执行:</p>
+<pre><code>$ psql -U postgres
+psql (9.2.13)
+Type &quot;help&quot; for help.
+postgres=# select * from pg_stat_replication ;
+  pid  | usesysid | usename  | application_name | client_addr | client_hostname | client_port |         backend_start         |   state   | sent_location | write_location | flush_location | replay_location | sync_priority | sync_state
+-------+----------+----------+------------------+-------------+-----------------+-------------+-------------------------------+-----------+---------------+----------------+----------------+-----------------+---------------+------------
+ 59835 |       10 | postgres | zhaopin-5-91     | 172.17.5.98 |                 |       46393 | 2015-10-20 03:10:24.392231+00 | streaming | 0/F000140     | 0/F000140      | 0/F000140      | 0/F000140       |             1 | sync
+(1 row)
+postgres=# create table test ( id bigint );
+CREATE TABLE
+postgres=# \dt test
+        List of relations
+ Schema | Name | Type  |  Owner
+--------+------+-------+----------
+ public | test | table | postgres
+(1 row)
+postgres=# \q
+</code></pre><p>可以正常提供服务</p>
+<p>恢复node3为新master node1的slave,在node3上执行</p>
+<pre><code>$ sudo su - postgres
+Last login: Tue Oct 20 11:10:16 CST 2015
+$ rm -f /var/lib/pgsql/tmp/PGSQL.lock
+$ rm -fr /data/postgresql/data/*
+$ pg_basebackup -h 172.17.5.90 -U postgres -D /data/postgresql/data/ -X stream -P
+20243/20243 kB (100%), 1/1 tablespace
+$ logout
+$ sudo pcs resource cleanup pgsql-master
+Resource: pgsql-master successfully cleaned up
+$ sudo pcs status
+Cluster name: pgcluster
+WARNING: corosync and pacemaker node names do not match (IPs used in setup?)
+Last updated: Tue Oct 20 11:19:45 2015Last change: Tue Oct 20 11:19:45 2015 by root via crm_attribute on zhaopin-5-90
+Stack: corosync
+Current DC: zhaopin-5-92 (version 1.1.13-a14efad) - partition with quorum
+3 nodes and 5 resources configured
+Online: [ zhaopin-5-90 zhaopin-5-91 zhaopin-5-92 ]
+Full list of resources:
+ Master/Slave Set: pgsql-master [pgsql]
+     Masters: [ zhaopin-5-90 ]
+     Slaves: [ zhaopin-5-91 zhaopin-5-92 ]
+ Resource Group: master-group
+     vip-master(ocf::heartbeat:IPaddr2):Started zhaopin-5-90
+ Resource Group: slave-group
+     vip-slave(ocf::heartbeat:IPaddr2):Started zhaopin-5-91
+PCSD Status:
+  zhaopin-5-90 (172.17.5.90): Online
+  zhaopin-5-91 (172.17.5.91): Online
+  zhaopin-5-92 (172.17.5.92): Online
+Daemon Status:
+  corosync: active/disabled
+  pacemaker: active/disabled
+  pcsd: active/enabled
+</code></pre><p>可见node3已经加到集群里面了。如果配置archive_command和restore_command的话,就不用删除数据目录,按照下面pacemaker故障的解决方法就行。</p>
+<p>2）slave故障</p>
+<p>在node2上执行:</p>
+<pre><code>$ ps aux | grep postgres | grep -v grep
+postgres  35611  0.0  0.2 103216  7876 ?        S    10:57   0:00 /usr/bin/postgres -D /data/postgresql/data -c config_file=/data/postgresql/data/postgresql.conf
+postgres  35637  0.0  0.0 103280  2392 ?        Ss   10:57   0:00 postgres: startup process   recovering 000000010000000000000011
+postgres  35656  0.0  0.0 103216  2144 ?        Ss   10:57   0:00 postgres: checkpointer process
+postgres  35657  0.0  0.0 103216  1648 ?        Ss   10:57   0:00 postgres: writer process
+postgres  35658  0.0  0.0  88912  1512 ?        Ss   10:57   0:00 postgres: stats collector process
+postgres  55111  0.1  0.0 110228  3364 ?        Ss   11:10   0:00 postgres: wal receiver process   streaming 0/12000000
+$ sudo killall postgres
+$ ps aux | grep postgres | grep -v grep
+$ sudo pcs status
+Cluster name: pgcluster
+WARNING: corosync and pacemaker node names do not match (IPs used in setup?)
+Last updated: Tue Oct 20 11:22:57 2015Last change: Tue Oct 20 11:22:53 2015 by root via crm_attribute on zhaopin-5-90
+Stack: corosync
+Current DC: zhaopin-5-92 (version 1.1.13-a14efad) - partition with quorum
+3 nodes and 5 resources configured
+Online: [ zhaopin-5-90 zhaopin-5-91 zhaopin-5-92 ]
+Full list of resources:
+ Master/Slave Set: pgsql-master [pgsql]
+     Masters: [ zhaopin-5-90 ]
+     Slaves: [ zhaopin-5-91 zhaopin-5-92 ]
+ Resource Group: master-group
+     vip-master(ocf::heartbeat:IPaddr2):Started zhaopin-5-90
+ Resource Group: slave-group
+     vip-slave(ocf::heartbeat:IPaddr2):Started zhaopin-5-92
+Failed Actions:
+* pgsql_monitor_4000 on zhaopin-5-91 &apos;unknown error&apos; (1): call=47, status=complete, exitreason=&apos;none&apos;,
+    last-rc-change=&apos;Tue Oct 20 11:22:51 2015&apos;, queued=0ms, exec=0ms
+PCSD Status:
+  zhaopin-5-90 (172.17.5.90): Online
+  zhaopin-5-91 (172.17.5.91): Online
+  zhaopin-5-92 (172.17.5.92): Online
+Daemon Status:
+  corosync: active/disabled
+  pacemaker: active/disabled
+  pcsd: active/enabled
+</code></pre><p>可见vip-slave自动切换到了node3</p>
+<p>在node1上执行:</p>
+<pre><code>$ psql -U postgres
+psql (9.2.13)
+Type &quot;help&quot; for help.
+postgres=# create table test ( id bigint );
+ERROR:  relation &quot;test&quot; already exists
+postgres=# select * from pg_stat_replication ;
+  pid  | usesysid | usename  | application_name | client_addr | client_hostname | client_port |        backend_start         |   state   | sent_location | write_location | flush_location | replay_location | sync_priority | sync_state
+-------+----------+----------+------------------+-------------+-----------------+-------------+------------------------------+-----------+---------------+----------------+----------------+-----------------+---------------+------------
+ 99082 |       10 | postgres | zhaopin-5-91     | 172.17.5.91 |                 |       60726 | 2015-10-20 03:22:55.84451+00 | streaming | 0/120000B8    | 0/120000B8     | 0/120000B8     | 0/120000B8      |             2 | potential
+ 88344 |       10 | postgres | zhaopin-5-92     | 172.17.5.92 |                 |       60891 | 2015-10-20 03:19:43.1618+00  | streaming | 0/120000B8    | 0/120000B8     | 0/120000B8     | 0/120000B8      |             1 | sync
+(2 rows)
+postgres=# \q
+</code></pre><p>可见同步复制节点切换到了node3上</p>
+<h3 id="2-两节点故障"><a href="#2-两节点故障" class="headerlink" title="(2) 两节点故障"></a>(2) 两节点故障</h3><p>1）master和slave故障</p>
+<p>在node1和node2执行:</p>
+<pre><code>$ sudo killall postgres
+$ sudo pcs status
+Cluster name: pgcluster
+WARNING: corosync and pacemaker node names do not match (IPs used in setup?)
+Last updated: Tue Oct 20 13:47:01 2015Last change: Tue Oct 20 13:47:00 2015 by root via crm_attribute on zhaopin-5-92
+Stack: corosync
+Current DC: zhaopin-5-92 (version 1.1.13-a14efad) - partition with quorum
+3 nodes and 5 resources configured
+Online: [ zhaopin-5-90 zhaopin-5-91 zhaopin-5-92 ]
+Full list of resources:
+ Master/Slave Set: pgsql-master [pgsql]
+     Masters: [ zhaopin-5-92 ]
+     Stopped: [ zhaopin-5-90 zhaopin-5-91 ]
+ Resource Group: master-group
+     vip-master(ocf::heartbeat:IPaddr2):Started zhaopin-5-92
+ Resource Group: slave-group
+     vip-slave(ocf::heartbeat:IPaddr2):Stopped
+Failed Actions:
+* pgsql_start_0 on zhaopin-5-90 &apos;unknown error&apos; (1): call=50, status=complete, exitreason=&apos;My data may be inconsistent. You have to remove /var/lib/pgsql/tmp/PGSQL.lock file to force start.&apos;,
+    last-rc-change=&apos;Tue Oct 20 13:46:53 2015&apos;, queued=0ms, exec=285ms
+* pgsql_start_0 on zhaopin-5-91 &apos;unknown error&apos; (1): call=34, status=complete, exitreason=&apos;My data may be inconsistent. You have to remove /var/lib/pgsql/tmp/PGSQL.lock file to force start.&apos;,
+    last-rc-change=&apos;Tue Oct 20 13:46:33 2015&apos;, queued=0ms, exec=343ms
+PCSD Status:
+  zhaopin-5-90 (172.17.5.90): Online
+  zhaopin-5-91 (172.17.5.91): Online
+  zhaopin-5-92 (172.17.5.92): Online
+Daemon Status:
+  corosync: active/disabled
+  pacemaker: active/disabled
+  pcsd: active/enabled
+</code></pre><p>可见node1和node2停机了,node3自动切成了master,vip-slave也失效了</p>
+<p>在node3上执行:</p>
+<pre><code>$ psql -U postgres
+psql (9.2.13)
+Type &quot;help&quot; for help.
+postgres=# select * from pg_stat_replication ;
+ pid | usesysid | usename | application_name | client_addr | client_hostname | client_port | backend_start | state | sent_location | write_location | flush_location | replay_location | sync_priority | sync_state
+-----+----------+---------+------------------+-------------+-----------------+-------------+---------------+-------+---------------+----------------+----------------+-----------------+---------------+------------
+(0 rows)
+postgres=# \dt
+        List of relations
+ Schema | Name | Type  |  Owner
+--------+------+-------+----------
+ public | test | table | postgres
+(1 row)
+postgres=# drop table test ;
+DROP TABLE
+postgres=# \q
+</code></pre><p>可见master可以正常提供服务</p>
+<p>将两个节点变成新master node3的slave,解决方法如上面单节点故障-&gt;master节点的一样,结果如下:</p>
+<pre><code>$ sudo pcs status
+Cluster name: pgcluster
+WARNING: corosync and pacemaker node names do not match (IPs used in setup?)
+Last updated: Tue Oct 20 13:53:27 2015Last change: Tue Oct 20 13:53:16 2015 by root via crm_attribute on zhaopin-5-92
+Stack: corosync
+Current DC: zhaopin-5-92 (version 1.1.13-a14efad) - partition with quorum
+3 nodes and 5 resources configured
+Online: [ zhaopin-5-90 zhaopin-5-91 zhaopin-5-92 ]
+Full list of resources:
+ Master/Slave Set: pgsql-master [pgsql]
+     Masters: [ zhaopin-5-92 ]
+     Slaves: [ zhaopin-5-90 zhaopin-5-91 ]
+ Resource Group: master-group
+     vip-master(ocf::heartbeat:IPaddr2):Started zhaopin-5-92
+ Resource Group: slave-group
+     vip-slave(ocf::heartbeat:IPaddr2):Started zhaopin-5-90
+PCSD Status:
+  zhaopin-5-90 (172.17.5.90): Online
+  zhaopin-5-91 (172.17.5.91): Online
+  zhaopin-5-92 (172.17.5.92): Online
+Daemon Status:
+  corosync: active/disabled
+  pacemaker: active/disabled
+  pcsd: active/enabled
+</code></pre><p>2）两个slave故障</p>
+<p>在node1和node2执行:</p>
+<pre><code>$ sudo killall postgres
+$ sudo pcs status
+Cluster name: pgcluster
+WARNING: corosync and pacemaker node names do not match (IPs used in setup?)
+Last updated: Tue Oct 20 13:57:23 2015Last change: Tue Oct 20 13:57:20 2015 by hacluster via crmd on zhaopin-5-92
+Stack: corosync
+Current DC: zhaopin-5-92 (version 1.1.13-a14efad) - partition with quorum
+3 nodes and 5 resources configured
+Online: [ zhaopin-5-90 zhaopin-5-91 zhaopin-5-92 ]
+Full list of resources:
+ Master/Slave Set: pgsql-master [pgsql]
+     Masters: [ zhaopin-5-92 ]
+     Slaves: [ zhaopin-5-90 zhaopin-5-91 ]
+ Resource Group: master-group
+     vip-master(ocf::heartbeat:IPaddr2):Started zhaopin-5-92
+ Resource Group: slave-group
+     vip-slave(ocf::heartbeat:IPaddr2):Started zhaopin-5-90
+PCSD Status:
+  zhaopin-5-90 (172.17.5.90): Online
+  zhaopin-5-91 (172.17.5.91): Online
+  zhaopin-5-92 (172.17.5.92): Online
+Daemon Status:
+  corosync: active/disabled
+  pacemaker: active/disabled
+  pcsd: active/enabled
+</code></pre><p>可见集群会自动恢复</p>
+<h2 id="3-Pacemaker故障"><a href="#3-Pacemaker故障" class="headerlink" title="3.Pacemaker故障"></a>3.Pacemaker故障</h2><h3 id="1-单节点故障-1"><a href="#1-单节点故障-1" class="headerlink" title="(1) 单节点故障"></a>(1) 单节点故障</h3><p>1）停掉Pacemaker服务</p>
+<p>在node1上执行:</p>
+<pre><code>$ systemctl status pacemaker
+pacemaker.service - Pacemaker High Availability Cluster Manager
+   Loaded: loaded (/usr/lib/systemd/system/pacemaker.service; disabled)
+   Active: active (running) since Tue 2015-10-20 13:45:28 CST; 15min ago
+ Main PID: 35622 (pacemakerd)
+   CGroup: /system.slice/pacemaker.service
+           ├─35622 /usr/sbin/pacemakerd -f
+           ├─35623 /usr/libexec/pacemaker/cib
+           ├─35624 /usr/libexec/pacemaker/stonithd
+           ├─35625 /usr/libexec/pacemaker/lrmd
+           ├─35626 /usr/libexec/pacemaker/attrd
+           ├─35627 /usr/libexec/pacemaker/pengine
+           └─35628 /usr/libexec/pacemaker/crmd
+$ sudo systemctl stop pacemaker
+$ systemctl status pacemaker
+pacemaker.service - Pacemaker High Availability Cluster Manager
+   Loaded: loaded (/usr/lib/systemd/system/pacemaker.service; disabled)
+   Active: inactive (dead)
+$ sudo pcs status
+Error: cluster is not currently running on this node
+</code></pre><p>2）查看状态</p>
+<p>在node2上执行:</p>
+<pre><code>$ sudo pcs status
+Cluster name: pgcluster
+WARNING: corosync and pacemaker node names do not match (IPs used in setup?)
+Last updated: Tue Oct 20 14:02:41 2015Last change: Tue Oct 20 14:01:06 2015 by root via crm_attribute on zhaopin-5-92
+Stack: corosync
+Current DC: zhaopin-5-92 (version 1.1.13-a14efad) - partition with quorum
+3 nodes and 5 resources configured
+Online: [ zhaopin-5-91 zhaopin-5-92 ]
+OFFLINE: [ zhaopin-5-90 ]
+Full list of resources:
+ Master/Slave Set: pgsql-master [pgsql]
+     Masters: [ zhaopin-5-92 ]
+     Slaves: [ zhaopin-5-91 ]
+     Stopped: [ zhaopin-5-90 ]
+ Resource Group: master-group
+     vip-master(ocf::heartbeat:IPaddr2):Started zhaopin-5-92
+ Resource Group: slave-group
+     vip-slave(ocf::heartbeat:IPaddr2):Started zhaopin-5-91
+PCSD Status:
+  172.17.5.90: Online
+  zhaopin-5-91 (172.17.5.91): Online
+  zhaopin-5-92 (172.17.5.92): Online
+Daemon Status:
+  corosync: active/disabled
+  pacemaker: active/disabled
+  pcsd: active/enabled
+</code></pre><p>可见node1的集群和PostgreSQL都宕机了,vip-slave切换到了node2上</p>
+<p>3）验证可用性</p>
+<p>在node3上执行:</p>
+<pre><code>$ psql -U postgres
+psql (9.2.13)
+Type &quot;help&quot; for help.
+postgres=# select * from pg_stat_replication ;
+  pid  | usesysid | usename  | application_name | client_addr | client_hostname | client_port |         backend_start         |   state   | sent_location | write_location | flush_location | replay_location | sync_priority | sync_state
+-------+----------+----------+------------------+-------------+-----------------+-------------+-------------------------------+-----------+---------------+----------------+----------------+-----------------+---------------+------------
+ 78298 |       10 | postgres | zhaopin-5-91     | 172.17.5.91 |                 |       60755 | 2015-10-20 05:57:08.882432+00 | streaming | 0/16000150    | 0/16000150     | 0/16000150     | 0/16000150      |             1 | sync
+(1 row)
+postgres=# create table test ( id int );
+CREATE TABLE
+postgres=# \q
+</code></pre><p>可见集群仍然可用</p>
+<p>4）解决方案</p>
+<p>在node1上执行:</p>
+<pre><code>$ sudo pcs cluster start
+Starting Cluster...
+$ sudo pcs status
+Cluster name: pgcluster
+WARNING: corosync and pacemaker node names do not match (IPs used in setup?)
+Last updated: Tue Oct 20 14:07:54 2015Last change: Tue Oct 20 14:07:51 2015 by root via crm_attribute on zhaopin-5-92
+Stack: corosync
+Current DC: zhaopin-5-92 (version 1.1.13-a14efad) - partition with quorum
+3 nodes and 5 resources configured
+Online: [ zhaopin-5-90 zhaopin-5-91 zhaopin-5-92 ]
+Full list of resources:
+ Master/Slave Set: pgsql-master [pgsql]
+     Masters: [ zhaopin-5-92 ]
+     Slaves: [ zhaopin-5-90 zhaopin-5-91 ]
+ Resource Group: master-group
+     vip-master(ocf::heartbeat:IPaddr2):Started zhaopin-5-92
+ Resource Group: slave-group
+     vip-slave(ocf::heartbeat:IPaddr2):Started zhaopin-5-91
+PCSD Status:
+  zhaopin-5-90 (172.17.5.90): Online
+  zhaopin-5-91 (172.17.5.91): Online
+  zhaopin-5-92 (172.17.5.92): Online
+Daemon Status:
+  corosync: active/disabled
+  pacemaker: active/disabled
+  pcsd: active/enabled
+</code></pre><p>在node3上执行:</p>
+<pre><code>$ psql -U postgres
+psql (9.2.13)
+Type &quot;help&quot; for help.
+postgres=# select * from pg_stat_replication ;
+  pid   | usesysid | usename  | application_name | client_addr | client_hostname | client_port |         backend_start         |   state   | sent_location | write_location | flush_location | replay_location | sync_priority | sync_state
+--------+----------+----------+------------------+-------------+-----------------+-------------+-------------------------------+-----------+---------------+----------------+----------------+-----------------+---------------+------------
+ 110962 |       10 | postgres | zhaopin-5-90     | 172.17.5.90 |                 |       35910 | 2015-10-20 06:07:51.026655+00 | streaming | 0/16013738    | 0/16013738     | 0/16013738     | 0/16013738      |             2 | potential
+  78298 |       10 | postgres | zhaopin-5-91     | 172.17.5.91 |                 |       60755 | 2015-10-20 05:57:08.882432+00 | streaming | 0/16013738    | 0/16013738     | 0/16013738     | 0/16013738      |             1 | sync
+(2 rows)
+postgres=# \q
+</code></pre><p>可见已经恢复</p>
+<h3 id="2-两节点故障-1"><a href="#2-两节点故障-1" class="headerlink" title="(2) 两节点故障"></a>(2) 两节点故障</h3><p>1）停掉Pacemaker服务</p>
+<p>在node1和node3上执行:</p>
+<pre><code>$ sudo systemctl stop pacemaker
+</code></pre><p>2）查看状态</p>
+<p>在node2上执行:</p>
+<pre><code>$ sudo pcs status
+Cluster name: pgcluster
+WARNING: corosync and pacemaker node names do not match (IPs used in setup?)
+Last updated: Tue Oct 20 14:11:34 2015Last change: Tue Oct 20 14:10:59 2015 by root via crm_attribute on zhaopin-5-91
+Stack: corosync
+Current DC: zhaopin-5-91 (version 1.1.13-a14efad) - partition with quorum
+3 nodes and 5 resources configured
+Online: [ zhaopin-5-91 ]
+OFFLINE: [ zhaopin-5-90 zhaopin-5-92 ]
+Full list of resources:
+ Master/Slave Set: pgsql-master [pgsql]
+     Masters: [ zhaopin-5-91 ]
+     Stopped: [ zhaopin-5-90 zhaopin-5-92 ]
+ Resource Group: master-group
+     vip-master(ocf::heartbeat:IPaddr2):Started zhaopin-5-91
+ Resource Group: slave-group
+     vip-slave(ocf::heartbeat:IPaddr2):Stopped
+PCSD Status:
+  172.17.5.90: Online
+  zhaopin-5-91 (172.17.5.91): Online
+  172.17.5.92: Online
+Daemon Status:
+  corosync: active/disabled
+  pacemaker: active/disabled
+  pcsd: active/enabled
+</code></pre><p>3）验证可用性</p>
+<pre><code>$ psql -U postgres
+psql (9.2.13)
+Type &quot;help&quot; for help.
+postgres=# select * from pg_stat_replication ;
+ pid | usesysid | usename | application_name | client_addr | client_hostname | client_port | backend_start | state | sent_location | write_location | flush_location | replay_location | sync_priority | sync_state
+-----+----------+---------+------------------+-------------+-----------------+-------------+---------------+-------+---------------+----------------+----------------+-----------------+---------------+------------
+(0 rows)
+postgres=# \dt
+        List of relations
+ Schema | Name | Type  |  Owner
+--------+------+-------+----------
+ public | test | table | postgres
+(1 row)
+postgres=# drop table test ;
+DROP TABLE
+postgres=# \q
+</code></pre><p>可见集群仍然可用</p>
+<p>4）解决方案</p>
+<p>对于原来的slave节点故障如上面单节点故障处理方法一样,原master节点操作如下:</p>
+<pre><code>$ sudo rm -f /var/lib/pgsql/tmp/PGSQL.lock
+$ sudo pcs cluster start
+Starting Cluster...
+$ sudo pcs status
+Cluster name: pgcluster
+WARNING: corosync and pacemaker node names do not match (IPs used in setup?)
+Last updated: Tue Oct 20 14:17:32 2015Last change: Tue Oct 20 14:17:31 2015 by root via crm_attribute on zhaopin-5-91
+Stack: corosync
+Current DC: zhaopin-5-91 (version 1.1.13-a14efad) - partition with quorum
+3 nodes and 5 resources configured
+Online: [ zhaopin-5-90 zhaopin-5-91 zhaopin-5-92 ]
+Full list of resources:
+ Master/Slave Set: pgsql-master [pgsql]
+     Masters: [ zhaopin-5-91 ]
+     Slaves: [ zhaopin-5-90 zhaopin-5-92 ]
+ Resource Group: master-group
+     vip-master(ocf::heartbeat:IPaddr2):Started zhaopin-5-91
+ Resource Group: slave-group
+     vip-slave(ocf::heartbeat:IPaddr2):Started zhaopin-5-90
+PCSD Status:
+  zhaopin-5-90 (172.17.5.90): Online
+  zhaopin-5-91 (172.17.5.91): Online
+  zhaopin-5-92 (172.17.5.92): Online
+Daemon Status:
+  corosync: active/disabled
+  pacemaker: active/disabled
+  pcsd: active/enabled
+</code></pre><p>在node2上执行:</p>
+<pre><code>$ psql -U postgres
+psql (9.2.13)
+Type &quot;help&quot; for help.
+postgres=# select * from pg_stat_replication ;
+  pid  | usesysid | usename  | application_name | client_addr | client_hostname | client_port |         backend_start         |   state   | sent_location | write_location | flush_location | replay_location | sync_priority | sync_state
+-------+----------+----------+------------------+-------------+-----------------+-------------+-------------------------------+-----------+---------------+----------------+----------------+-----------------+---------------+------------
+ 54687 |       10 | postgres | zhaopin-5-90     | 172.17.5.98 |                 |       40297 | 2015-10-20 06:17:02.084825+00 | streaming | 0/17005B08    | 0/17005B08     | 0/17005B08     | 0/17005B08      |             1 | sync
+ 56147 |       10 | postgres | zhaopin-5-92     | 172.17.5.92 |                 |       32904 | 2015-10-20 06:17:29.874711+00 | streaming | 0/17005B08    | 0/17005B08     | 0/17005B08     | 0/17005B08      |             2 | potential
+(2 rows)
+postgres=# \q
+</code></pre><h2 id="4-Corosync故障"><a href="#4-Corosync故障" class="headerlink" title="4.Corosync故障"></a>4.Corosync故障</h2><h3 id="1-单节点故障-2"><a href="#1-单节点故障-2" class="headerlink" title="(1) 单节点故障"></a>(1) 单节点故障</h3><p>1）停掉Corosync服务</p>
+<p>在node1上执行:</p>
+<pre><code>$ systemctl status corosync.service
+corosync.service - Corosync Cluster Engine
+   Loaded: loaded (/usr/lib/systemd/system/corosync.service; disabled)
+   Active: active (running) since Tue 2015-10-20 13:45:28 CST; 35min ago
+  Process: 35600 ExecStart=/usr/share/corosync/corosync start (code=exited, status=0/SUCCESS)
+ Main PID: 35607 (corosync)
+   CGroup: /system.slice/corosync.service
+           └─35607 corosync
+$ sudo systemctl stop corosync.service
+$ systemctl status corosync.service
+corosync.service - Corosync Cluster Engine
+   Loaded: loaded (/usr/lib/systemd/system/corosync.service; disabled)
+   Active: inactive (dead)
+$ sudo pcs status
+Error: cluster is not currently running on this node
+</code></pre><p>2）查看状态</p>
+<p>在node2上执行:</p>
+<pre><code>$ sudo pcs status
+Cluster name: pgcluster
+WARNING: corosync and pacemaker node names do not match (IPs used in setup?)
+Last updated: Tue Oct 20 14:22:36 2015Last change: Tue Oct 20 14:21:37 2015 by root via crm_attribute on zhaopin-5-91
+Stack: corosync
+Current DC: zhaopin-5-91 (version 1.1.13-a14efad) - partition with quorum
+3 nodes and 5 resources configured
+Online: [ zhaopin-5-91 zhaopin-5-92 ]
+OFFLINE: [ zhaopin-5-90 ]
+Full list of resources:
+ Master/Slave Set: pgsql-master [pgsql]
+     Masters: [ zhaopin-5-91 ]
+     Slaves: [ zhaopin-5-92 ]
+     Stopped: [ zhaopin-5-90 ]
+ Resource Group: master-group
+     vip-master(ocf::heartbeat:IPaddr2):Started zhaopin-5-91
+ Resource Group: slave-group
+     vip-slave(ocf::heartbeat:IPaddr2):Started zhaopin-5-92
+PCSD Status:
+  172.17.5.90: Online
+  zhaopin-5-91 (172.17.5.91): Online
+  zhaopin-5-92 (172.17.5.92): Online
+Daemon Status:
+  corosync: active/disabled
+  pacemaker: active/disabled
+  pcsd: active/enabled
+</code></pre><p>3）验证可用性</p>
+<p>在node2上执行:</p>
+<pre><code>$ psql -U postgres
+psql (9.2.13)
+Type &quot;help&quot; for help.
+postgres=# select * from pg_stat_replication ;
+  pid  | usesysid | usename  | application_name | client_addr | client_hostname | client_port |         backend_start         |   state   | sent_location | write_location | flush_location | replay_location | sync_priority | sync_state
+-------+----------+----------+------------------+-------------+-----------------+-------------+-------------------------------+-----------+---------------+----------------+----------------+-----------------+---------------+------------
+ 56147 |       10 | postgres | zhaopin-5-92     | 172.17.5.92 |                 |       32904 | 2015-10-20 06:17:29.874711+00 | streaming | 0/17005BA0    | 0/17005BA0     | 0/17005BA0     | 0/17005BA0      |             1 | sync
+(1 row)
+postgres=# \dt
+No relations found.
+postgres=# create table test ( id bigint );
+CREATE TABLE
+postgres=# \q
+</code></pre><p>可见集群仍然可用</p>
+<p>4）解决方案</p>
+<p>如同Pacemaker单节点故障解决方案</p>
+<h3 id="2-两节点故障-2"><a href="#2-两节点故障-2" class="headerlink" title="(2) 两节点故障"></a>(2) 两节点故障</h3><p>在node1和node2上执行:</p>
+<pre><code>$ sudo systemctl stop corosync.service
+$ systemctl status corosync.service
+corosync.service - Corosync Cluster Engine
+   Loaded: loaded (/usr/lib/systemd/system/corosync.service; disabled)
+   Active: inactive (dead)
+$ sudo pcs status
+Error: cluster is not currently running on this node
+</code></pre><p>2）查看状态</p>
+<p>在node3上执行:</p>
+<pre><code>$ sudo pcs status
+Cluster name: pgcluster
+WARNING: corosync and pacemaker node names do not match (IPs used in setup?)
+Last updated: Tue Oct 20 14:27:17 2015Last change: Tue Oct 20 14:26:35 2015 by root via crm_attribute on zhaopin-5-92
+Stack: corosync
+Current DC: zhaopin-5-92 (version 1.1.13-a14efad) - partition WITHOUT quorum
+3 nodes and 5 resources configured
+Online: [ zhaopin-5-92 ]
+OFFLINE: [ zhaopin-5-90 zhaopin-5-91 ]
+Full list of resources:
+ Master/Slave Set: pgsql-master [pgsql]
+     Masters: [ zhaopin-5-92 ]
+     Stopped: [ zhaopin-5-90 zhaopin-5-91 ]
+ Resource Group: master-group
+     vip-master(ocf::heartbeat:IPaddr2):Started zhaopin-5-92
+ Resource Group: slave-group
+     vip-slave(ocf::heartbeat:IPaddr2):Stopped
+PCSD Status:
+  172.17.5.90: Online
+  172.17.5.91: Online
+  zhaopin-5-92 (172.17.5.92): Online
+Daemon Status:
+  corosync: active/disabled
+  pacemaker: active/disabled
+  pcsd: active/enabled
+</code></pre><p>3）验证可用性</p>
+<p>在node3上执行:</p>
+<pre><code>$ psql -U postgres
+psql (9.2.13)
+Type &quot;help&quot; for help.
+postgres=# select * from pg_stat_replication ;
+ pid | usesysid | usename | application_name | client_addr | client_hostname | client_port | backend_start | state | sent_location | write_location | flush_location | replay_location | sync_priority | sync_state
+-----+----------+---------+------------------+-------------+-----------------+-------------+---------------+-------+---------------+----------------+----------------+-----------------+---------------+------------
+(0 rows)
+postgres=# \dt
+        List of relations
+ Schema | Name | Type  |  Owner
+--------+------+-------+----------
+ public | test | table | postgres
+(1 row)
+postgres=# drop table test ;
+DROP TABLE
+postgres=# \q
+</code></pre><p>4）解决方案</p>
+<p>如同Pacemaker故障中的两节点故障</p>
+<h2 id="5-服务器故障"><a href="#5-服务器故障" class="headerlink" title="5.服务器故障"></a>5.服务器故障</h2><h3 id="1-停掉机器"><a href="#1-停掉机器" class="headerlink" title="(1) 停掉机器"></a>(1) 停掉机器</h3><p>在node1上执行:</p>
+<pre><code>$ sudo shutdown -h now
+</code></pre><h3 id="2-查看状态"><a href="#2-查看状态" class="headerlink" title="(2) 查看状态"></a>(2) 查看状态</h3><p>在node3上执行:</p>
+<pre><code>$ sudo pcs status
+Cluster name: pgcluster
+WARNING: corosync and pacemaker node names do not match (IPs used in setup?)
+Last updated: Tue Oct 20 14:33:47 2015Last change: Tue Oct 20 14:33:22 2015 by root via crm_attribute on zhaopin-5-92
+Stack: corosync
+Current DC: zhaopin-5-92 (version 1.1.13-a14efad) - partition with quorum
+3 nodes and 5 resources configured
+Online: [ zhaopin-5-91 zhaopin-5-92 ]
+OFFLINE: [ zhaopin-5-90 ]
+Full list of resources:
+ Master/Slave Set: pgsql-master [pgsql]
+     Masters: [ zhaopin-5-92 ]
+     Slaves: [ zhaopin-5-91 ]
+     Stopped: [ zhaopin-5-90 ]
+ Resource Group: master-group
+     vip-master(ocf::heartbeat:IPaddr2):Started zhaopin-5-92
+ Resource Group: slave-group
+     vip-slave(ocf::heartbeat:IPaddr2):Started zhaopin-5-91
+PCSD Status:
+  172.17.5.90: Offline
+  zhaopin-5-91 (172.17.5.91): Online
+  zhaopin-5-92 (172.17.5.92): Online
+Daemon Status:
+  corosync: active/disabled
+  pacemaker: active/disabled
+  pcsd: active/enabled
+</code></pre><h3 id="3-验证可用性"><a href="#3-验证可用性" class="headerlink" title="(3) 验证可用性"></a>(3) 验证可用性</h3><p>在node3上执行:</p>
+<pre><code>$ psql -U postgres
+psql (9.2.13)
+Type &quot;help&quot; for help.
+postgres=# select * from pg_stat_replication ;
+  pid  | usesysid | usename  | application_name | client_addr | client_hostname | client_port |         backend_start         |   state   | sent_location | write_location | flush_location | replay_location | sync_priority | sync_state
+-------+----------+----------+------------------+-------------+-----------------+-------------+-------------------------------+-----------+---------------+----------------+----------------+-----------------+---------------+------------
+ 15678 |       10 | postgres | zhaopin-5-91     | 172.17.5.91 |                 |       60771 | 2015-10-20 06:30:11.747191+00 | streaming | 0/18006120    | 0/18006120     | 0/18006120     | 0/18006120      |             1 | sync
+(1 row)
+postgres=# \dt
+No relations found.
+postgres=# create table test ( id bigint );
+CREATE TABLE
+postgres=# \q
+</code></pre><p>可见集群仍然可用</p>
+<h3 id="4-解决方案"><a href="#4-解决方案" class="headerlink" title="(4) 解决方案"></a>(4) 解决方案</h3><p>在node4上执行:</p>
+<pre><code>$ sudo yum install -y -q pacemaker pcs psmisc policycoreutils-python
+$ sudo setenforce 0
+$ sudo sed -i.bak &quot;s/SELINUX=enforcing/SELINUX=permissive/g&quot; /etc/selinux/config
+$ sudo systemctl disable firewalld.service
+$ sudo systemctl stop firewalld.service
+$ sudo iptables --flush
+$ sudo systemctl start pcsd.service
+$ sudo systemctl enable pcsd.service
+ln -s &apos;/usr/lib/systemd/system/pcsd.service&apos; &apos;/etc/systemd/system/multi-user.target.wants/pcsd.service&apos;
+$ sudo passwd hacluster
+Changing password for user hacluster.
+New password:
+Retype new password:
+passwd: all authentication tokens updated successfully.
+$ sudo mkdir -p /data/postgresql/data
+$ sudo mkdir -p /data/postgresql/xlog_archive
+$ sudo chown -R postgres:postgres /data/postgresql/
+$ sudo chmod 0700 /data/postgresql/data
+$ sudo su - postgres
+$ pg_basebackup -h 172.17.5.92 -U postgres -D /data/postgresql/data/ -X stream -P
+</code></pre><p>20245/20245 kB (100%), 1/1 tablespace</p>
+<p>在node2上执行:</p>
+<pre><code>$ sudo pcs cluster auth 172.17.5.90 172.17.5.91 172.17.5.92 172.17.5.93 -u hacluster -p hacluster
+172.17.5.90: Authorized
+172.17.5.91: Authorized
+172.17.5.92: Authorized
+172.17.5.93: Authorized
+$ sudo pcs cluster node add 172.17.5.93 --start
+172.17.5.90: Corosync updated
+172.17.5.91: Corosync updated
+172.17.5.92: Corosync updated
+172.17.5.93: Succeeded
+172.17.5.93: Starting Cluster...
+$ sudo pcs status
+Cluster name: pgcluster
+WARNING: corosync and pacemaker node names do not match (IPs used in setup?)
+Last updated: Tue Oct 20 16:07:12 2015Last change: Tue Oct 20 16:01:06 2015 by hacluster via crmd on zhaopin-5-92
+Stack: corosync
+Current DC: zhaopin-5-91 (version 1.1.13-a14efad) - partition with quorum
+4 nodes and 5 resources configured
+Online: [ zhaopin-5-91 zhaopin-5-92 zhaopin-5-93 ]
+OFFLINE: [ zhaopin-5-90 ]
+Full list of resources:
+ Master/Slave Set: pgsql-master [pgsql]
+     Masters: [ zhaopin-5-92 ]
+     Slaves: [ zhaopin-5-91 ]
+     Stopped: [ zhaopin-5-90 zhaopin-5-93 ]
+ Resource Group: master-group
+     vip-master(ocf::heartbeat:IPaddr2):Started zhaopin-5-92
+ Resource Group: slave-group
+     vip-slave(ocf::heartbeat:IPaddr2):Started zhaopin-5-91
+PCSD Status:
+  172.17.5.90: Online
+  zhaopin-5-91 (172.17.5.91): Online
+  zhaopin-5-92 (172.17.5.92): Online
+  zhaopin-5-93 (172.17.5.93): Online
+Daemon Status:
+  corosync: active/disabled
+  pacemaker: active/disabled
+  pcsd: active/enabled
+</code></pre><p>更新PostgreSQL集群,添加新加的节点,会有闪断</p>
+<pre><code>$ sudo pcs resource update pgsql-master pgsql master-max=1 master-node-max=1 clone-max=4 clone-node-max=1 notify=true
+$ sudo pcs resource update pgsql pgsql node_list=&quot;zhaopin-5-90 zhaopin-5-91 zhaopin-5-92 zhaopin-5-93&quot;
+$ sudo pcs status
+Cluster name: pgcluster
+WARNING: corosync and pacemaker node names do not match (IPs used in setup?)
+Last updated: Tue Oct 20 16:13:55 2015Last change: Tue Oct 20 16:13:32 2015 by hacluster via crmd on zhaopin-5-91
+Stack: corosync
+Current DC: zhaopin-5-91 (version 1.1.13-a14efad) - partition with quorum
+4 nodes and 6 resources configured
+Online: [ zhaopin-5-91 zhaopin-5-92 zhaopin-5-93 ]
+OFFLINE: [ zhaopin-5-90 ]
+Full list of resources:
+ Master/Slave Set: pgsql-master [pgsql]
+     Masters: [ zhaopin-5-93 ]
+     Slaves: [ zhaopin-5-91 zhaopin-5-92 ]
+     Stopped: [ zhaopin-5-90 ]
+ Resource Group: master-group
+     vip-master(ocf::heartbeat:IPaddr2):Started zhaopin-5-93
+ Resource Group: slave-group
+     vip-slave(ocf::heartbeat:IPaddr2):Started zhaopin-5-91
+PCSD Status:
+  172.17.5.90: Online
+  zhaopin-5-91 (172.17.5.91): Online
+  zhaopin-5-92 (172.17.5.92): Online
+  zhaopin-5-93 (172.17.5.93): Online
+Daemon Status:
+  corosync: active/disabled
+  pacemaker: active/disabled
+  pcsd: active/enabled
+$ sudo pcs cluster node remove 172.17.5.90
+172.17.5.90: Stopping Cluster (pacemaker)...
+172.17.5.90: Successfully destroyed cluster
+172.17.5.91: Corosync updated
+172.17.5.92: Corosync updated
+172.17.5.93: Corosync updated
+$ sudo crmadmin -N
+(null) node: zhaopin-5-92 (3)
+(null) node: zhaopin-5-91 (2)
+(null) node: zhaopin-5-93 (4)
+$ sudo crm_node -R zhaopin-5-90 --force
+$ sudo crmadmin -N
+(null) node: zhaopin-5-92 (3)
+(null) node: zhaopin-5-91 (2)
+(null) node: zhaopin-5-93 (4)
+$ sudo pcs status
+Cluster name: pgcluster
+WARNING: corosync and pacemaker node names do not match (IPs used in setup?)
+Last updated: Tue Oct 20 16:58:05 2015Last change: Tue Oct 20 16:56:06 2015 by root via crm_node on zhaopin-5-92
+Stack: corosync
+Current DC: zhaopin-5-91 (version 1.1.13-a14efad) - partition with quorum
+3 nodes and 6 resources configured
+Online: [ zhaopin-5-91 zhaopin-5-92 zhaopin-5-93 ]
+Full list of resources:
+ Master/Slave Set: pgsql-master [pgsql]
+     Masters: [ zhaopin-5-93 ]
+     Slaves: [ zhaopin-5-91 zhaopin-5-92 ]
+ Resource Group: master-group
+     vip-master(ocf::heartbeat:IPaddr2):Started zhaopin-5-93
+ Resource Group: slave-group
+     vip-slave(ocf::heartbeat:IPaddr2):Started zhaopin-5-91
+PCSD Status:
+  zhaopin-5-91 (172.17.5.91): Online
+  zhaopin-5-92 (172.17.5.92): Online
+  zhaopin-5-93 (172.17.5.93): Online
+Daemon Status:
+  corosync: active/disabled
+  pacemaker: active/disabled
+  pcsd: active/enabled
+</code></pre><h2 id="6-结论"><a href="#6-结论" class="headerlink" title="6.结论"></a>6.结论</h2><p>集群中还剩最后一台机器仍能提供服务</p>
+
+      
+    </div>
+    
+  </div>
+  
+    
+    <div class="copyright">
+        <p><span>本文标题:</span><a href="/2016/07/05/PostgreSQL/2016-07-05-Pacemaker+Corosync+2016-07-05-PostgreSQL集群故障测试和解决方案/">Pacemaker+Corosync+PostgreSQL集群故障测试和解决方案</a></p>
+        <p><span>文章作者:</span><a href="/" title="回到主页">panwenhang</a></p>
+        <p><span>发布时间:</span>2016-07-05, 00:00:00</p>
+        <p><span>最后更新:</span>2016-09-02, 00:53:41</p>
+        <p>
+            <span>原始链接:</span><a class="post-url" href="/2016/07/05/PostgreSQL/2016-07-05-Pacemaker+Corosync+2016-07-05-PostgreSQL集群故障测试和解决方案/" title="Pacemaker+Corosync+PostgreSQL集群故障测试和解决方案">http://panwenhang.github.io/2016/07/05/PostgreSQL/2016-07-05-Pacemaker+Corosync+2016-07-05-PostgreSQL集群故障测试和解决方案/</a>
+            <span class="copy-path" data-clipboard-text="原文: http://panwenhang.github.io/2016/07/05/PostgreSQL/2016-07-05-Pacemaker+Corosync+2016-07-05-PostgreSQL集群故障测试和解决方案/　　作者: panwenhang" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <script> var clipboard = new Clipboard('.copy-path'); </script>
+        </p>
+        <p>
+            <span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/" title="CC BY-NC-SA 4.0 International" target = "_blank">"署名-非商用-相同方式共享 4.0"</a> 转载请保留原文链接及作者。
+        </p>
+    </div>
+
+
+
+    <nav id="article-nav">
+        
+            <div id="article-nav-newer" class="article-nav-title">
+                <a href="/2016/07/05/PostgreSQL/2016-07-05-BDR0.9.0版本测试/">
+                    BDR0.9.0版本测试
+                </a>
+            </div>
+        
+        
+            <div id="article-nav-older" class="article-nav-title">
+                <a href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL主键膨胀维护/">
+                    PostgreSQL主键膨胀维护
+                </a>
+            </div>
+        
+    </nav>
+
+  
+</article>
+
+    <div id="toc" class="toc-article">
+        <strong class="toc-title">文章目录</strong>
+        
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-环境"><span class="toc-number">1.</span> <span class="toc-text">1.环境</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-PostgreSQL故障"><span class="toc-number">2.</span> <span class="toc-text">2.PostgreSQL故障</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-单节点故障"><span class="toc-number">2.1.</span> <span class="toc-text">(1) 单节点故障</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-两节点故障"><span class="toc-number">2.2.</span> <span class="toc-text">(2) 两节点故障</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-Pacemaker故障"><span class="toc-number">3.</span> <span class="toc-text">3.Pacemaker故障</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-单节点故障-1"><span class="toc-number">3.1.</span> <span class="toc-text">(1) 单节点故障</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-两节点故障-1"><span class="toc-number">3.2.</span> <span class="toc-text">(2) 两节点故障</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-Corosync故障"><span class="toc-number">4.</span> <span class="toc-text">4.Corosync故障</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-单节点故障-2"><span class="toc-number">4.1.</span> <span class="toc-text">(1) 单节点故障</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-两节点故障-2"><span class="toc-number">4.2.</span> <span class="toc-text">(2) 两节点故障</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-服务器故障"><span class="toc-number">5.</span> <span class="toc-text">5.服务器故障</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-停掉机器"><span class="toc-number">5.1.</span> <span class="toc-text">(1) 停掉机器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-查看状态"><span class="toc-number">5.2.</span> <span class="toc-text">(2) 查看状态</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-验证可用性"><span class="toc-number">5.3.</span> <span class="toc-text">(3) 验证可用性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-解决方案"><span class="toc-number">5.4.</span> <span class="toc-text">(4) 解决方案</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-结论"><span class="toc-number">6.</span> <span class="toc-text">6.结论</span></a></li></ol>
+        
+    </div>
+    <style>
+        .left-col .switch-btn,
+        .left-col .switch-area {
+            display: none;
+        }
+        .toc-level-3 i,
+        .toc-level-3 ol {
+            display: none !important;
+        }
+    </style>
+
+    <input type="button" id="tocButton" value="隐藏目录"  title="点击按钮隐藏或者显示文章目录">
+
+    <script>
+        yiliaConfig.toc = ["隐藏目录", "显示目录", !!"false"];
+    </script>
+
+
+
+    
+<div class="share">
+    
+        <div class="bdsharebuttonbox">
+            <a href="#" class="fa fa-twitter bds_twi" data-cmd="twi" title="分享到推特"></a>
+            <a href="#" class="fa fa-weibo bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
+            <a href="#" class="fa fa-qq bds_sqq" data-cmd="sqq" title="分享给 QQ 好友"></a>
+            <a href="#" class="fa fa-files-o bds_copy" data-cmd="copy" title="复制网址"></a>
+            <a href="#" class="fa fa fa-envelope-o bds_mail" data-cmd="mail" title="通过邮件分享"></a>
+            <a href="#" class="fa fa-weixin bds_weixin" data-cmd="weixin" title="生成文章二维码"></a>
+            <a href="#" class="fa fa-share-alt bds_more" data-cmd="more"></i></a>
+        </div>
+        <script>
+            window._bd_share_config={
+                "common":{"bdSnsKey":{},"bdText":"Pacemaker+Corosync+PostgreSQL集群故障测试和解决方案　| panwenhang's blog　","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+        </script>
+    
+
+    
+</div>
+
+
+
+
+
+
+
+    
+
+
+
+
+    <div class="scroll" id="post-nav-button">
+        
+            <a href="/2016/07/05/PostgreSQL/2016-07-05-BDR0.9.0版本测试/" title="上一篇: BDR0.9.0版本测试">
+                <i class="fa fa-angle-left"></i>
+            </a>
+        
+
+        <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
+
+        
+            <a href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL主键膨胀维护/" title="下一篇: PostgreSQL主键膨胀维护">
+                <i class="fa fa-angle-right"></i>
+            </a>
+        
+    </div>
+
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL/2016-07-05-Pacemaker+Corosync搭建2016-07-05-PostgreSQL集群/">Pacemaker+Corosync搭建PostgreSQL集群</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL之网络地址类型/">PostgreSQL之网络地址类型</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL查看没有注释的表和字段/">PostgreSQL查看没有注释的表和字段</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL权限管理之创建可更新表的普通用户/">PostgreSQL权限管理之创建可更新表的普通用户</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL日志换行处理/">PostgreSQL日志换行处理</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL日志使用rsyslog/">PostgreSQL日志使用rsyslog</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL多线程备份与恢复/">PostgreSQL多线程备份与恢复</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL恢复到任意时间点/">PostgreSQL恢复到任意时间点</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL备份之手工备份/">PostgreSQL备份之手工备份</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL备份之pg_rman/">PostgreSQL备份之pg_rman</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL备份之pg_basebackup/">PostgreSQL备份之pg_basebackup</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL备份之omniPITR/">PostgreSQL备份之omniPITR</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL同步复制故障测试/">PostgreSQL同步复制故障测试</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL同步复制搭建/">PostgreSQL同步复制搭建</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL事务特性之嵌套事务/">PostgreSQL事务特性之嵌套事务</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL之MVCC/">PostgreSQL之MVCC</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL/2016-07-05-BDR0.9.0版本测试/">BDR0.9.0版本测试</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL/2016-07-05-Pacemaker+Corosync+2016-07-05-PostgreSQL集群故障测试和解决方案/">Pacemaker+Corosync+PostgreSQL集群故障测试和解决方案</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL主键膨胀维护/">PostgreSQL主键膨胀维护</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL表空间的使用/">PostgreSQL表空间的使用</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/30/Linux/2016-06-30-DELL磁盘阵列控制卡（RAID卡）MegaCli常用管理命令汇总/">DELL磁盘阵列控制卡（RAID卡）MegaCli常用管理命令汇总</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/30/Linux/2016-06-30-设置虚ip/">设置虚ip</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/30/Linux/2016-06-30-格式化大盘/">格式化大盘</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/30/Linux/2016-06-30-在Slackware64中安装rtx/">在Slackware64中安装rtx</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/30/Linux/2016-06-30-在CenOS6.4下安装Docker/">在CenOS6.4下安装Docker</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/30/Linux/2016-06-30-crontab中PATH的坑/">crontab中PATH的坑</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/30/Linux/2016-06-30-ssd优化/">ssd优化</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/30/Linux/2016-06-30-部署Docker下打包环境/">部署Docker下打包环境</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/30/Linux/2016-06-30-Linux查看硬件信息/">Linux查看硬件信息</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/30/Linux/2016-06-30-Linux代理设置/">Linux代理设置</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/30/Linux/2016-06-30-HP机器RAID和2016-06-30-LVM创建/">HP机器RAID和LVM创建</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/30/Linux/2016-06-30-Linux下打包/">Linux下打包</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/30/Linux/2016-06-30-Linux之间ssh免密码登录/">Linux之间ssh免密码登录</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/30/Linux/2016-06-30-Linux中时间同步/">Linux中时间同步</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/30/Linux/2016-06-30-Shell脚本-良好的习惯/">Shell脚本-良好的习惯</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/23/C/2016-06-23-C语言side effect和sequence point/">C语言side effect和sequence point</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/23/C/2016-06-23-C语言类型转换/">C语言类型转换</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/23/MongoDB/2016-06-23-Linux下2016-06-23-MongoDB安装和配置/">Linux下MongoDB安装和配置</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/23/MongoDB/2016-06-23-MongoDB主从集群/">MongoDB主从集群</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/23/MongoDB/2016-06-23-MongoDB分片搭建/">MongoDB分片搭建</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/23/MongoDB/2016-06-23-MongoDB分片故障测试和解决方案/">MongoDB分片故障测试和解决方案</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/23/MongoDB/2016-06-23-MongoDB副本集搭建/">MongoDB副本集搭建</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/23/MongoDB/2016-06-23-MongoDB副本集故障测试和解决方案/">MongoDB副本集故障测试和解决方案</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/23/Python/2016-06-23-多版本python环境/">多版本python环境</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/23/Python/2016-06-23-flask环境配置/">flask环境配置</a></li></ul>
+
+
+
+
+    <script>
+        
+    </script>
+</div>
+      <footer id="footer">
+    <div class="outer">
+        <div id="footer-info">
+            <div class="footer-left">
+                <i class="fa fa-copyright"></i> 
+                2016 panwenhang
+            </div>
+            <div class="footer-right">
+                <a href="http://hexo.io/" target="_blank" title="快速、简洁且高效的博客框架">Hexo</a>  Theme <a href="https://github.com/MOxFIVE/hexo-theme-yelee" target="_blank" title="简而不减 Hexo 双栏博客主题  v3.5">Yelee</a> by MOxFIVE <i class="fa fa-heart animated infinite pulse"></i>
+            </div>
+        </div>
+        
+            <div class="visit">
+                
+                    <span id="busuanzi_container_site_pv" style='display:none'>
+                        <span id="site-visit" title="本站到访数"><i class="fa fa-user" aria-hidden="true"></i><span id="busuanzi_value_site_uv"></span>
+                        </span>
+                    </span>
+                
+                
+                    <span>| </span>
+                
+                
+                    <span id="busuanzi_container_page_pv" style='display:none'>
+                        <span id="page-visit"  title="本页阅读量"><i class="fa fa-eye animated infinite pulse" aria-hidden="true"></i><span id="busuanzi_value_page_pv"></span>
+                        </span>
+                    </span>
+                
+            </div>
+        
+    </div>
+</footer>
+    </div>
+    
+<script data-main="/js/main.js" src="//cdn.bootcss.com/require.js/2.2.0/require.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            var iPad = window.navigator.userAgent.indexOf('iPad');
+            if (iPad > -1 || $(".left-col").css("display") === "none") {
+                var bgColorList = ["#9db3f4", "#414141", "#e5a859", "#f5dfc6", "#c084a0", "#847e72", "#cd8390", "#996731"];
+                var bgColor = Math.ceil(Math.random() * (bgColorList.length - 1));
+                $("body").css({"background-color": bgColorList[bgColor], "background-size": "cover"});
+            }
+            else {
+                var backgroundnum = 5;
+                var backgroundimg = "url(/background/bg-x.jpg)".replace(/x/gi, Math.ceil(Math.random() * backgroundnum));
+                $("body").css({"background": backgroundimg, "background-attachment": "fixed", "background-size": "cover"});
+            }
+        })
+    </script>
+
+
+
+
+
+<div class="scroll" id="scroll">
+    <a href="#" title="返回顶部"><i class="fa fa-arrow-up"></i></a>
+    <a href="#comments" onclick="load$hide();" title="查看评论"><i class="fa fa-comments-o"></i></a>
+    <a href="#footer" title="转到底部"><i class="fa fa-arrow-down"></i></a>
+</div>
+<script>
+    // Open in New Window
+    
+        var oOpenInNew = {
+            
+            
+            
+            
+            
+            
+             archives: ".archive-article-title", 
+             miniArchives: "a.post-list-link", 
+            
+             friends: "#js-friends a", 
+             socail: ".social a" 
+        }
+        for (var x in oOpenInNew) {
+            $(oOpenInNew[x]).attr("target", "_blank");
+        }
+    
+</script>
+
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+  </div>
+</body>
+</html>

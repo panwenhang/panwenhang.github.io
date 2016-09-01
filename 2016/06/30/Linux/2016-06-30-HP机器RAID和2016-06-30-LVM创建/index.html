@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+
+    <!--[if lt IE 9]>
+        <style>body {display: none; background: none !important} </style>
+        <meta http-equiv="Refresh" Content="0; url=//outdatedbrowser.com/" />
+    <![endif]-->
+
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="format-detection" content="telephone=no" />
+<meta name="author" content="panwenhang" />
+
+
+
+<meta name="description" content="1.环境[root@localhost ~]# uname -a
+Linux localhost.localdomain 2.6.32-220.el6.x86_64 #1 SMP Tue Dec 6 19:48:22 GMT 2011 x86_64 x86_64 x86_64 GNU/Linux
+[root@localhost ~]# cat /etc/issue
+CentOS release 6">
+<meta property="og:type" content="article">
+<meta property="og:title" content="HP机器RAID和LVM创建">
+<meta property="og:url" content="http://panwenhang.github.io/2016/06/30/Linux/2016-06-30-HP机器RAID和2016-06-30-LVM创建/index.html">
+<meta property="og:site_name" content="panwenhang's blog">
+<meta property="og:description" content="1.环境[root@localhost ~]# uname -a
+Linux localhost.localdomain 2.6.32-220.el6.x86_64 #1 SMP Tue Dec 6 19:48:22 GMT 2011 x86_64 x86_64 x86_64 GNU/Linux
+[root@localhost ~]# cat /etc/issue
+CentOS release 6">
+<meta property="og:updated_time" content="2016-09-01T16:53:40.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="HP机器RAID和LVM创建">
+<meta name="twitter:description" content="1.环境[root@localhost ~]# uname -a
+Linux localhost.localdomain 2.6.32-220.el6.x86_64 #1 SMP Tue Dec 6 19:48:22 GMT 2011 x86_64 x86_64 x86_64 GNU/Linux
+[root@localhost ~]# cat /etc/issue
+CentOS release 6">
+
+<link rel="apple-touch-icon" href= "/apple-touch-icon.png">
+
+
+    <link rel="alternate" href="/atom.xml" title="panwenhang&#39;s blog" type="application/atom+xml">
+
+
+
+    <link rel="shortcut icon" href="/favicon.png">
+
+
+
+    <link href="//cdn.bootcss.com/animate.css/3.5.1/animate.min.css" rel="stylesheet">
+
+
+
+    <link href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.css" rel="stylesheet">
+
+
+
+    <script src="//cdn.bootcss.com/pace/1.0.2/pace.min.js"></script>
+    <link href="//cdn.bootcss.com/pace/1.0.2/themes/blue/pace-theme-minimal.css" rel="stylesheet">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+
+<link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+
+
+<title>HP机器RAID和LVM创建 | panwenhang&#39;s blog</title>
+
+<script src="//cdn.bootcss.com/jquery/2.2.4/jquery.min.js"></script>
+<script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
+
+<script>
+    var yiliaConfig = {
+        fancybox: true,
+        animate: true,
+        isHome: false,
+        isPost: true,
+        isArchive: false,
+        isTag: false,
+        isCategory: false,
+        fancybox_js: "//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.js",
+        scrollreveal: "//cdn.bootcss.com/scrollReveal.js/3.1.4/scrollreveal.min.js",
+        search: undefined
+    }
+</script>
+
+
+    <script> yiliaConfig.jquery_ui = [false]; </script>
+
+
+
+    <script> yiliaConfig.rootUrl = "\/";</script>
+
+
+
+
+
+
+</head>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+    <header id="header" class="inner">
+        <a href="/" class="profilepic">
+            <img src="/img/avatar.png" class="animated zoomIn">
+        </a>
+        <hgroup>
+          <h1 class="header-author"><a href="/">panwenhang</a></h1>
+        </hgroup>
+
+        
+
+        
+
+
+        
+            <div id="switch-btn" class="switch-btn">
+                <div class="icon">
+                    <div class="icon-ctn">
+                        <div class="icon-wrap icon-house" data-idx="0">
+                            <div class="birdhouse"></div>
+                            <div class="birdhouse_holes"></div>
+                        </div>
+                        <div class="icon-wrap icon-ribbon hide" data-idx="1">
+                            <div class="ribbon"></div>
+                        </div>
+                        
+                        <div class="icon-wrap icon-link hide" data-idx="2">
+                            <div class="loopback_l"></div>
+                            <div class="loopback_r"></div>
+                        </div>
+                        
+                        
+                    </div>
+                    
+                </div>
+                <div class="tips-box hide">
+                    <div class="tips-arrow"></div>
+                    <ul class="tips-inner">
+                        <li>菜单</li>
+                        <li>标签</li>
+                        
+                        <li>友情链接</li>
+                        
+                        
+                    </ul>
+                </div>
+            </div>
+        
+
+        <div id="switch-area" class="switch-area">
+            <div class="switch-wrap">
+                <section class="switch-part switch-part1">
+                    <nav class="header-menu">
+                        <ul>
+                        
+                            <li><a href="/">主页</a></li>
+                        
+                            <li><a href="/archives/">所有文章</a></li>
+                        
+                            <li><a href="/tags/">标签云</a></li>
+                        
+                            <li><a href="/about/">关于我</a></li>
+                        
+                        </ul>
+                    </nav>
+                    <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fa Email" href="mailto:panwenhang92@gmail.com" title="Email"></a>
+                            
+                                <a class="fa GitHub" href="https://github.com/panwenhang" title="GitHub"></a>
+                            
+                                <a class="fa RSS" href="/atom.xml" title="RSS"></a>
+                            
+                        </ul>
+                    </nav>
+                </section>
+                
+                
+                <section class="switch-part switch-part2">
+                    <div class="widget tagcloud" id="js-tagcloud">
+                        
+                    </div>
+                </section>
+                
+                
+                
+                <section class="switch-part switch-part3">
+                    <div id="js-friends">
+                    
+                      <a class="main-nav-link switch-friends-link" href="https://hexo.io">Hexo</a>
+                    
+                      <a class="main-nav-link switch-friends-link" href="https://pages.github.com/">GitHub</a>
+                    
+                    </div>
+                </section>
+                
+
+                
+            </div>
+        </div>
+    </header>                
+</div>
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+      <div class="overlay">
+          <div class="slider-trigger"></div>
+          <h1 class="header-author js-mobile-header hide"><a href="/" title="回到主页">panwenhang</a></h1>
+      </div>
+    <div class="intrude-less">
+        <header id="header" class="inner">
+            <a href="/" class="profilepic">
+                <img src="/img/avatar.png" class="animated zoomIn">
+            </a>
+            <hgroup>
+              <h1 class="header-author"><a href="/" title="回到主页">panwenhang</a></h1>
+            </hgroup>
+            
+            <nav class="header-menu">
+                <ul>
+                
+                    <li><a href="/">主页</a></li>
+                
+                    <li><a href="/archives/">所有文章</a></li>
+                
+                    <li><a href="/tags/">标签云</a></li>
+                
+                    <li><a href="/about/">关于我</a></li>
+                
+                <div class="clearfix"></div>
+                </ul>
+            </nav>
+            <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fa Email" target="_blank" href="mailto:panwenhang92@gmail.com" title="Email"></a>
+                            
+                                <a class="fa GitHub" target="_blank" href="https://github.com/panwenhang" title="GitHub"></a>
+                            
+                                <a class="fa RSS" target="_blank" href="/atom.xml" title="RSS"></a>
+                            
+                        </ul>
+            </nav>
+        </header>                
+    </div>
+    <link class="menu-list" tags="标签" friends="友情链接" about="关于我"/>
+</nav>
+      <div class="body-wrap"><article id="post-Linux/2016-06-30-HP机器RAID和2016-06-30-LVM创建" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2016/06/30/Linux/2016-06-30-HP机器RAID和2016-06-30-LVM创建/" class="article-date">
+      <time datetime="2016-06-29T16:00:00.000Z" itemprop="datePublished">2016-06-30</time>
+</a>
+
+
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      HP机器RAID和LVM创建
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/Linux/">Linux</a>
+    </div>
+
+
+        
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        <h2 id="1-环境"><a href="#1-环境" class="headerlink" title="1.环境"></a>1.环境</h2><pre><code>[root@localhost ~]# uname -a
+Linux localhost.localdomain 2.6.32-220.el6.x86_64 #1 SMP Tue Dec 6 19:48:22 GMT 2011 x86_64 x86_64 x86_64 GNU/Linux
+[root@localhost ~]# cat /etc/issue
+CentOS release 6.7 (Final)
+Kernel \r on an \m
+[root@localhost ~]# dmidecode -t bios
+# dmidecode 2.12
+SMBIOS 2.7 present.
+</code></pre><a id="more"></a>
+<pre><code>Handle 0x0000, DMI type 0, 24 bytes
+BIOS Information
+        Vendor: HP
+        Version: P71
+        Release Date: 03/01/2013
+        Address: 0xF0000
+        Runtime Size: 64 kB
+        ROM Size: 8192 kB
+</code></pre><h2 id="2-安装HP磁盘管理工具"><a href="#2-安装HP磁盘管理工具" class="headerlink" title="2.安装HP磁盘管理工具"></a>2.安装HP磁盘管理工具</h2><pre><code>[root@localhost ~]# rpm -ivh http://mirror.nforce.com/pub/software/raidtools/hpacucli-tool/hpacucli-9.40-12.0.x86_64.rpm
+</code></pre><h2 id="3-配置RAID"><a href="#3-配置RAID" class="headerlink" title="3.配置RAID"></a>3.配置RAID</h2><h3 id="1-产看当前RAID状态"><a href="#1-产看当前RAID状态" class="headerlink" title="(1) 产看当前RAID状态"></a>(1) 产看当前RAID状态</h3><pre><code>[root@localhost ~]# hpacucli ctrl all show status
+
+Smart Array P420i in Slot 0 (Embedded)
+   Controller Status: OK
+   Cache Status: OK
+   Battery/Capacitor Status: OK
+
+[root@localhost ~]# hpacucli ctrl all show config
+
+Smart Array P420i in Slot 0 (Embedded)    (sn: 500143802626A660)
+
+   array A (SAS, Unused Space: 0  MB)
+
+
+      logicaldrive 1 (558.9 GB, RAID 1, OK)
+
+      physicaldrive 1I:1:1 (port 1I:box 1:bay 1, SAS, 600 GB, OK)
+      physicaldrive 1I:1:2 (port 1I:box 1:bay 2, SAS, 600 GB, OK)
+
+   unassigned
+
+      physicaldrive 1I:1:3 (port 1I:box 1:bay 3, SAS, 600 GB, OK)
+      physicaldrive 1I:1:4 (port 1I:box 1:bay 4, SAS, 600 GB, OK)
+      physicaldrive 2I:1:5 (port 2I:box 1:bay 5, SAS, 600 GB, OK)
+      physicaldrive 2I:1:6 (port 2I:box 1:bay 6, SAS, 600 GB, OK)
+
+   SEP (Vendor ID PMCSIERA, Model SRCv8x6G) 380 (WWID: 500143802626A66F)
+</code></pre><p>发现有两块盘做了RAID 1, 剩下4块盘没有做RAID。。</p>
+<h2 id="2-创建RAID"><a href="#2-创建RAID" class="headerlink" title="(2) 创建RAID"></a>(2) 创建RAID</h2><pre><code>[root@localhost ~]# hpacucli ctrl slot=0 create type=ld drives=1I:1:3,1I:1:4,2I:1:5,2I:1:6 raid=1+0
+[root@localhost ~]# hpacucli ctrl all show config
+
+Smart Array P420i in Slot 0 (Embedded)    (sn: 500143802626A660)
+
+   array A (SAS, Unused Space: 0  MB)
+
+
+      logicaldrive 1 (558.9 GB, RAID 1, OK)
+
+      physicaldrive 1I:1:1 (port 1I:box 1:bay 1, SAS, 600 GB, OK)
+      physicaldrive 1I:1:2 (port 1I:box 1:bay 2, SAS, 600 GB, OK)
+
+   array B (SAS, Unused Space: 0  MB)
+
+
+      logicaldrive 2 (1.1 TB, RAID 1+0, OK)
+
+      physicaldrive 1I:1:3 (port 1I:box 1:bay 3, SAS, 600 GB, OK)
+      physicaldrive 1I:1:4 (port 1I:box 1:bay 4, SAS, 600 GB, OK)
+      physicaldrive 2I:1:5 (port 2I:box 1:bay 5, SAS, 600 GB, OK)
+      physicaldrive 2I:1:6 (port 2I:box 1:bay 6, SAS, 600 GB, OK)
+
+   SEP (Vendor ID PMCSIERA, Model SRCv8x6G) 380 (WWID: 500143802626A66F)
+</code></pre><p>为剩下的4块盘创建了一个RAID 1+0</p>
+<h2 id="4-配置LVM"><a href="#4-配置LVM" class="headerlink" title="4.配置LVM"></a>4.配置LVM</h2><h3 id="1-创建分区"><a href="#1-创建分区" class="headerlink" title="(1) 创建分区"></a>(1) 创建分区</h3><pre><code>[root@localhost ~]# cfdisk /dev/sdb
+</code></pre><h3 id="2-创建物理卷"><a href="#2-创建物理卷" class="headerlink" title="(2) 创建物理卷"></a>(2) 创建物理卷</h3><pre><code>[root@localhost ~]# pvs
+  PV         VG       Fmt  Attr PSize   PFree
+  /dev/sda2  VolGroup lvm2 a--  558.39g    0
+[root@localhost ~]# pvcreate /dev/sdb1
+  Physical volume &quot;/dev/sdb1&quot; successfully created
+[root@localhost ~]# pvs
+  PV         VG       Fmt  Attr PSize   PFree
+  /dev/sda2  VolGroup lvm2 a--  558.39g    0
+  /dev/sdb1           lvm2 ---    1.09t 1.09t
+</code></pre><h3 id="3-将创建的物理卷添加到卷组"><a href="#3-将创建的物理卷添加到卷组" class="headerlink" title="(3) 将创建的物理卷添加到卷组"></a>(3) 将创建的物理卷添加到卷组</h3><pre><code>[root@localhost ~]# vgs
+  VG       #PV #LV #SN Attr   VSize   VFree
+  VolGroup   1   3   0 wz--n- 558.39g    0
+[root@localhost ~]# vgextend VolGroup /dev/sdb1
+  Volume group &quot;VolGroup&quot; successfully extended
+[root@localhost ~]# vgs
+  VG       #PV #LV #SN Attr   VSize VFree
+  VolGroup   2   3   0 wz--n- 1.64t 1.09t
+</code></pre><h3 id="4-创建逻辑卷"><a href="#4-创建逻辑卷" class="headerlink" title="(4) 创建逻辑卷"></a>(4) 创建逻辑卷</h3><pre><code>[root@localhost ~]# lvs
+  LV      VG       Attr       LSize   Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert
+  lv_home VolGroup -wi-ao---- 380.25g
+  lv_root VolGroup -wi-ao----  50.00g
+  lv_swap VolGroup -wi-ao---- 128.14g
+[root@localhost ~]# lvcreate -L 1T -n lv_data VolGroup
+  Logical volume &quot;lv_data&quot; created.
+[root@localhost ~]# lvs
+  LV      VG       Attr       LSize   Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert
+  lv_data VolGroup -wi-a-----   1.00t
+  lv_home VolGroup -wi-ao---- 380.25g
+  lv_root VolGroup -wi-ao----  50.00g
+  lv_swap VolGroup -wi-ao---- 128.14g
+</code></pre><h2 id="5-格式化使用"><a href="#5-格式化使用" class="headerlink" title="5.格式化使用"></a>5.格式化使用</h2><h3 id="1-格式化"><a href="#1-格式化" class="headerlink" title="(1) 格式化"></a>(1) 格式化</h3><pre><code>[root@localhost ~]#  mkfs.ext4 /dev/VolGroup/lv_data
+mke2fs 1.41.12 (17-May-2010)
+Filesystem label=
+OS type: Linux
+Block size=4096 (log=2)
+Fragment size=4096 (log=2)
+Stride=64 blocks, Stripe width=128 blocks
+67108864 inodes, 268435456 blocks
+13421772 blocks (5.00%) reserved for the super user
+First data block=0
+Maximum filesystem blocks=4294967296
+8192 block groups
+32768 blocks per group, 32768 fragments per group
+8192 inodes per group
+Superblock backups stored on blocks:
+        32768, 98304, 163840, 229376, 294912, 819200, 884736, 1605632, 2654208,
+        4096000, 7962624, 11239424, 20480000, 23887872, 71663616, 78675968,
+        102400000, 214990848
+
+Writing inode tables: done
+Creating journal (32768 blocks): done
+Writing superblocks and filesystem accounting information: done
+
+This filesystem will be automatically checked every 28 mounts or
+180 days, whichever comes first.  Use tune2fs -c or -i to override.
+[root@localhost ~]#  e2fsck -f /dev/VolGroup/lv_data
+e2fsck 1.41.12 (17-May-2010)
+Pass 1: Checking inodes, blocks, and sizes
+Pass 2: Checking directory structure
+Pass 3: Checking directory connectivity
+Pass 4: Checking reference counts
+Pass 5: Checking group summary information
+/dev/VolGroup/lv_data: 11/67108864 files (0.0% non-contiguous), 4262937/268435456 blocks
+</code></pre><h3 id="2-挂载"><a href="#2-挂载" class="headerlink" title="(2) 挂载"></a>(2) 挂载</h3><pre><code>[root@localhost ~]# df -h
+Filesystem            Size  Used Avail Use% Mounted on
+/dev/mapper/VolGroup-lv_root
+                       50G  5.1G   42G  11% /
+tmpfs                  63G     0   63G   0% /dev/shm
+/dev/sda1             485M   67M  393M  15% /boot
+/dev/mapper/VolGroup-lv_home
+                      375G  192G  164G  55% /home
+[root@localhost ~]# mkdir -p /data
+[root@localhost ~]# mount -t ext4 /dev/VolGroup/lv_data /data
+[root@localhost ~]# df -h
+Filesystem            Size  Used Avail Use% Mounted on
+/dev/mapper/VolGroup-lv_root
+                       50G  5.1G   42G  11% /
+tmpfs                  63G     0   63G   0% /dev/shm
+/dev/sda1             485M   67M  393M  15% /boot
+/dev/mapper/VolGroup-lv_home
+                      375G  192G  164G  55% /home
+/dev/mapper/VolGroup-lv_data
+                     1008G  200M  957G   1% /data
+</code></pre><h2 id="6-参考"><a href="#6-参考" class="headerlink" title="6.参考"></a>6.参考</h2><p><a href="http://www.datadisk.co.uk/html_docs/redhat/hpacucli.htm" target="_blank" rel="external">http://www.datadisk.co.uk/html_docs/redhat/hpacucli.htm</a></p>
+
+      
+    </div>
+    
+  </div>
+  
+    
+    <div class="copyright">
+        <p><span>本文标题:</span><a href="/2016/06/30/Linux/2016-06-30-HP机器RAID和2016-06-30-LVM创建/">HP机器RAID和LVM创建</a></p>
+        <p><span>文章作者:</span><a href="/" title="回到主页">panwenhang</a></p>
+        <p><span>发布时间:</span>2016-06-30, 00:00:00</p>
+        <p><span>最后更新:</span>2016-09-02, 00:53:40</p>
+        <p>
+            <span>原始链接:</span><a class="post-url" href="/2016/06/30/Linux/2016-06-30-HP机器RAID和2016-06-30-LVM创建/" title="HP机器RAID和LVM创建">http://panwenhang.github.io/2016/06/30/Linux/2016-06-30-HP机器RAID和2016-06-30-LVM创建/</a>
+            <span class="copy-path" data-clipboard-text="原文: http://panwenhang.github.io/2016/06/30/Linux/2016-06-30-HP机器RAID和2016-06-30-LVM创建/　　作者: panwenhang" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <script> var clipboard = new Clipboard('.copy-path'); </script>
+        </p>
+        <p>
+            <span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/" title="CC BY-NC-SA 4.0 International" target = "_blank">"署名-非商用-相同方式共享 4.0"</a> 转载请保留原文链接及作者。
+        </p>
+    </div>
+
+
+
+    <nav id="article-nav">
+        
+            <div id="article-nav-newer" class="article-nav-title">
+                <a href="/2016/06/30/Linux/2016-06-30-Linux代理设置/">
+                    Linux代理设置
+                </a>
+            </div>
+        
+        
+            <div id="article-nav-older" class="article-nav-title">
+                <a href="/2016/06/30/Linux/2016-06-30-Linux下打包/">
+                    Linux下打包
+                </a>
+            </div>
+        
+    </nav>
+
+  
+</article>
+
+    <div id="toc" class="toc-article">
+        <strong class="toc-title">文章目录</strong>
+        
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-环境"><span class="toc-number">1.</span> <span class="toc-text">1.环境</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-安装HP磁盘管理工具"><span class="toc-number">2.</span> <span class="toc-text">2.安装HP磁盘管理工具</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-配置RAID"><span class="toc-number">3.</span> <span class="toc-text">3.配置RAID</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-产看当前RAID状态"><span class="toc-number">3.1.</span> <span class="toc-text">(1) 产看当前RAID状态</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-创建RAID"><span class="toc-number">4.</span> <span class="toc-text">(2) 创建RAID</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-配置LVM"><span class="toc-number">5.</span> <span class="toc-text">4.配置LVM</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-创建分区"><span class="toc-number">5.1.</span> <span class="toc-text">(1) 创建分区</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-创建物理卷"><span class="toc-number">5.2.</span> <span class="toc-text">(2) 创建物理卷</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-将创建的物理卷添加到卷组"><span class="toc-number">5.3.</span> <span class="toc-text">(3) 将创建的物理卷添加到卷组</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-创建逻辑卷"><span class="toc-number">5.4.</span> <span class="toc-text">(4) 创建逻辑卷</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-格式化使用"><span class="toc-number">6.</span> <span class="toc-text">5.格式化使用</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-格式化"><span class="toc-number">6.1.</span> <span class="toc-text">(1) 格式化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-挂载"><span class="toc-number">6.2.</span> <span class="toc-text">(2) 挂载</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-参考"><span class="toc-number">7.</span> <span class="toc-text">6.参考</span></a></li></ol>
+        
+    </div>
+    <style>
+        .left-col .switch-btn,
+        .left-col .switch-area {
+            display: none;
+        }
+        .toc-level-3 i,
+        .toc-level-3 ol {
+            display: none !important;
+        }
+    </style>
+
+    <input type="button" id="tocButton" value="隐藏目录"  title="点击按钮隐藏或者显示文章目录">
+
+    <script>
+        yiliaConfig.toc = ["隐藏目录", "显示目录", !!"false"];
+    </script>
+
+
+
+    
+<div class="share">
+    
+        <div class="bdsharebuttonbox">
+            <a href="#" class="fa fa-twitter bds_twi" data-cmd="twi" title="分享到推特"></a>
+            <a href="#" class="fa fa-weibo bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
+            <a href="#" class="fa fa-qq bds_sqq" data-cmd="sqq" title="分享给 QQ 好友"></a>
+            <a href="#" class="fa fa-files-o bds_copy" data-cmd="copy" title="复制网址"></a>
+            <a href="#" class="fa fa fa-envelope-o bds_mail" data-cmd="mail" title="通过邮件分享"></a>
+            <a href="#" class="fa fa-weixin bds_weixin" data-cmd="weixin" title="生成文章二维码"></a>
+            <a href="#" class="fa fa-share-alt bds_more" data-cmd="more"></i></a>
+        </div>
+        <script>
+            window._bd_share_config={
+                "common":{"bdSnsKey":{},"bdText":"HP机器RAID和LVM创建　| panwenhang's blog　","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+        </script>
+    
+
+    
+</div>
+
+
+
+
+
+
+
+    
+
+
+
+
+    <div class="scroll" id="post-nav-button">
+        
+            <a href="/2016/06/30/Linux/2016-06-30-Linux代理设置/" title="上一篇: Linux代理设置">
+                <i class="fa fa-angle-left"></i>
+            </a>
+        
+
+        <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
+
+        
+            <a href="/2016/06/30/Linux/2016-06-30-Linux下打包/" title="下一篇: Linux下打包">
+                <i class="fa fa-angle-right"></i>
+            </a>
+        
+    </div>
+
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL/2016-07-05-Pacemaker+Corosync搭建2016-07-05-PostgreSQL集群/">Pacemaker+Corosync搭建PostgreSQL集群</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL之网络地址类型/">PostgreSQL之网络地址类型</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL查看没有注释的表和字段/">PostgreSQL查看没有注释的表和字段</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL权限管理之创建可更新表的普通用户/">PostgreSQL权限管理之创建可更新表的普通用户</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL日志换行处理/">PostgreSQL日志换行处理</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL日志使用rsyslog/">PostgreSQL日志使用rsyslog</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL多线程备份与恢复/">PostgreSQL多线程备份与恢复</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL恢复到任意时间点/">PostgreSQL恢复到任意时间点</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL备份之手工备份/">PostgreSQL备份之手工备份</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL备份之pg_rman/">PostgreSQL备份之pg_rman</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL备份之pg_basebackup/">PostgreSQL备份之pg_basebackup</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL备份之omniPITR/">PostgreSQL备份之omniPITR</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL同步复制故障测试/">PostgreSQL同步复制故障测试</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL同步复制搭建/">PostgreSQL同步复制搭建</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL事务特性之嵌套事务/">PostgreSQL事务特性之嵌套事务</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL之MVCC/">PostgreSQL之MVCC</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL/2016-07-05-BDR0.9.0版本测试/">BDR0.9.0版本测试</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL/2016-07-05-Pacemaker+Corosync+2016-07-05-PostgreSQL集群故障测试和解决方案/">Pacemaker+Corosync+PostgreSQL集群故障测试和解决方案</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL主键膨胀维护/">PostgreSQL主键膨胀维护</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL表空间的使用/">PostgreSQL表空间的使用</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/30/Linux/2016-06-30-DELL磁盘阵列控制卡（RAID卡）MegaCli常用管理命令汇总/">DELL磁盘阵列控制卡（RAID卡）MegaCli常用管理命令汇总</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/30/Linux/2016-06-30-设置虚ip/">设置虚ip</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/30/Linux/2016-06-30-格式化大盘/">格式化大盘</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/30/Linux/2016-06-30-在Slackware64中安装rtx/">在Slackware64中安装rtx</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/30/Linux/2016-06-30-在CenOS6.4下安装Docker/">在CenOS6.4下安装Docker</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/30/Linux/2016-06-30-crontab中PATH的坑/">crontab中PATH的坑</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/30/Linux/2016-06-30-ssd优化/">ssd优化</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/30/Linux/2016-06-30-部署Docker下打包环境/">部署Docker下打包环境</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/30/Linux/2016-06-30-Linux查看硬件信息/">Linux查看硬件信息</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/30/Linux/2016-06-30-Linux代理设置/">Linux代理设置</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/30/Linux/2016-06-30-HP机器RAID和2016-06-30-LVM创建/">HP机器RAID和LVM创建</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/30/Linux/2016-06-30-Linux下打包/">Linux下打包</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/30/Linux/2016-06-30-Linux之间ssh免密码登录/">Linux之间ssh免密码登录</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/30/Linux/2016-06-30-Linux中时间同步/">Linux中时间同步</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/30/Linux/2016-06-30-Shell脚本-良好的习惯/">Shell脚本-良好的习惯</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/23/C/2016-06-23-C语言side effect和sequence point/">C语言side effect和sequence point</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/23/C/2016-06-23-C语言类型转换/">C语言类型转换</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/23/MongoDB/2016-06-23-Linux下2016-06-23-MongoDB安装和配置/">Linux下MongoDB安装和配置</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/23/MongoDB/2016-06-23-MongoDB主从集群/">MongoDB主从集群</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/23/MongoDB/2016-06-23-MongoDB分片搭建/">MongoDB分片搭建</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/23/MongoDB/2016-06-23-MongoDB分片故障测试和解决方案/">MongoDB分片故障测试和解决方案</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/23/MongoDB/2016-06-23-MongoDB副本集搭建/">MongoDB副本集搭建</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/23/MongoDB/2016-06-23-MongoDB副本集故障测试和解决方案/">MongoDB副本集故障测试和解决方案</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/23/Python/2016-06-23-多版本python环境/">多版本python环境</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/23/Python/2016-06-23-flask环境配置/">flask环境配置</a></li></ul>
+
+
+
+
+    <script>
+        
+    </script>
+</div>
+      <footer id="footer">
+    <div class="outer">
+        <div id="footer-info">
+            <div class="footer-left">
+                <i class="fa fa-copyright"></i> 
+                2016 panwenhang
+            </div>
+            <div class="footer-right">
+                <a href="http://hexo.io/" target="_blank" title="快速、简洁且高效的博客框架">Hexo</a>  Theme <a href="https://github.com/MOxFIVE/hexo-theme-yelee" target="_blank" title="简而不减 Hexo 双栏博客主题  v3.5">Yelee</a> by MOxFIVE <i class="fa fa-heart animated infinite pulse"></i>
+            </div>
+        </div>
+        
+            <div class="visit">
+                
+                    <span id="busuanzi_container_site_pv" style='display:none'>
+                        <span id="site-visit" title="本站到访数"><i class="fa fa-user" aria-hidden="true"></i><span id="busuanzi_value_site_uv"></span>
+                        </span>
+                    </span>
+                
+                
+                    <span>| </span>
+                
+                
+                    <span id="busuanzi_container_page_pv" style='display:none'>
+                        <span id="page-visit"  title="本页阅读量"><i class="fa fa-eye animated infinite pulse" aria-hidden="true"></i><span id="busuanzi_value_page_pv"></span>
+                        </span>
+                    </span>
+                
+            </div>
+        
+    </div>
+</footer>
+    </div>
+    
+<script data-main="/js/main.js" src="//cdn.bootcss.com/require.js/2.2.0/require.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            var iPad = window.navigator.userAgent.indexOf('iPad');
+            if (iPad > -1 || $(".left-col").css("display") === "none") {
+                var bgColorList = ["#9db3f4", "#414141", "#e5a859", "#f5dfc6", "#c084a0", "#847e72", "#cd8390", "#996731"];
+                var bgColor = Math.ceil(Math.random() * (bgColorList.length - 1));
+                $("body").css({"background-color": bgColorList[bgColor], "background-size": "cover"});
+            }
+            else {
+                var backgroundnum = 5;
+                var backgroundimg = "url(/background/bg-x.jpg)".replace(/x/gi, Math.ceil(Math.random() * backgroundnum));
+                $("body").css({"background": backgroundimg, "background-attachment": "fixed", "background-size": "cover"});
+            }
+        })
+    </script>
+
+
+
+
+
+<div class="scroll" id="scroll">
+    <a href="#" title="返回顶部"><i class="fa fa-arrow-up"></i></a>
+    <a href="#comments" onclick="load$hide();" title="查看评论"><i class="fa fa-comments-o"></i></a>
+    <a href="#footer" title="转到底部"><i class="fa fa-arrow-down"></i></a>
+</div>
+<script>
+    // Open in New Window
+    
+        var oOpenInNew = {
+            
+            
+            
+            
+            
+            
+             archives: ".archive-article-title", 
+             miniArchives: "a.post-list-link", 
+            
+             friends: "#js-friends a", 
+             socail: ".social a" 
+        }
+        for (var x in oOpenInNew) {
+            $(oOpenInNew[x]).attr("target", "_blank");
+        }
+    
+</script>
+
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+  </div>
+</body>
+</html>

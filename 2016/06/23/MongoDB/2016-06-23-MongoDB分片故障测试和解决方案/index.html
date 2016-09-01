@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+
+    <!--[if lt IE 9]>
+        <style>body {display: none; background: none !important} </style>
+        <meta http-equiv="Refresh" Content="0; url=//outdatedbrowser.com/" />
+    <![endif]-->
+
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="format-detection" content="telephone=no" />
+<meta name="author" content="panwenhang" />
+
+
+
+<meta name="description" content="1. 环境$ cat /etc/redhat-release
+CentOS Linux release 7.0.1406 (Core)
+$ uname -a
+Linux zhaopin-2-201 3.10.0-123.el7.x86_64 #1 SMP Mon Jun 30 12:09:22 UTC 2014 x86_64 x86_64 x86_64 GNU/Linux
+$ mongo --po">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MongoDB分片故障测试和解决方案">
+<meta property="og:url" content="http://panwenhang.github.io/2016/06/23/MongoDB/2016-06-23-MongoDB分片故障测试和解决方案/index.html">
+<meta property="og:site_name" content="panwenhang's blog">
+<meta property="og:description" content="1. 环境$ cat /etc/redhat-release
+CentOS Linux release 7.0.1406 (Core)
+$ uname -a
+Linux zhaopin-2-201 3.10.0-123.el7.x86_64 #1 SMP Mon Jun 30 12:09:22 UTC 2014 x86_64 x86_64 x86_64 GNU/Linux
+$ mongo --po">
+<meta property="og:updated_time" content="2016-09-01T16:53:41.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="MongoDB分片故障测试和解决方案">
+<meta name="twitter:description" content="1. 环境$ cat /etc/redhat-release
+CentOS Linux release 7.0.1406 (Core)
+$ uname -a
+Linux zhaopin-2-201 3.10.0-123.el7.x86_64 #1 SMP Mon Jun 30 12:09:22 UTC 2014 x86_64 x86_64 x86_64 GNU/Linux
+$ mongo --po">
+
+<link rel="apple-touch-icon" href= "/apple-touch-icon.png">
+
+
+    <link rel="alternate" href="/atom.xml" title="panwenhang&#39;s blog" type="application/atom+xml">
+
+
+
+    <link rel="shortcut icon" href="/favicon.png">
+
+
+
+    <link href="//cdn.bootcss.com/animate.css/3.5.1/animate.min.css" rel="stylesheet">
+
+
+
+    <link href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.css" rel="stylesheet">
+
+
+
+    <script src="//cdn.bootcss.com/pace/1.0.2/pace.min.js"></script>
+    <link href="//cdn.bootcss.com/pace/1.0.2/themes/blue/pace-theme-minimal.css" rel="stylesheet">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+
+<link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+
+
+<title>MongoDB分片故障测试和解决方案 | panwenhang&#39;s blog</title>
+
+<script src="//cdn.bootcss.com/jquery/2.2.4/jquery.min.js"></script>
+<script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
+
+<script>
+    var yiliaConfig = {
+        fancybox: true,
+        animate: true,
+        isHome: false,
+        isPost: true,
+        isArchive: false,
+        isTag: false,
+        isCategory: false,
+        fancybox_js: "//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.js",
+        scrollreveal: "//cdn.bootcss.com/scrollReveal.js/3.1.4/scrollreveal.min.js",
+        search: undefined
+    }
+</script>
+
+
+    <script> yiliaConfig.jquery_ui = [false]; </script>
+
+
+
+    <script> yiliaConfig.rootUrl = "\/";</script>
+
+
+
+
+
+
+</head>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+    <header id="header" class="inner">
+        <a href="/" class="profilepic">
+            <img src="/img/avatar.png" class="animated zoomIn">
+        </a>
+        <hgroup>
+          <h1 class="header-author"><a href="/">panwenhang</a></h1>
+        </hgroup>
+
+        
+
+        
+
+
+        
+            <div id="switch-btn" class="switch-btn">
+                <div class="icon">
+                    <div class="icon-ctn">
+                        <div class="icon-wrap icon-house" data-idx="0">
+                            <div class="birdhouse"></div>
+                            <div class="birdhouse_holes"></div>
+                        </div>
+                        <div class="icon-wrap icon-ribbon hide" data-idx="1">
+                            <div class="ribbon"></div>
+                        </div>
+                        
+                        <div class="icon-wrap icon-link hide" data-idx="2">
+                            <div class="loopback_l"></div>
+                            <div class="loopback_r"></div>
+                        </div>
+                        
+                        
+                    </div>
+                    
+                </div>
+                <div class="tips-box hide">
+                    <div class="tips-arrow"></div>
+                    <ul class="tips-inner">
+                        <li>菜单</li>
+                        <li>标签</li>
+                        
+                        <li>友情链接</li>
+                        
+                        
+                    </ul>
+                </div>
+            </div>
+        
+
+        <div id="switch-area" class="switch-area">
+            <div class="switch-wrap">
+                <section class="switch-part switch-part1">
+                    <nav class="header-menu">
+                        <ul>
+                        
+                            <li><a href="/">主页</a></li>
+                        
+                            <li><a href="/archives/">所有文章</a></li>
+                        
+                            <li><a href="/tags/">标签云</a></li>
+                        
+                            <li><a href="/about/">关于我</a></li>
+                        
+                        </ul>
+                    </nav>
+                    <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fa Email" href="mailto:panwenhang92@gmail.com" title="Email"></a>
+                            
+                                <a class="fa GitHub" href="https://github.com/panwenhang" title="GitHub"></a>
+                            
+                                <a class="fa RSS" href="/atom.xml" title="RSS"></a>
+                            
+                        </ul>
+                    </nav>
+                </section>
+                
+                
+                <section class="switch-part switch-part2">
+                    <div class="widget tagcloud" id="js-tagcloud">
+                        
+                    </div>
+                </section>
+                
+                
+                
+                <section class="switch-part switch-part3">
+                    <div id="js-friends">
+                    
+                      <a class="main-nav-link switch-friends-link" href="https://hexo.io">Hexo</a>
+                    
+                      <a class="main-nav-link switch-friends-link" href="https://pages.github.com/">GitHub</a>
+                    
+                    </div>
+                </section>
+                
+
+                
+            </div>
+        </div>
+    </header>                
+</div>
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+      <div class="overlay">
+          <div class="slider-trigger"></div>
+          <h1 class="header-author js-mobile-header hide"><a href="/" title="回到主页">panwenhang</a></h1>
+      </div>
+    <div class="intrude-less">
+        <header id="header" class="inner">
+            <a href="/" class="profilepic">
+                <img src="/img/avatar.png" class="animated zoomIn">
+            </a>
+            <hgroup>
+              <h1 class="header-author"><a href="/" title="回到主页">panwenhang</a></h1>
+            </hgroup>
+            
+            <nav class="header-menu">
+                <ul>
+                
+                    <li><a href="/">主页</a></li>
+                
+                    <li><a href="/archives/">所有文章</a></li>
+                
+                    <li><a href="/tags/">标签云</a></li>
+                
+                    <li><a href="/about/">关于我</a></li>
+                
+                <div class="clearfix"></div>
+                </ul>
+            </nav>
+            <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fa Email" target="_blank" href="mailto:panwenhang92@gmail.com" title="Email"></a>
+                            
+                                <a class="fa GitHub" target="_blank" href="https://github.com/panwenhang" title="GitHub"></a>
+                            
+                                <a class="fa RSS" target="_blank" href="/atom.xml" title="RSS"></a>
+                            
+                        </ul>
+            </nav>
+        </header>                
+    </div>
+    <link class="menu-list" tags="标签" friends="友情链接" about="关于我"/>
+</nav>
+      <div class="body-wrap"><article id="post-MongoDB/2016-06-23-MongoDB分片故障测试和解决方案" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2016/06/23/MongoDB/2016-06-23-MongoDB分片故障测试和解决方案/" class="article-date">
+      <time datetime="2016-06-22T16:00:00.000Z" itemprop="datePublished">2016-06-23</time>
+</a>
+
+
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      MongoDB分片故障测试和解决方案
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/MongoDB/">MongoDB</a>
+    </div>
+
+
+        
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        <h2 id="1-环境"><a href="#1-环境" class="headerlink" title="1. 环境"></a>1. 环境</h2><pre><code>$ cat /etc/redhat-release
+CentOS Linux release 7.0.1406 (Core)
+$ uname -a
+Linux zhaopin-2-201 3.10.0-123.el7.x86_64 #1 SMP Mon Jun 30 12:09:22 UTC 2014 x86_64 x86_64 x86_64 GNU/Linux
+$ mongo --port 30000
+MongoDB shell version: 3.0.6
+</code></pre><a id="more"></a>
+<p>  connecting to: 127.0.0.1:30000/test<br>    mongos&gt; sh.status();<br>    — Sharding Status —<br>      sharding version: {<br>            “_id” : 1,<br>            “minCompatibleVersion” : 5,<br>            “currentVersion” : 6,<br>            “clusterId” : ObjectId(“561728b4030ea038bcb57fa0”)<br>    }<br>      shards:<br>            {  “_id” : “sh0”,  “host” : “sh0/172.30.2.201:27010” }<br>            {  “_id” : “sh1”,  “host” : “sh1/172.30.2.201:27011” }<br>      balancer:<br>            Currently enabled:  yes<br>            Currently running:  no<br>            Failed balancer rounds in last 5 attempts:  0<br>            Migration Results for the last 24 hours:<br>                    No recent migrations<br>      databases:<br>            {  “_id” : “admin”,  “partitioned” : false,  “primary” : “config” }<br>            {  “_id” : “mydb”,  “partitioned” : true,  “primary” : “sh0” }</p>
+<h2 id="2-准备"><a href="#2-准备" class="headerlink" title="2. 准备"></a>2. 准备</h2><p>插入测试数据</p>
+<pre><code>$ mongo --port 30000
+MongoDB shell version: 3.0.6
+connecting to: 127.0.0.1:30000/test
+mongos&gt; use mydb
+switched to db mydb
+mongos&gt; sh.shardCollection(&quot;mydb.test&quot;,{&quot;Uid&quot;:1});
+{ &quot;collectionsharded&quot; : &quot;mydb.test&quot;, &quot;ok&quot; : 1 }
+mongos&gt; for (var i = 1; i &lt;= 100000; i++) db.test.save({&quot;Uid&quot;:i,&quot;Name&quot;:&quot;zhanjindong&quot;,&quot;Age&quot;:13,&quot;Date&quot;:new Date()});
+WriteResult({ &quot;nInserted&quot; : 1 })
+mongos&gt; use config;
+switched to db config
+mongos&gt; db.chunks.find().limit(3);
+{ &quot;_id&quot; : &quot;mydb.test-Uid_MinKey&quot;, &quot;lastmod&quot; : Timestamp(10, 1), &quot;lastmodEpoch&quot; : ObjectId(&quot;56178dad030ea038bcb592c2&quot;), &quot;ns&quot; : &quot;mydb.test&quot;, &quot;min&quot; : { &quot;Uid&quot; : { &quot;$minKey&quot; : 1 } }, &quot;max&quot; : { &quot;Uid&quot; : 2 }, &quot;shard&quot; : &quot;sh0&quot; }
+{ &quot;_id&quot; : &quot;mydb.test-Uid_2.0&quot;, &quot;lastmod&quot; : Timestamp(1, 2), &quot;lastmodEpoch&quot; : ObjectId(&quot;56178dad030ea038bcb592c2&quot;), &quot;ns&quot; : &quot;mydb.test&quot;, &quot;min&quot; : { &quot;Uid&quot; : 2 }, &quot;max&quot; : { &quot;Uid&quot; : 10 }, &quot;shard&quot; : &quot;sh0&quot; }
+{ &quot;_id&quot; : &quot;mydb.test-Uid_10.0&quot;, &quot;lastmod&quot; : Timestamp(11, 1), &quot;lastmodEpoch&quot; : ObjectId(&quot;56178dad030ea038bcb592c2&quot;), &quot;ns&quot; : &quot;mydb.test&quot;, &quot;min&quot; : { &quot;Uid&quot; : 10 }, &quot;max&quot; : { &quot;Uid&quot; : 4691 }, &quot;shard&quot; : &quot;sh1&quot; }
+</code></pre><h2 id="3-Shard-Server-节点故障"><a href="#3-Shard-Server-节点故障" class="headerlink" title="3. Shard Server 节点故障"></a>3. Shard Server 节点故障</h2><h3 id="1-分片中副本集的节点故障"><a href="#1-分片中副本集的节点故障" class="headerlink" title="(1) 分片中副本集的节点故障"></a>(1) 分片中副本集的节点故障</h3><p>参考 MongoDB 副本集故障测试和解决方案,Query Routers 会自动更新副本集的配置,只需要在副本集里面解决故障</p>
+<h3 id="2-分片故障"><a href="#2-分片故障" class="headerlink" title="(2) 分片故障"></a>(2) 分片故障</h3><p>分片故障是指分片中的节点全部不可用了 ( 如果分片中配置了副本集的话,基本是不会出现这种情况的 )</p>
+<p>1) 将 sh0 停机</p>
+<pre><code>$ ps aux | grep mongo
+wenhang+  1493  0.0  0.0 112640   976 pts/0    S+   10:42   0:00 grep --color=auto mongo
+root     41492  0.5  0.1 1045696 118336 ?      Sl   Oct09   8:12 /opt/mongodb/bin/mongod --config /data/mongodb/sh0/conf/mongodb.conf
+root     41509  0.5  0.1 1028196 108720 ?      Sl   Oct09   7:30 /opt/mongodb/bin/mongod --config /data/mongodb/sh1/conf/mongodb.conf
+root     41855  0.6  0.0 566248 55208 ?        Sl   Oct09   9:14 /opt/mongodb/bin/mongod --config /data/mongodb/cf0/conf/config.conf
+root     41870  0.5  0.0 565220 56180 ?        Sl   Oct09   8:29 /opt/mongodb/bin/mongod --config /data/mongodb/cf1/conf/config.conf
+root     42170  0.5  0.0 565216 56872 ?        Sl   Oct09   8:25 /opt/mongodb/bin/mongod --config /data/mongodb/cf2/conf/config.conf
+root     42233  0.3  0.0 260180 13200 ?        Sl   Oct09   5:40 /opt/mongodb/bin/mongos --config /data/mongodb/ms0/conf/mongos.conf
+root     42286  0.3  0.0 259148 11564 ?        Sl   Oct09   4:31 /opt/mongodb/bin/mongos --config /data/mongodb/ms1/conf/mongos.conf
+$ ps aux | grep mongo | grep -v grep
+root     41492  0.5  0.1 1045696 118336 ?      Sl   Oct09   8:12 /opt/mongodb/bin/mongod --config /data/mongodb/sh0/conf/mongodb.conf
+root     41509  0.5  0.1 1028196 108720 ?      Sl   Oct09   7:31 /opt/mongodb/bin/mongod --config /data/mongodb/sh1/conf/mongodb.conf
+root     41855  0.6  0.0 566248 54988 ?        Sl   Oct09   9:14 /opt/mongodb/bin/mongod --config /data/mongodb/cf0/conf/config.conf
+root     41870  0.5  0.1 565220 72392 ?        Sl   Oct09   8:29 /opt/mongodb/bin/mongod --config /data/mongodb/cf1/conf/config.conf
+root     42170  0.5  0.0 565216 56776 ?        Sl   Oct09   8:25 /opt/mongodb/bin/mongod --config /data/mongodb/cf2/conf/config.conf
+root     42233  0.3  0.0 260180 13200 ?        Sl   Oct09   5:40 /opt/mongodb/bin/mongos --config /data/mongodb/ms0/conf/mongos.conf
+root     42286  0.3  0.0 259148 11564 ?        Sl   Oct09   4:31 /opt/mongodb/bin/mongos --config /data/mongodb/ms1/conf/mongos.conf
+$ sudo kill 41492
+$ ps aux | grep mongo | grep -v grep
+root     41509  0.5  0.1 1028196 108736 ?      Sl   Oct09   7:31 /opt/mongodb/bin/mongod --config /data/mongodb/sh1/conf/mongodb.conf
+root     41855  0.6  0.1 566248 87832 ?        Sl   Oct09   9:14 /opt/mongodb/bin/mongod --config /data/mongodb/cf0/conf/config.conf
+root     41870  0.5  0.1 565220 89116 ?        Sl   Oct09   8:29 /opt/mongodb/bin/mongod --config /data/mongodb/cf1/conf/config.conf
+root     42170  0.5  0.0 565216 56852 ?        Sl   Oct09   8:26 /opt/mongodb/bin/mongod --config /data/mongodb/cf2/conf/config.conf
+root     42233  0.3  0.0 260180 13200 ?        Sl   Oct09   5:40 /opt/mongodb/bin/mongos --config /data/mongodb/ms0/conf/mongos.conf
+root     42286  0.3  0.0 259148 11564 ?        Sl   Oct09   4:31 /opt/mongodb/bin/mongos --config /data/mongodb/ms1/conf/mongos.conf
+</code></pre><p>2) 查看集群状态</p>
+<pre><code>$ mongo --port 30000
+MongoDB shell version: 3.0.6
+connecting to: 127.0.0.1:30000/test
+mongos&gt; sh.status();
+--- Sharding Status ---
+  sharding version: {
+        &quot;_id&quot; : 1,
+        &quot;minCompatibleVersion&quot; : 5,
+        &quot;currentVersion&quot; : 6,
+        &quot;clusterId&quot; : ObjectId(&quot;561728b4030ea038bcb57fa0&quot;)
+}
+  shards:
+        {  &quot;_id&quot; : &quot;sh0&quot;,  &quot;host&quot; : &quot;sh0/172.30.2.201:27010&quot; }
+        {  &quot;_id&quot; : &quot;sh1&quot;,  &quot;host&quot; : &quot;sh1/172.30.2.201:27011&quot; }
+  balancer:
+        Currently enabled:  yes
+        Currently running:  no
+        Failed balancer rounds in last 5 attempts:  5
+        Last reported error:  socket exception [CONNECT_ERROR] for sh0/172.30.2.201:27010
+        Time of Reported error:  Sat Oct 10 2015 10:44:56 GMT+0800 (CST)
+        Migration Results for the last 24 hours:
+                19 : Success
+                2 : Failed with error &apos;migration already in progress&apos;, from sh0 to sh1
+  databases:
+        {  &quot;_id&quot; : &quot;admin&quot;,  &quot;partitioned&quot; : false,  &quot;primary&quot; : &quot;config&quot; }
+        {  &quot;_id&quot; : &quot;mydb&quot;,  &quot;partitioned&quot; : true,  &quot;primary&quot; : &quot;sh0&quot; }
+                mydb.test
+                        shard key: { &quot;Uid&quot; : 1 }
+                        chunks:
+                                sh0     11
+                                sh1     10
+                        too many chunks to print, use verbose if you want to force print
+</code></pre><p>3) 测试可用性</p>
+<pre><code>mongos&gt; db.test.find({Uid:12});
+{ &quot;_id&quot; : ObjectId(&quot;56178e473af16d338338d3bf&quot;), &quot;Uid&quot; : 12, &quot;Name&quot; : &quot;zhanjindong&quot;, &quot;Age&quot; : 13, &quot;Date&quot; : ISODate(&quot;2015-10-09T09:52:07.205Z&quot;) }
+mongos&gt; db.test.find({Uid:8});
+Error: error: {
+        &quot;$err&quot; : &quot;socket exception [CONNECT_ERROR] for sh0/172.30.2.201:27010&quot;,
+        &quot;code&quot; : 11002,
+        &quot;shard&quot; : &quot;sh0&quot;
+}
+mongos&gt; db.test.insert({&quot;Uid&quot;:12,&quot;Name&quot;:&quot;zhanjindong&quot;,&quot;Age&quot;:13,&quot;Date&quot;:new Date()});
+WriteResult({ &quot;nInserted&quot; : 1 })
+mongos&gt; db.test.insert({&quot;Uid&quot;:8,&quot;Name&quot;:&quot;zhanjindong&quot;,&quot;Age&quot;:13,&quot;Date&quot;:new Date()});
+WriteResult({
+        &quot;nInserted&quot; : 0,
+        &quot;writeError&quot; : {
+                &quot;code&quot; : 7,
+                &quot;errmsg&quot; : &quot;could not contact primary for replica set sh0&quot;
+        }
+})
+mongos&gt;
+bye
+</code></pre><p>sh0 上的操作都会报错,其他分片的可以正常执行</p>
+<p>重新启动 sh0</p>
+<pre><code>$ sudo /opt/mongodb/bin/mongod --config /data/mongodb/sh0/conf/mongodb.conf
+about to fork child process, waiting until server is ready for connections.
+forked process: 2534
+child process started successfully, parent exiting
+$ ps aux | grep mongo | grep -v grep
+root      2534  1.1  0.0 971800 64060 ?        Sl   10:53   0:00 /opt/mongodb/bin/mongod --config /data/mongodb/sh0/conf/mongodb.conf
+root     41509  0.5  0.1 1028196 108804 ?      Sl   Oct09   7:33 /opt/mongodb/bin/mongod --config /data/mongodb/sh1/conf/mongodb.conf
+root     41855  0.6  0.0 566248 55572 ?        Sl   Oct09   9:17 /opt/mongodb/bin/mongod --config /data/mongodb/cf0/conf/config.conf
+root     41870  0.5  0.0 565220 56480 ?        Sl   Oct09   8:33 /opt/mongodb/bin/mongod --config /data/mongodb/cf1/conf/config.conf
+root     42170  0.5  0.0 565216 57240 ?        Sl   Oct09   8:29 /opt/mongodb/bin/mongod --config /data/mongodb/cf2/conf/config.conf
+root     42233  0.3  0.0 260180 13388 ?        Sl   Oct09   5:42 /opt/mongodb/bin/mongos --config /data/mongodb/ms0/conf/mongos.conf
+root     42286  0.3  0.0 259148 11572 ?        Sl   Oct09   4:32 /opt/mongodb/bin/mongos --config /data/mongodb/ms1/conf/mongos.conf
+$ mongo --port 30000
+MongoDB shell version: 3.0.6
+connecting to: 127.0.0.1:30000/test
+mongos&gt; use mydb;
+switched to db mydb
+mongos&gt; db.test.find({Uid:8});
+{ &quot;_id&quot; : ObjectId(&quot;56178e453af16d338338d3bb&quot;), &quot;Uid&quot; : 8, &quot;Name&quot; : &quot;zhanjindong&quot;, &quot;Age&quot; : 13, &quot;Date&quot; : ISODate(&quot;2015-10-09T09:52:05.539Z&quot;) }
+mongos&gt; db.test.find({Uid:12});
+{ &quot;_id&quot; : ObjectId(&quot;56178e473af16d338338d3bf&quot;), &quot;Uid&quot; : 12, &quot;Name&quot; : &quot;zhanjindong&quot;, &quot;Age&quot; : 13, &quot;Date&quot; : ISODate(&quot;2015-10-09T09:52:07.205Z&quot;) }
+{ &quot;_id&quot; : ObjectId(&quot;56187d6743c2e9badb0ca53b&quot;), &quot;Uid&quot; : 12, &quot;Name&quot; : &quot;zhanjindong&quot;, &quot;Age&quot; : 13, &quot;Date&quot; : ISODate(&quot;2015-10-10T02:52:23.497Z&quot;) }
+mongos&gt; db.test.insert({&quot;Uid&quot;:8,&quot;Name&quot;:&quot;zhanjindong&quot;,&quot;Age&quot;:13,&quot;Date&quot;:new Date()});
+WriteResult({ &quot;nInserted&quot; : 1 })
+</code></pre><p>两个分片都可读写</p>
+<h2 id="4-Config-Server-故障"><a href="#4-Config-Server-故障" class="headerlink" title="4. Config Server 故障"></a>4. Config Server 故障</h2><h3 id="1-单节点故障"><a href="#1-单节点故障" class="headerlink" title="(1) 单节点故障"></a>(1) 单节点故障</h3><p>1) 停掉 cf0</p>
+<pre><code>$ ps axu | grep mongo | grep -v grep
+root      2534  0.4  0.1 982052 67608 ?        Sl   10:53   0:03 /opt/mongodb/bin/mongod --config /data/mongodb/sh0/conf/mongodb.conf
+root     41509  0.5  0.1 1028196 108808 ?      Sl   Oct09   7:37 /opt/mongodb/bin/mongod --config /data/mongodb/sh1/conf/mongodb.conf
+root     41855  0.6  0.0 566248 55444 ?        Sl   Oct09   9:23 /opt/mongodb/bin/mongod --config /data/mongodb/cf0/conf/config.conf
+root     41870  0.5  0.0 565220 56456 ?        Sl   Oct09   8:38 /opt/mongodb/bin/mongod --config /data/mongodb/cf1/conf/config.conf
+root     42170  0.5  0.0 565216 56820 ?        Sl   Oct09   8:34 /opt/mongodb/bin/mongod --config /data/mongodb/cf2/conf/config.conf
+root     42233  0.3  0.0 261204 13408 ?        Sl   Oct09   5:45 /opt/mongodb/bin/mongos --config /data/mongodb/ms0/conf/mongos.conf
+root     42286  0.3  0.0 259148 11596 ?        Sl   Oct09   4:35 /opt/mongodb/bin/mongos --config /data/mongodb/ms1/conf/mongos.conf
+[wenhang.pan@zhaopin-2-201 ~]$ sudo kill 41855
+[wenhang.pan@zhaopin-2-201 ~]$ ps axu | grep mongo | grep -v grep
+root      2534  0.4  0.1 982052 67636 ?        Sl   10:53   0:03 /opt/mongodb/bin/mongod --config /data/mongodb/sh0/conf/mongodb.conf
+root     41509  0.5  0.1 1028196 108808 ?      Sl   Oct09   7:37 /opt/mongodb/bin/mongod --config /data/mongodb/sh1/conf/mongodb.conf
+root     41870  0.5  0.0 565220 56324 ?        Sl   Oct09   8:38 /opt/mongodb/bin/mongod --config /data/mongodb/cf1/conf/config.conf
+root     42170  0.5  0.0 565216 56600 ?        Sl   Oct09   8:34 /opt/mongodb/bin/mongod --config /data/mongodb/cf2/conf/config.conf
+root     42233  0.3  0.0 261204 13408 ?        Sl   Oct09   5:45 /opt/mongodb/bin/mongos --config /data/mongodb/ms0/conf/mongos.conf
+root     42286  0.3  0.0 259148 11596 ?        Sl   Oct09   4:35 /opt/mongodb/bin/mongos --config /data/mongodb/ms1/conf/mongos.conf
+</code></pre><p>2) 查看状态</p>
+<pre><code>$ mongo --port 30000
+MongoDB shell version: 3.0.6
+connecting to: 127.0.0.1:30000/test
+mongos&gt; sh.status();
+--- Sharding Status ---
+  sharding version: {
+        &quot;_id&quot; : 1,
+        &quot;minCompatibleVersion&quot; : 5,
+        &quot;currentVersion&quot; : 6,
+        &quot;clusterId&quot; : ObjectId(&quot;561728b4030ea038bcb57fa0&quot;)
+}
+  shards:
+        {  &quot;_id&quot; : &quot;sh0&quot;,  &quot;host&quot; : &quot;sh0/172.30.2.201:27010&quot; }
+        {  &quot;_id&quot; : &quot;sh1&quot;,  &quot;host&quot; : &quot;sh1/172.30.2.201:27011&quot; }
+  balancer:
+        Currently enabled:  yes
+        Currently running:  yes
+                Balancer lock taken at Sat Oct 10 2015 11:08:14 GMT+0800 (CST) by zhaopin-2-201:30000:1444358323:1804289383:Balancer:1681692777
+        Failed balancer rounds in last 5 attempts:  0
+        Migration Results for the last 24 hours:
+                19 : Success
+                2 : Failed with error &apos;migration already in progress&apos;, from sh0 to sh1
+  databases:
+        {  &quot;_id&quot; : &quot;admin&quot;,  &quot;partitioned&quot; : false,  &quot;primary&quot; : &quot;config&quot; }
+        {  &quot;_id&quot; : &quot;mydb&quot;,  &quot;partitioned&quot; : true,  &quot;primary&quot; : &quot;sh0&quot; }
+                mydb.test
+                        shard key: { &quot;Uid&quot; : 1 }
+                        chunks:
+                                sh0     11
+                                sh1     10
+                        too many chunks to print, use verbose if you want to force print
+</code></pre><p>3) 测试可用性</p>
+<pre><code>mongos&gt; use mydb;
+switched to db mydb
+mongos&gt; db.test.find({Uid:12});
+{ &quot;_id&quot; : ObjectId(&quot;56178e473af16d338338d3bf&quot;), &quot;Uid&quot; : 12, &quot;Name&quot; : &quot;zhanjindong&quot;, &quot;Age&quot; : 13, &quot;Date&quot; : ISODate(&quot;2015-10-09T09:52:07.205Z&quot;) }
+{ &quot;_id&quot; : ObjectId(&quot;56187d6743c2e9badb0ca53b&quot;), &quot;Uid&quot; : 12, &quot;Name&quot; : &quot;zhanjindong&quot;, &quot;Age&quot; : 13, &quot;Date&quot; : ISODate(&quot;2015-10-10T02:52:23.497Z&quot;) }
+mongos&gt; db.test.find({Uid:8});
+{ &quot;_id&quot; : ObjectId(&quot;56178e453af16d338338d3bb&quot;), &quot;Uid&quot; : 8, &quot;Name&quot; : &quot;zhanjindong&quot;, &quot;Age&quot; : 13, &quot;Date&quot; : ISODate(&quot;2015-10-09T09:52:05.539Z&quot;) }
+{ &quot;_id&quot; : ObjectId(&quot;56187e117ec37f9bb7244496&quot;), &quot;Uid&quot; : 8, &quot;Name&quot; : &quot;zhanjindong&quot;, &quot;Age&quot; : 13, &quot;Date&quot; : ISODate(&quot;2015-10-10T02:55:13.529Z&quot;) }
+mongos&gt; db.test.insert({&quot;Uid&quot;:8,&quot;Name&quot;:&quot;zhanjindong&quot;,&quot;Age&quot;:13,&quot;Date&quot;:new Date()});
+WriteResult({ &quot;nInserted&quot; : 1 })
+mongos&gt; db.test.insert({&quot;Uid&quot;:12,&quot;Name&quot;:&quot;zhanjindong&quot;,&quot;Age&quot;:13,&quot;Date&quot;:new Date()});
+WriteResult({ &quot;nInserted&quot; : 1 })
+mongos&gt;
+bye
+</code></pre><p>集群可正常使用</p>
+<h3 id="2-双节点故障"><a href="#2-双节点故障" class="headerlink" title="(2) 双节点故障"></a>(2) 双节点故障</h3><p>1) 停掉 cf1</p>
+<pre><code>$ ps axu | grep mongo | grep -v grep
+root      2534  0.4  0.1 982052 68128 ?        Sl   10:53   0:05 /opt/mongodb/bin/mongod --config /data/mongodb/sh0/conf/mongodb.conf
+root     41509  0.5  0.1 1028196 108892 ?      Sl   Oct09   7:39 /opt/mongodb/bin/mongod --config /data/mongodb/sh1/conf/mongodb.conf
+root     41870  0.5  0.1 565220 92328 ?        Sl   Oct09   8:40 /opt/mongodb/bin/mongod --config /data/mongodb/cf1/conf/config.conf
+root     42170  0.5  0.1 565216 90392 ?        Sl   Oct09   8:36 /opt/mongodb/bin/mongod --config /data/mongodb/cf2/conf/config.conf
+root     42233  0.3  0.0 261204 13508 ?        Sl   Oct09   5:46 /opt/mongodb/bin/mongos --config /data/mongodb/ms0/conf/mongos.conf
+root     42286  0.3  0.0 260172 11716 ?        Sl   Oct09   4:37 /opt/mongodb/bin/mongos --config /data/mongodb/ms1/conf/mongos.conf
+$ sudo kill 41870
+$ ps axu | grep mongo | grep -v grep
+root      2534  0.4  0.1 982052 68128 ?        Sl   10:53   0:05 /opt/mongodb/bin/mongod --config /data/mongodb/sh0/conf/mongodb.conf
+root     41509  0.5  0.1 1028196 108892 ?      Sl   Oct09   7:39 /opt/mongodb/bin/mongod --config /data/mongodb/sh1/conf/mongodb.conf
+root     42170  0.5  0.1 565216 90408 ?        Sl   Oct09   8:36 /opt/mongodb/bin/mongod --config /data/mongodb/cf2/conf/config.conf
+root     42233  0.3  0.0 261204 13508 ?        Sl   Oct09   5:46 /opt/mongodb/bin/mongos --config /data/mongodb/ms0/conf/mongos.conf
+root     42286  0.3  0.0 260172 11716 ?        Sl   Oct09   4:37 /opt/mongodb/bin/mongos --config /data/mongodb/ms1/conf/mongos.conf
+</code></pre><p>2) 查看集群状态</p>
+<pre><code>$ mongo --port 30000
+MongoDB shell version: 3.0.6
+connecting to: 127.0.0.1:30000/test
+mongos&gt; sh.status();
+--- Sharding Status ---
+  sharding version: {
+        &quot;_id&quot; : 1,
+        &quot;minCompatibleVersion&quot; : 5,
+        &quot;currentVersion&quot; : 6,
+        &quot;clusterId&quot; : ObjectId(&quot;561728b4030ea038bcb57fa0&quot;)
+}
+  shards:
+        {  &quot;_id&quot; : &quot;sh0&quot;,  &quot;host&quot; : &quot;sh0/172.30.2.201:27010&quot; }
+        {  &quot;_id&quot; : &quot;sh1&quot;,  &quot;host&quot; : &quot;sh1/172.30.2.201:27011&quot; }
+  balancer:
+        Currently enabled:  yes
+        Currently running:  yes
+                Balancer lock taken at Sat Oct 10 2015 11:08:14 GMT+0800 (CST) by zhaopin-2-201:30000:1444358323:1804289383:Balancer:1681692777
+        Failed balancer rounds in last 5 attempts:  0
+        Migration Results for the last 24 hours:
+                19 : Success
+                2 : Failed with error &apos;migration already in progress&apos;, from sh0 to sh1
+  databases:
+        {  &quot;_id&quot; : &quot;admin&quot;,  &quot;partitioned&quot; : false,  &quot;primary&quot; : &quot;config&quot; }
+        {  &quot;_id&quot; : &quot;mydb&quot;,  &quot;partitioned&quot; : true,  &quot;primary&quot; : &quot;sh0&quot; }
+                mydb.test
+                        shard key: { &quot;Uid&quot; : 1 }
+                        chunks:
+                                sh0     11
+                                sh1     10
+                        too many chunks to print, use verbose if you want to force print
+</code></pre><p>3) 测试可用性</p>
+<pre><code>mongos&gt; use mydb;
+switched to db mydb
+mongos&gt; db.test.find({Uid:8});
+{ &quot;_id&quot; : ObjectId(&quot;56178e453af16d338338d3bb&quot;), &quot;Uid&quot; : 8, &quot;Name&quot; : &quot;zhanjindong&quot;, &quot;Age&quot; : 13, &quot;Date&quot; : ISODate(&quot;2015-10-09T09:52:05.539Z&quot;) }
+{ &quot;_id&quot; : ObjectId(&quot;56187e117ec37f9bb7244496&quot;), &quot;Uid&quot; : 8, &quot;Name&quot; : &quot;zhanjindong&quot;, &quot;Age&quot; : 13, &quot;Date&quot; : ISODate(&quot;2015-10-10T02:55:13.529Z&quot;) }
+{ &quot;_id&quot; : ObjectId(&quot;5618824d7bd66d65a90fb01c&quot;), &quot;Uid&quot; : 8, &quot;Name&quot; : &quot;zhanjindong&quot;, &quot;Age&quot; : 13, &quot;Date&quot; : ISODate(&quot;2015-10-10T03:13:17.564Z&quot;) }
+mongos&gt; db.test.find({Uid:12});
+{ &quot;_id&quot; : ObjectId(&quot;56178e473af16d338338d3bf&quot;), &quot;Uid&quot; : 12, &quot;Name&quot; : &quot;zhanjindong&quot;, &quot;Age&quot; : 13, &quot;Date&quot; : ISODate(&quot;2015-10-09T09:52:07.205Z&quot;) }
+{ &quot;_id&quot; : ObjectId(&quot;56187d6743c2e9badb0ca53b&quot;), &quot;Uid&quot; : 12, &quot;Name&quot; : &quot;zhanjindong&quot;, &quot;Age&quot; : 13, &quot;Date&quot; : ISODate(&quot;2015-10-10T02:52:23.497Z&quot;) }
+{ &quot;_id&quot; : ObjectId(&quot;561882527bd66d65a90fb01d&quot;), &quot;Uid&quot; : 12, &quot;Name&quot; : &quot;zhanjindong&quot;, &quot;Age&quot; : 13, &quot;Date&quot; : ISODate(&quot;2015-10-10T03:13:22.594Z&quot;) }
+mongos&gt; db.test.insert({&quot;Uid&quot;:12,&quot;Name&quot;:&quot;zhanjindong&quot;,&quot;Age&quot;:13,&quot;Date&quot;:new Date()});
+WriteResult({ &quot;nInserted&quot; : 1 })
+mongos&gt; db.test.insert({&quot;Uid&quot;:8,&quot;Name&quot;:&quot;zhanjindong&quot;,&quot;Age&quot;:13,&quot;Date&quot;:new Date()});
+WriteResult({ &quot;nInserted&quot; : 1 })
+mongos&gt;
+bye
+</code></pre><p>集群可以正常使用</p>
+<p>4) 重新启动 cf0 和 cf1</p>
+<pre><code>$ ps axu | grep mongo | grep -v grep
+root      2534  0.4  0.1 982052 68228 ?        Sl   10:53   0:05 /opt/mongodb/bin/mongod --config /data/mongodb/conf/sh0/mongodb.conf
+root     41509  0.5  0.1 1028196 107976 ?      Sl   Oct09   7:39 /opt/mongodb/bin/mongod --config /data/mongodb/conf/sh1/mongodb.conf
+root     42170  0.5  0.1 565216 93140 ?        Sl   Oct09   8:37 /opt/mongodb/bin/mongod --config /data/mongodb/conf/cf2/config.conf
+root     42233  0.3  0.0 261204 13540 ?        Sl   Oct09   5:47 /opt/mongodb/bin/mongos --config /data/mongodb/conf/ms0/mongos.conf
+root     42286  0.3  0.0 260172 11752 ?        Sl   Oct09   4:37 /opt/mongodb/bin/mongos --config /data/mongodb/conf/ms1/mongos.conf
+$ sudo /opt/mongodb/bin/mongod --config /data/mongodb/conf/cf0/config.conf
+about to fork child process, waiting until server is ready for connections.
+forked process: 7309
+child process started successfully, parent exiting
+$ sudo /opt/mongodb/bin/mongod --config /data/mongodb/conf/cf1/config.conf
+about to fork child process, waiting until server is ready for connections.
+forked process: 7355
+child process started successfully, parent exiting
+$ ps axu | grep mongo | grep -v grep
+root      2534  0.4  0.1 982052 68228 ?        Sl   10:53   0:06 /opt/mongodb/bin/mongod --config /data/mongodb/conf/sh0/mongodb.conf
+root      7309  0.6  0.0 545696 37504 ?        Sl   11:17   0:00 /opt/mongodb/bin/mongod --config /data/mongodb/conf/cf0/config.conf
+root      7355  0.5  0.0 542616 33748 ?        Sl   11:17   0:00 /opt/mongodb/bin/mongod --config /data/mongodb/conf/cf1/config.conf
+root     41509  0.5  0.1 1028196 108188 ?      Sl   Oct09   7:40 /opt/mongodb/bin/mongod --config /data/mongodb/conf/sh1/mongodb.conf
+root     42170  0.5  0.0 565216 57992 ?        Sl   Oct09   8:37 /opt/mongodb/bin/mongod --config /data/mongodb/conf/cf2/config.conf
+root     42233  0.3  0.0 261204 13540 ?        Sl   Oct09   5:47 /opt/mongodb/bin/mongos --config /data/mongodb/conf/ms0/mongos.conf
+root     42286  0.3  0.0 260172 11768 ?        Sl   Oct09   4:38 /opt/mongodb/bin/mongos --config /data/mongodb/conf/ms1/mongos.conf
+</code></pre><p>5) 解决方案</p>
+<p>参考:</p>
+<p><a href="http://docs.mongodb.org/manual/tutorial/replace-config-server/" target="_blank" rel="external">http://docs.mongodb.org/manual/tutorial/replace-config-server/</a></p>
+<p><a href="http://docs.mongodb.org/manual/tutorial/migrate-config-servers-with-different-hostnames/" target="_blank" rel="external">http://docs.mongodb.org/manual/tutorial/migrate-config-servers-with-different-hostnames/</a></p>
+<h2 id="5-Query-Routers故障"><a href="#5-Query-Routers故障" class="headerlink" title="5. Query Routers故障"></a>5. Query Routers故障</h2><p>1) 将 ms0 停机</p>
+<pre><code>$ ps axu | grep mongo | grep -v grep
+root      2534  0.4  0.1 982052 68228 ?        Sl   10:53   0:06 /opt/mongodb/bin/mongod --config /data/mongodb/sh0/conf/mongodb.conf
+root      7309  0.6  0.0 545696 37504 ?        Sl   11:17   0:00 /opt/mongodb/bin/mongod --config /data/mongodb/cf0/conf/config.conf
+root      7355  0.5  0.0 542616 33748 ?        Sl   11:17   0:00 /opt/mongodb/bin/mongod --config /data/mongodb/cf1/conf/config.conf
+root     41509  0.5  0.1 1028196 108188 ?      Sl   Oct09   7:40 /opt/mongodb/bin/mongod --config /data/mongodb/sh1/conf/mongodb.conf
+root     42170  0.5  0.0 565216 57992 ?        Sl   Oct09   8:37 /opt/mongodb/bin/mongod --config /data/mongodb/cf2/conf/config.conf
+root     42233  0.3  0.0 261204 13540 ?        Sl   Oct09   5:47 /opt/mongodb/bin/mongos --config /data/mongodb/ms0/conf/mongos.conf
+root     42286  0.3  0.0 260172 11768 ?        Sl   Oct09   4:38 /opt/mongodb/bin/mongos --config /data/mongodb/ms1/conf/mongos.conf
+$ sudo kill 42233
+$ ps axu | grep mongo | grep -v grep
+root      2534  0.4  0.1 982052 68408 ?        Sl   10:53   0:06 /opt/mongodb/bin/mongod --config /data/mongodb/sh0/conf/mongodb.conf
+root      7309  0.6  0.0 547752 39096 ?        Sl   11:17   0:01 /opt/mongodb/bin/mongod --config /data/mongodb/cf0/conf/config.conf
+root      7355  0.6  0.0 544672 34256 ?        Sl   11:17   0:01 /opt/mongodb/bin/mongod --config /data/mongodb/cf1/conf/config.conf
+root     41509  0.5  0.1 1028196 108164 ?      Sl   Oct09   7:40 /opt/mongodb/bin/mongod --config /data/mongodb/sh1/conf/mongodb.conf
+root     42170  0.5  0.0 565216 57796 ?        Sl   Oct09   8:38 /opt/mongodb/bin/mongod --config /data/mongodb/cf2/conf/config.conf
+root     42286  0.3  0.0 260172 11768 ?        Sl   Oct09   4:38 /opt/mongodb/bin/mongos --config /data/mongodb/ms1/conf/mongos.conf
+</code></pre><p>2) 查看集群状态</p>
+<pre><code>$ mongo --port 30000
+MongoDB shell version: 3.0.6
+connecting to: 127.0.0.1:30000/test
+2015-10-10T11:21:04.681+0800 W NETWORK  Failed to connect to 127.0.0.1:30000, reason: errno:111 Connection refused
+2015-10-10T11:21:04.683+0800 E QUERY    Error: couldn&apos;t connect to server 127.0.0.1:30000 (127.0.0.1), connection attempt failed
+    at connect (src/mongo/shell/mongo.js:181:14)
+    at (connect):1:6 at src/mongo/shell/mongo.js:181
+exception: connect failed
+$ mongo --port 30001
+MongoDB shell version: 3.0.6
+connecting to: 127.0.0.1:30001/test
+mongos&gt; sh.status();
+--- Sharding Status ---
+  sharding version: {
+        &quot;_id&quot; : 1,
+        &quot;minCompatibleVersion&quot; : 5,
+        &quot;currentVersion&quot; : 6,
+        &quot;clusterId&quot; : ObjectId(&quot;561728b4030ea038bcb57fa0&quot;)
+}
+  shards:
+        {  &quot;_id&quot; : &quot;sh0&quot;,  &quot;host&quot; : &quot;sh0/172.30.2.201:27010&quot; }
+        {  &quot;_id&quot; : &quot;sh1&quot;,  &quot;host&quot; : &quot;sh1/172.30.2.201:27011&quot; }
+  balancer:
+        Currently enabled:  yes
+        Currently running:  no
+        Failed balancer rounds in last 5 attempts:  0
+        Migration Results for the last 24 hours:
+                19 : Success
+                2 : Failed with error &apos;migration already in progress&apos;, from sh0 to sh1
+  databases:
+        {  &quot;_id&quot; : &quot;admin&quot;,  &quot;partitioned&quot; : false,  &quot;primary&quot; : &quot;config&quot; }
+        {  &quot;_id&quot; : &quot;mydb&quot;,  &quot;partitioned&quot; : true,  &quot;primary&quot; : &quot;sh0&quot; }
+                mydb.test
+                        shard key: { &quot;Uid&quot; : 1 }
+                        chunks:
+                                sh0     11
+                                sh1     10
+                        too many chunks to print, use verbose if you want to force print
+mongos&gt;
+bye
+</code></pre><p>可见 30000 端口的 mongos 已经宕机,不能提供服务了,但 30001 端口的 mongos 可以使用</p>
+<p>3) 测试可用性</p>
+<pre><code>mongos&gt; use mydb;
+switched to db mydb
+mongos&gt; db.test.find({Uid:12});
+{ &quot;_id&quot; : ObjectId(&quot;56178e473af16d338338d3bf&quot;), &quot;Uid&quot; : 12, &quot;Name&quot; : &quot;zhanjindong&quot;, &quot;Age&quot; : 13, &quot;Date&quot; : ISODate(&quot;2015-10-09T09:52:07.205Z&quot;) }
+{ &quot;_id&quot; : ObjectId(&quot;56187d6743c2e9badb0ca53b&quot;), &quot;Uid&quot; : 12, &quot;Name&quot; : &quot;zhanjindong&quot;, &quot;Age&quot; : 13, &quot;Date&quot; : ISODate(&quot;2015-10-10T02:52:23.497Z&quot;) }
+{ &quot;_id&quot; : ObjectId(&quot;561882527bd66d65a90fb01d&quot;), &quot;Uid&quot; : 12, &quot;Name&quot; : &quot;zhanjindong&quot;, &quot;Age&quot; : 13, &quot;Date&quot; : ISODate(&quot;2015-10-10T03:13:22.594Z&quot;) }
+{ &quot;_id&quot; : ObjectId(&quot;561882f9ff80495f50bec62f&quot;), &quot;Uid&quot; : 12, &quot;Name&quot; : &quot;zhanjindong&quot;, &quot;Age&quot; : 13, &quot;Date&quot; : ISODate(&quot;2015-10-10T03:16:09.930Z&quot;) }
+mongos&gt; db.test.find({Uid:8});
+{ &quot;_id&quot; : ObjectId(&quot;56178e453af16d338338d3bb&quot;), &quot;Uid&quot; : 8, &quot;Name&quot; : &quot;zhanjindong&quot;, &quot;Age&quot; : 13, &quot;Date&quot; : ISODate(&quot;2015-10-09T09:52:05.539Z&quot;) }
+{ &quot;_id&quot; : ObjectId(&quot;56187e117ec37f9bb7244496&quot;), &quot;Uid&quot; : 8, &quot;Name&quot; : &quot;zhanjindong&quot;, &quot;Age&quot; : 13, &quot;Date&quot; : ISODate(&quot;2015-10-10T02:55:13.529Z&quot;) }
+{ &quot;_id&quot; : ObjectId(&quot;5618824d7bd66d65a90fb01c&quot;), &quot;Uid&quot; : 8, &quot;Name&quot; : &quot;zhanjindong&quot;, &quot;Age&quot; : 13, &quot;Date&quot; : ISODate(&quot;2015-10-10T03:13:17.564Z&quot;) }
+{ &quot;_id&quot; : ObjectId(&quot;561882fdff80495f50bec630&quot;), &quot;Uid&quot; : 8, &quot;Name&quot; : &quot;zhanjindong&quot;, &quot;Age&quot; : 13, &quot;Date&quot; : ISODate(&quot;2015-10-10T03:16:13.788Z&quot;) }
+mongos&gt; db.test.insert({&quot;Uid&quot;:8,&quot;Name&quot;:&quot;zhanjindong&quot;,&quot;Age&quot;:13,&quot;Date&quot;:new Date()});
+WriteResult({ &quot;nInserted&quot; : 1 })
+mongos&gt; db.test.insert({&quot;Uid&quot;:12,&quot;Name&quot;:&quot;zhanjindong&quot;,&quot;Age&quot;:13,&quot;Date&quot;:new Date()});
+WriteResult({ &quot;nInserted&quot; : 1 })
+</code></pre><p>可见集群可以正常使用</p>
+<p>4) 解决方案</p>
+<p>可以在代码中配置连接多台 mongo 实现 failover,java 代码如下:</p>
+<pre><code>List&lt;ServerAddress&gt; mongoHostList = new ArrayList&lt;ServerAddress&gt;();
+mongoHostList.add(new ServerAddress(&quot;ip&quot;,port));
+mongoHostList.add(new ServerAddress(&quot;ip&quot;,port));
+mongoHostList.add(new ServerAddress(&quot;ip&quot;,port));
+MongoClient mg = new MongoClient(mongoHostList);
+</code></pre><h2 id="6-结论"><a href="#6-结论" class="headerlink" title="6. 结论"></a>6. 结论</h2><h3 id="1-Shard-Server-故障"><a href="#1-Shard-Server-故障" class="headerlink" title="(1) Shard Server 故障"></a>(1) Shard Server 故障</h3><p>1) 分片节点故障,可以按照 MongoDB 副本集故障测试和解决方案中解决,仍可以实现可用性</p>
+<p>2) 整个分片故障,如果可以重新启动的话,仍然可以使用,否则只能从备份中恢复,必然会丢数据</p>
+<h3 id="2-Config-Server-故障"><a href="#2-Config-Server-故障" class="headerlink" title="(2) Config Server 故障"></a>(2) Config Server 故障</h3><p>只要有可用的配置服务器,整个集群都可以正常使用</p>
+<h3 id="3-Query-Routers-故障"><a href="#3-Query-Routers-故障" class="headerlink" title="(3) Query Routers 故障"></a>(3) Query Routers 故障</h3><p>只要有可用的 mongos 服务器,整个集群就可以正常使用,要客户端也实现 failover,需要将代码写成连接多台 mongo 的方式</p>
+
+      
+    </div>
+    
+  </div>
+  
+    
+    <div class="copyright">
+        <p><span>本文标题:</span><a href="/2016/06/23/MongoDB/2016-06-23-MongoDB分片故障测试和解决方案/">MongoDB分片故障测试和解决方案</a></p>
+        <p><span>文章作者:</span><a href="/" title="回到主页">panwenhang</a></p>
+        <p><span>发布时间:</span>2016-06-23, 00:00:00</p>
+        <p><span>最后更新:</span>2016-09-02, 00:53:41</p>
+        <p>
+            <span>原始链接:</span><a class="post-url" href="/2016/06/23/MongoDB/2016-06-23-MongoDB分片故障测试和解决方案/" title="MongoDB分片故障测试和解决方案">http://panwenhang.github.io/2016/06/23/MongoDB/2016-06-23-MongoDB分片故障测试和解决方案/</a>
+            <span class="copy-path" data-clipboard-text="原文: http://panwenhang.github.io/2016/06/23/MongoDB/2016-06-23-MongoDB分片故障测试和解决方案/　　作者: panwenhang" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <script> var clipboard = new Clipboard('.copy-path'); </script>
+        </p>
+        <p>
+            <span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/" title="CC BY-NC-SA 4.0 International" target = "_blank">"署名-非商用-相同方式共享 4.0"</a> 转载请保留原文链接及作者。
+        </p>
+    </div>
+
+
+
+    <nav id="article-nav">
+        
+            <div id="article-nav-newer" class="article-nav-title">
+                <a href="/2016/06/23/MongoDB/2016-06-23-MongoDB分片搭建/">
+                    MongoDB分片搭建
+                </a>
+            </div>
+        
+        
+            <div id="article-nav-older" class="article-nav-title">
+                <a href="/2016/06/23/MongoDB/2016-06-23-MongoDB副本集搭建/">
+                    MongoDB副本集搭建
+                </a>
+            </div>
+        
+    </nav>
+
+  
+</article>
+
+    <div id="toc" class="toc-article">
+        <strong class="toc-title">文章目录</strong>
+        
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-环境"><span class="toc-number">1.</span> <span class="toc-text">1. 环境</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-准备"><span class="toc-number">2.</span> <span class="toc-text">2. 准备</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-Shard-Server-节点故障"><span class="toc-number">3.</span> <span class="toc-text">3. Shard Server 节点故障</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-分片中副本集的节点故障"><span class="toc-number">3.1.</span> <span class="toc-text">(1) 分片中副本集的节点故障</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-分片故障"><span class="toc-number">3.2.</span> <span class="toc-text">(2) 分片故障</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-Config-Server-故障"><span class="toc-number">4.</span> <span class="toc-text">4. Config Server 故障</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-单节点故障"><span class="toc-number">4.1.</span> <span class="toc-text">(1) 单节点故障</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-双节点故障"><span class="toc-number">4.2.</span> <span class="toc-text">(2) 双节点故障</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-Query-Routers故障"><span class="toc-number">5.</span> <span class="toc-text">5. Query Routers故障</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-结论"><span class="toc-number">6.</span> <span class="toc-text">6. 结论</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-Shard-Server-故障"><span class="toc-number">6.1.</span> <span class="toc-text">(1) Shard Server 故障</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-Config-Server-故障"><span class="toc-number">6.2.</span> <span class="toc-text">(2) Config Server 故障</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-Query-Routers-故障"><span class="toc-number">6.3.</span> <span class="toc-text">(3) Query Routers 故障</span></a></li></ol></li></ol>
+        
+    </div>
+    <style>
+        .left-col .switch-btn,
+        .left-col .switch-area {
+            display: none;
+        }
+        .toc-level-3 i,
+        .toc-level-3 ol {
+            display: none !important;
+        }
+    </style>
+
+    <input type="button" id="tocButton" value="隐藏目录"  title="点击按钮隐藏或者显示文章目录">
+
+    <script>
+        yiliaConfig.toc = ["隐藏目录", "显示目录", !!"false"];
+    </script>
+
+
+
+    
+<div class="share">
+    
+        <div class="bdsharebuttonbox">
+            <a href="#" class="fa fa-twitter bds_twi" data-cmd="twi" title="分享到推特"></a>
+            <a href="#" class="fa fa-weibo bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
+            <a href="#" class="fa fa-qq bds_sqq" data-cmd="sqq" title="分享给 QQ 好友"></a>
+            <a href="#" class="fa fa-files-o bds_copy" data-cmd="copy" title="复制网址"></a>
+            <a href="#" class="fa fa fa-envelope-o bds_mail" data-cmd="mail" title="通过邮件分享"></a>
+            <a href="#" class="fa fa-weixin bds_weixin" data-cmd="weixin" title="生成文章二维码"></a>
+            <a href="#" class="fa fa-share-alt bds_more" data-cmd="more"></i></a>
+        </div>
+        <script>
+            window._bd_share_config={
+                "common":{"bdSnsKey":{},"bdText":"MongoDB分片故障测试和解决方案　| panwenhang's blog　","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+        </script>
+    
+
+    
+</div>
+
+
+
+
+
+
+
+    
+
+
+
+
+    <div class="scroll" id="post-nav-button">
+        
+            <a href="/2016/06/23/MongoDB/2016-06-23-MongoDB分片搭建/" title="上一篇: MongoDB分片搭建">
+                <i class="fa fa-angle-left"></i>
+            </a>
+        
+
+        <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
+
+        
+            <a href="/2016/06/23/MongoDB/2016-06-23-MongoDB副本集搭建/" title="下一篇: MongoDB副本集搭建">
+                <i class="fa fa-angle-right"></i>
+            </a>
+        
+    </div>
+
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL/2016-07-05-Pacemaker+Corosync搭建2016-07-05-PostgreSQL集群/">Pacemaker+Corosync搭建PostgreSQL集群</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL之网络地址类型/">PostgreSQL之网络地址类型</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL查看没有注释的表和字段/">PostgreSQL查看没有注释的表和字段</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL权限管理之创建可更新表的普通用户/">PostgreSQL权限管理之创建可更新表的普通用户</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL日志换行处理/">PostgreSQL日志换行处理</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL日志使用rsyslog/">PostgreSQL日志使用rsyslog</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL多线程备份与恢复/">PostgreSQL多线程备份与恢复</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL恢复到任意时间点/">PostgreSQL恢复到任意时间点</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL备份之手工备份/">PostgreSQL备份之手工备份</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL备份之pg_rman/">PostgreSQL备份之pg_rman</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL备份之pg_basebackup/">PostgreSQL备份之pg_basebackup</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL备份之omniPITR/">PostgreSQL备份之omniPITR</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL同步复制故障测试/">PostgreSQL同步复制故障测试</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL同步复制搭建/">PostgreSQL同步复制搭建</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL事务特性之嵌套事务/">PostgreSQL事务特性之嵌套事务</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL之MVCC/">PostgreSQL之MVCC</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL/2016-07-05-BDR0.9.0版本测试/">BDR0.9.0版本测试</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL/2016-07-05-Pacemaker+Corosync+2016-07-05-PostgreSQL集群故障测试和解决方案/">Pacemaker+Corosync+PostgreSQL集群故障测试和解决方案</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL主键膨胀维护/">PostgreSQL主键膨胀维护</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL表空间的使用/">PostgreSQL表空间的使用</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/30/Linux/2016-06-30-DELL磁盘阵列控制卡（RAID卡）MegaCli常用管理命令汇总/">DELL磁盘阵列控制卡（RAID卡）MegaCli常用管理命令汇总</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/30/Linux/2016-06-30-设置虚ip/">设置虚ip</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/30/Linux/2016-06-30-格式化大盘/">格式化大盘</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/30/Linux/2016-06-30-在Slackware64中安装rtx/">在Slackware64中安装rtx</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/30/Linux/2016-06-30-在CenOS6.4下安装Docker/">在CenOS6.4下安装Docker</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/30/Linux/2016-06-30-crontab中PATH的坑/">crontab中PATH的坑</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/30/Linux/2016-06-30-ssd优化/">ssd优化</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/30/Linux/2016-06-30-部署Docker下打包环境/">部署Docker下打包环境</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/30/Linux/2016-06-30-Linux查看硬件信息/">Linux查看硬件信息</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/30/Linux/2016-06-30-Linux代理设置/">Linux代理设置</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/30/Linux/2016-06-30-HP机器RAID和2016-06-30-LVM创建/">HP机器RAID和LVM创建</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/30/Linux/2016-06-30-Linux下打包/">Linux下打包</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/30/Linux/2016-06-30-Linux之间ssh免密码登录/">Linux之间ssh免密码登录</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/30/Linux/2016-06-30-Linux中时间同步/">Linux中时间同步</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/30/Linux/2016-06-30-Shell脚本-良好的习惯/">Shell脚本-良好的习惯</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/23/C/2016-06-23-C语言side effect和sequence point/">C语言side effect和sequence point</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/23/C/2016-06-23-C语言类型转换/">C语言类型转换</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/23/MongoDB/2016-06-23-Linux下2016-06-23-MongoDB安装和配置/">Linux下MongoDB安装和配置</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/23/MongoDB/2016-06-23-MongoDB主从集群/">MongoDB主从集群</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/23/MongoDB/2016-06-23-MongoDB分片搭建/">MongoDB分片搭建</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/23/MongoDB/2016-06-23-MongoDB分片故障测试和解决方案/">MongoDB分片故障测试和解决方案</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/23/MongoDB/2016-06-23-MongoDB副本集搭建/">MongoDB副本集搭建</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/23/MongoDB/2016-06-23-MongoDB副本集故障测试和解决方案/">MongoDB副本集故障测试和解决方案</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/23/Python/2016-06-23-多版本python环境/">多版本python环境</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/23/Python/2016-06-23-flask环境配置/">flask环境配置</a></li></ul>
+
+
+
+
+    <script>
+        
+    </script>
+</div>
+      <footer id="footer">
+    <div class="outer">
+        <div id="footer-info">
+            <div class="footer-left">
+                <i class="fa fa-copyright"></i> 
+                2016 panwenhang
+            </div>
+            <div class="footer-right">
+                <a href="http://hexo.io/" target="_blank" title="快速、简洁且高效的博客框架">Hexo</a>  Theme <a href="https://github.com/MOxFIVE/hexo-theme-yelee" target="_blank" title="简而不减 Hexo 双栏博客主题  v3.5">Yelee</a> by MOxFIVE <i class="fa fa-heart animated infinite pulse"></i>
+            </div>
+        </div>
+        
+            <div class="visit">
+                
+                    <span id="busuanzi_container_site_pv" style='display:none'>
+                        <span id="site-visit" title="本站到访数"><i class="fa fa-user" aria-hidden="true"></i><span id="busuanzi_value_site_uv"></span>
+                        </span>
+                    </span>
+                
+                
+                    <span>| </span>
+                
+                
+                    <span id="busuanzi_container_page_pv" style='display:none'>
+                        <span id="page-visit"  title="本页阅读量"><i class="fa fa-eye animated infinite pulse" aria-hidden="true"></i><span id="busuanzi_value_page_pv"></span>
+                        </span>
+                    </span>
+                
+            </div>
+        
+    </div>
+</footer>
+    </div>
+    
+<script data-main="/js/main.js" src="//cdn.bootcss.com/require.js/2.2.0/require.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            var iPad = window.navigator.userAgent.indexOf('iPad');
+            if (iPad > -1 || $(".left-col").css("display") === "none") {
+                var bgColorList = ["#9db3f4", "#414141", "#e5a859", "#f5dfc6", "#c084a0", "#847e72", "#cd8390", "#996731"];
+                var bgColor = Math.ceil(Math.random() * (bgColorList.length - 1));
+                $("body").css({"background-color": bgColorList[bgColor], "background-size": "cover"});
+            }
+            else {
+                var backgroundnum = 5;
+                var backgroundimg = "url(/background/bg-x.jpg)".replace(/x/gi, Math.ceil(Math.random() * backgroundnum));
+                $("body").css({"background": backgroundimg, "background-attachment": "fixed", "background-size": "cover"});
+            }
+        })
+    </script>
+
+
+
+
+
+<div class="scroll" id="scroll">
+    <a href="#" title="返回顶部"><i class="fa fa-arrow-up"></i></a>
+    <a href="#comments" onclick="load$hide();" title="查看评论"><i class="fa fa-comments-o"></i></a>
+    <a href="#footer" title="转到底部"><i class="fa fa-arrow-down"></i></a>
+</div>
+<script>
+    // Open in New Window
+    
+        var oOpenInNew = {
+            
+            
+            
+            
+            
+            
+             archives: ".archive-article-title", 
+             miniArchives: "a.post-list-link", 
+            
+             friends: "#js-friends a", 
+             socail: ".social a" 
+        }
+        for (var x in oOpenInNew) {
+            $(oOpenInNew[x]).attr("target", "_blank");
+        }
+    
+</script>
+
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+  </div>
+</body>
+</html>

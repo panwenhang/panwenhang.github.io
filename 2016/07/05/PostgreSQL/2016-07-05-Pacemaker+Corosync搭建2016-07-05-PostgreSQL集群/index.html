@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+
+    <!--[if lt IE 9]>
+        <style>body {display: none; background: none !important} </style>
+        <meta http-equiv="Refresh" Content="0; url=//outdatedbrowser.com/" />
+    <![endif]-->
+
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="format-detection" content="telephone=no" />
+<meta name="author" content="panwenhang" />
+
+
+
+<meta name="description" content="1.环境$ cat /etc/redhat-release
+CentOS Linux release 7.0.1406 (Core)
+$ uname -a
+Linux zhaopin-5-90 3.10.0-123.el7.x86_64 #1 SMP Mon Jun 30 12:09:22 UTC 2014 x86_64 x86_64 x86_64 GNU/Linux
+node1: 172.17.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Pacemaker+Corosync搭建PostgreSQL集群">
+<meta property="og:url" content="http://panwenhang.github.io/2016/07/05/PostgreSQL/2016-07-05-Pacemaker+Corosync搭建2016-07-05-PostgreSQL集群/index.html">
+<meta property="og:site_name" content="panwenhang's blog">
+<meta property="og:description" content="1.环境$ cat /etc/redhat-release
+CentOS Linux release 7.0.1406 (Core)
+$ uname -a
+Linux zhaopin-5-90 3.10.0-123.el7.x86_64 #1 SMP Mon Jun 30 12:09:22 UTC 2014 x86_64 x86_64 x86_64 GNU/Linux
+node1: 172.17.">
+<meta property="og:updated_time" content="2016-09-01T16:53:40.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Pacemaker+Corosync搭建PostgreSQL集群">
+<meta name="twitter:description" content="1.环境$ cat /etc/redhat-release
+CentOS Linux release 7.0.1406 (Core)
+$ uname -a
+Linux zhaopin-5-90 3.10.0-123.el7.x86_64 #1 SMP Mon Jun 30 12:09:22 UTC 2014 x86_64 x86_64 x86_64 GNU/Linux
+node1: 172.17.">
+
+<link rel="apple-touch-icon" href= "/apple-touch-icon.png">
+
+
+    <link rel="alternate" href="/atom.xml" title="panwenhang&#39;s blog" type="application/atom+xml">
+
+
+
+    <link rel="shortcut icon" href="/favicon.png">
+
+
+
+    <link href="//cdn.bootcss.com/animate.css/3.5.1/animate.min.css" rel="stylesheet">
+
+
+
+    <link href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.css" rel="stylesheet">
+
+
+
+    <script src="//cdn.bootcss.com/pace/1.0.2/pace.min.js"></script>
+    <link href="//cdn.bootcss.com/pace/1.0.2/themes/blue/pace-theme-minimal.css" rel="stylesheet">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+
+<link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+
+
+<title>Pacemaker+Corosync搭建PostgreSQL集群 | panwenhang&#39;s blog</title>
+
+<script src="//cdn.bootcss.com/jquery/2.2.4/jquery.min.js"></script>
+<script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
+
+<script>
+    var yiliaConfig = {
+        fancybox: true,
+        animate: true,
+        isHome: false,
+        isPost: true,
+        isArchive: false,
+        isTag: false,
+        isCategory: false,
+        fancybox_js: "//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.js",
+        scrollreveal: "//cdn.bootcss.com/scrollReveal.js/3.1.4/scrollreveal.min.js",
+        search: undefined
+    }
+</script>
+
+
+    <script> yiliaConfig.jquery_ui = [false]; </script>
+
+
+
+    <script> yiliaConfig.rootUrl = "\/";</script>
+
+
+
+
+
+
+</head>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+    <header id="header" class="inner">
+        <a href="/" class="profilepic">
+            <img src="/img/avatar.png" class="animated zoomIn">
+        </a>
+        <hgroup>
+          <h1 class="header-author"><a href="/">panwenhang</a></h1>
+        </hgroup>
+
+        
+
+        
+
+
+        
+            <div id="switch-btn" class="switch-btn">
+                <div class="icon">
+                    <div class="icon-ctn">
+                        <div class="icon-wrap icon-house" data-idx="0">
+                            <div class="birdhouse"></div>
+                            <div class="birdhouse_holes"></div>
+                        </div>
+                        <div class="icon-wrap icon-ribbon hide" data-idx="1">
+                            <div class="ribbon"></div>
+                        </div>
+                        
+                        <div class="icon-wrap icon-link hide" data-idx="2">
+                            <div class="loopback_l"></div>
+                            <div class="loopback_r"></div>
+                        </div>
+                        
+                        
+                    </div>
+                    
+                </div>
+                <div class="tips-box hide">
+                    <div class="tips-arrow"></div>
+                    <ul class="tips-inner">
+                        <li>菜单</li>
+                        <li>标签</li>
+                        
+                        <li>友情链接</li>
+                        
+                        
+                    </ul>
+                </div>
+            </div>
+        
+
+        <div id="switch-area" class="switch-area">
+            <div class="switch-wrap">
+                <section class="switch-part switch-part1">
+                    <nav class="header-menu">
+                        <ul>
+                        
+                            <li><a href="/">主页</a></li>
+                        
+                            <li><a href="/archives/">所有文章</a></li>
+                        
+                            <li><a href="/tags/">标签云</a></li>
+                        
+                            <li><a href="/about/">关于我</a></li>
+                        
+                        </ul>
+                    </nav>
+                    <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fa Email" href="mailto:panwenhang92@gmail.com" title="Email"></a>
+                            
+                                <a class="fa GitHub" href="https://github.com/panwenhang" title="GitHub"></a>
+                            
+                                <a class="fa RSS" href="/atom.xml" title="RSS"></a>
+                            
+                        </ul>
+                    </nav>
+                </section>
+                
+                
+                <section class="switch-part switch-part2">
+                    <div class="widget tagcloud" id="js-tagcloud">
+                        
+                    </div>
+                </section>
+                
+                
+                
+                <section class="switch-part switch-part3">
+                    <div id="js-friends">
+                    
+                      <a class="main-nav-link switch-friends-link" href="https://hexo.io">Hexo</a>
+                    
+                      <a class="main-nav-link switch-friends-link" href="https://pages.github.com/">GitHub</a>
+                    
+                    </div>
+                </section>
+                
+
+                
+            </div>
+        </div>
+    </header>                
+</div>
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+      <div class="overlay">
+          <div class="slider-trigger"></div>
+          <h1 class="header-author js-mobile-header hide"><a href="/" title="回到主页">panwenhang</a></h1>
+      </div>
+    <div class="intrude-less">
+        <header id="header" class="inner">
+            <a href="/" class="profilepic">
+                <img src="/img/avatar.png" class="animated zoomIn">
+            </a>
+            <hgroup>
+              <h1 class="header-author"><a href="/" title="回到主页">panwenhang</a></h1>
+            </hgroup>
+            
+            <nav class="header-menu">
+                <ul>
+                
+                    <li><a href="/">主页</a></li>
+                
+                    <li><a href="/archives/">所有文章</a></li>
+                
+                    <li><a href="/tags/">标签云</a></li>
+                
+                    <li><a href="/about/">关于我</a></li>
+                
+                <div class="clearfix"></div>
+                </ul>
+            </nav>
+            <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fa Email" target="_blank" href="mailto:panwenhang92@gmail.com" title="Email"></a>
+                            
+                                <a class="fa GitHub" target="_blank" href="https://github.com/panwenhang" title="GitHub"></a>
+                            
+                                <a class="fa RSS" target="_blank" href="/atom.xml" title="RSS"></a>
+                            
+                        </ul>
+            </nav>
+        </header>                
+    </div>
+    <link class="menu-list" tags="标签" friends="友情链接" about="关于我"/>
+</nav>
+      <div class="body-wrap"><article id="post-PostgreSQL/2016-07-05-Pacemaker+Corosync搭建2016-07-05-PostgreSQL集群" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2016/07/05/PostgreSQL/2016-07-05-Pacemaker+Corosync搭建2016-07-05-PostgreSQL集群/" class="article-date">
+      <time datetime="2016-07-04T16:00:00.000Z" itemprop="datePublished">2016-07-05</time>
+</a>
+
+
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Pacemaker+Corosync搭建PostgreSQL集群
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/PostgreSQL/">PostgreSQL</a>
+    </div>
+
+
+        
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        <h2 id="1-环境"><a href="#1-环境" class="headerlink" title="1.环境"></a>1.环境</h2><pre><code>$ cat /etc/redhat-release
+CentOS Linux release 7.0.1406 (Core)
+$ uname -a
+Linux zhaopin-5-90 3.10.0-123.el7.x86_64 #1 SMP Mon Jun 30 12:09:22 UTC 2014 x86_64 x86_64 x86_64 GNU/Linux
+node1: 172.17.5.90
+node2: 172.17.5.91
+node3: 172.17.5.92
+vip-master: 172.17.5.99
+vip-slave:  172.17.5.98
+</code></pre><a id="more"></a>
+<h2 id="2-配置Linux集群环境"><a href="#2-配置Linux集群环境" class="headerlink" title="2.配置Linux集群环境"></a>2.配置Linux集群环境</h2><h3 id="1-安装Pacemaker和Corosync包"><a href="#1-安装Pacemaker和Corosync包" class="headerlink" title="(1) 安装Pacemaker和Corosync包"></a>(1) 安装Pacemaker和Corosync包</h3><p>在所有节点执行:</p>
+<pre><code>$ sudo yum install -y pacemaker pcs psmisc policycoreutils-python postgresql-server
+</code></pre><h3 id="2-禁用防火墙"><a href="#2-禁用防火墙" class="headerlink" title="(2) 禁用防火墙"></a>(2) 禁用防火墙</h3><p>在所有节点执行:</p>
+<pre><code>$ sudo setenforce 0
+$ sudo sed -i.bak &quot;s/SELINUX=enforcing/SELINUX=permissive/g&quot; /etc/selinux/config
+$ sudo systemctl disable firewalld.service
+$ sudo systemctl stop firewalld.service
+$ sudo iptables --flush
+</code></pre><h3 id="3-启用pcs"><a href="#3-启用pcs" class="headerlink" title="(3) 启用pcs"></a>(3) 启用pcs</h3><p>在所有节点执行:</p>
+<pre><code>$ sudo systemctl start pcsd.service
+$ sudo systemctl enable pcsd.service
+ln -s &apos;/usr/lib/systemd/system/pcsd.service&apos; &apos;/etc/systemd/system/multi-user.target.wants/pcsd.service&apos;
+$ echo hacluster | sudo passwd hacluster --stdin
+Changing password for user hacluster.
+Changing password for user hacluster.
+passwd: all authentication tokens updated successfully.
+</code></pre><h3 id="4-集群认证"><a href="#4-集群认证" class="headerlink" title="(4) 集群认证"></a>(4) 集群认证</h3><p>在任何一个节点上执行,这里选择node1:</p>
+<pre><code>$ sudo pcs cluster auth -u hacluster -p hacluster 172.17.5.90 172.17.5.91 172.17.5.92
+172.17.5.90: Authorized
+172.17.5.91: Authorized
+172.17.5.92: Authorized
+</code></pre><h3 id="5-同步配置"><a href="#5-同步配置" class="headerlink" title="(5) 同步配置"></a>(5) 同步配置</h3><p>在node1上执行:</p>
+<pre><code>$ sudo pcs cluster setup --last_man_standing=1 --name pgcluster 172.17.5.90 172.17.5.91 172.17.5.92
+Shutting down pacemaker/corosync services...
+Redirecting to /bin/systemctl stop  pacemaker.service
+Redirecting to /bin/systemctl stop  corosync.service
+Killing any remaining services...
+Removing all cluster configuration files...
+172.17.5.90: Succeeded
+172.17.5.91: Succeeded
+172.17.5.92: Succeeded
+</code></pre><h3 id="6-启动集群"><a href="#6-启动集群" class="headerlink" title="(6) 启动集群"></a>(6) 启动集群</h3><p>在node1上执行:</p>
+<pre><code>$ sudo pcs cluster start --all
+172.17.5.90: Starting Cluster...
+172.17.5.91: Starting Cluster...
+172.17.5.92: Starting Cluster...
+</code></pre><h3 id="7-检验"><a href="#7-检验" class="headerlink" title="(7) 检验"></a>(7) 检验</h3><p>1）检验corosync</p>
+<p>在node1上执行:</p>
+<pre><code>$ sudo pcs status corosync
+Membership information
+----------------------
+    Nodeid      Votes Name
+         1          1 172.17.5.90 (local)
+         2          1 172.17.5.91
+         3          1 172.17.5.92
+</code></pre><p>2）检验pacemaker</p>
+<pre><code>$ sudo pcs status
+Cluster name: pgcluster
+WARNING: no stonith devices and stonith-enabled is not false
+WARNING: corosync and pacemaker node names do not match (IPs used in setup?)
+Last updated: Mon Oct 19 15:08:06 2015          Last change:
+Stack: unknown
+Current DC: NONE
+0 nodes and 0 resources configured
+Full list of resources:
+PCSD Status:
+  zhaopin-5-90 (172.17.5.90): Online
+  zhaopin-5-91 (172.17.5.91): Online
+  zhaopin-5-92 (172.17.5.92): Online
+Daemon Status:
+  corosync: active/disabled
+  pacemaker: active/disabled
+  pcsd: active/disabled
+</code></pre><h2 id="3-安装和配置PostgreSQL"><a href="#3-安装和配置PostgreSQL" class="headerlink" title="3.安装和配置PostgreSQL"></a>3.安装和配置PostgreSQL</h2><h3 id="1-创建目录"><a href="#1-创建目录" class="headerlink" title="(1) 创建目录"></a>(1) 创建目录</h3><p>在所有节点上执行:</p>
+<pre><code>$ sudo mkdir -p /data/postgresql/{data,xlog_archive}
+$ sudo chown -R postgres:postgres /data/postgresql/
+$ sudo chmod 0700 /data/postgresql/data
+</code></pre><h3 id="2-初始化db"><a href="#2-初始化db" class="headerlink" title="(2) 初始化db"></a>(2) 初始化db</h3><p>在node1上执行:</p>
+<pre><code>$ sudo su - postgres
+$ initdb -D /data/postgresql/data/
+The files belonging to this database system will be owned by user &quot;postgres&quot;.
+This user must also own the server process.
+The database cluster will be initialized with locale &quot;en_US.UTF-8&quot;.
+The default database encoding has accordingly been set to &quot;UTF8&quot;.
+The default text search configuration will be set to &quot;english&quot;.
+fixing permissions on existing directory /data/postgresql/data ... ok
+creating subdirectories ... ok
+selecting default max_connections ... 100
+selecting default shared_buffers ... 32MB
+creating configuration files ... ok
+creating template1 database in /data/postgresql/data/base/1 ... ok
+initializing pg_authid ... ok
+initializing dependencies ... ok
+creating system views ... ok
+loading system objects&apos; descriptions ... ok
+creating collations ... ok
+creating conversions ... ok
+creating dictionaries ... ok
+setting privileges on built-in objects ... ok
+creating information schema ... ok
+loading PL/pgSQL server-side language ... ok
+vacuuming database template1 ... ok
+copying template1 to template0 ... ok
+copying template1 to postgres ... ok
+WARNING: enabling &quot;trust&quot; authentication for local connections
+You can change this by editing pg_hba.conf or using the option -A, or
+--auth-local and --auth-host, the next time you run initdb.
+Success. You can now start the database server using:
+    postgres -D /data/postgresql/data
+or
+    pg_ctl -D /data/postgresql/data -l logfile start
+</code></pre><h3 id="3-修改配置文件"><a href="#3-修改配置文件" class="headerlink" title="(3) 修改配置文件"></a>(3) 修改配置文件</h3><p>在node1上执行:</p>
+<pre><code>$ vim /data/postgresql/data/postgresql.conf
+listen_addresses = &apos;*&apos;
+wal_level = hot_standby
+synchronous_commit = on
+archive_mode = on
+archive_command = &apos;cp %p /data/postgresql/xlog_archive/%f&apos;
+max_wal_senders=5
+wal_keep_segments = 32
+hot_standby = on
+restart_after_crash = off
+replication_timeout = 5000
+wal_receiver_status_interval = 2
+max_standby_streaming_delay = -1
+max_standby_archive_delay = -1
+synchronous_commit = on
+restart_after_crash = off
+hot_standby_feedback = on
+$ vim /data/postgresql/data/pg_hba.conf
+local   all                 all                              trust
+host    all                 all     172.17.0.0/16            md5
+host    replication         all     172.17.0.0/16            md5
+</code></pre><h3 id="4-启动"><a href="#4-启动" class="headerlink" title="(4) 启动"></a>(4) 启动</h3><p>在node1上执行:</p>
+<pre><code>$ pg_ctl -D /data/postgresql/data/ start
+server starting
+[    2015-10-16 08:51:31.451 UTC 53158 5620ba93.cfa6 1 0]LOG:  redirecting log output to logging collector process
+[    2015-10-16 08:51:31.451 UTC 53158 5620ba93.cfa6 2 0]HINT:  Future log output will appear in directory &quot;pg_log&quot;.
+$ psql -U postgres
+psql (9.2.13)
+Type &quot;help&quot; for help.
+postgres=# create role replicator with login replication password &apos;8d5e9531-3817-460d-a851-659d2e51ca99&apos;;
+CREATE ROLE
+postgres=# \q
+</code></pre><h3 id="5-制作slave"><a href="#5-制作slave" class="headerlink" title="(5) 制作slave"></a>(5) 制作slave</h3><p>在node2和node3上执行:</p>
+<pre><code>$ sudo su - postgres
+$ pg_basebackup -h 172.17.5.90 -U postgres -D /data/postgresql/data/ -X stream -P
+could not change directory to &quot;/home/wenhang.pan&quot;
+20127/20127 kB (100%), 1/1 tablespace
+node2:
+$ vim /data/postgresql/data/recovery.conf
+standby_mode = &apos;on&apos;
+primary_conninfo = &apos;host=172.17.5.90 port=5432 user=replicator password=8d5e9531-3817-460d-a851-659d2e51ca99 application_name=node2&apos;
+restore_command = &apos;&apos;
+recovery_target_timeline = &apos;latest&apos;
+node3:
+$ vim /data/postgresql/data/recovery.conf
+standby_mode = &apos;on&apos;
+primary_conninfo = &apos;host=172.17.5.90 port=5432 user=replicator password=8d5e9531-3817-460d-a851-659d2e51ca99 application_name=node3&apos;
+restore_command = &apos;&apos;
+recovery_target_timeline = &apos;latest&apos;
+</code></pre><h3 id="6-启动slave"><a href="#6-启动slave" class="headerlink" title="(6) 启动slave"></a>(6) 启动slave</h3><p>在node2和node3上执行:</p>
+<pre><code>$ pg_ctl -D /data/postgresql/data/ start
+pg_ctl: another server might be running; trying to start server anyway
+server starting
+-bash-4.2$ LOG:  database system was interrupted while in recovery at log time 2015-10-16 08:19:07 GMT
+HINT:  If this has occurred more than once some data might be corrupted and you might need to choose an earlier recovery target.
+LOG:  entering standby mode
+LOG:  redo starts at 0/3000020
+LOG:  consistent recovery state reached at 0/30000E0
+LOG:  database system is ready to accept read only connections
+LOG:  streaming replication successfully connected to primary
+</code></pre><h3 id="7-查看集群状态"><a href="#7-查看集群状态" class="headerlink" title="(7) 查看集群状态"></a>(7) 查看集群状态</h3><p>在node1上执行:</p>
+<pre><code>$ psql -U postgres
+psql (9.2.13)
+Type &quot;help&quot; for help.
+postgres=# select * from pg_stat_replication ;
+  pid  | usesysid |  usename   | application_name | client_addr  | client_hostname | client_port |         backend_start         | backend_xmin |   state   | sent_location | write_location | flush_location | replay_location | sync_priority | sync_state
+-------+----------+------------+------------------+--------------+-----------------+-------------+-------------------------------+--------------+-----------+---------------+----------------+----------------+-----------------+---------------+------------
+ 10745 |    16384 | postgres   | node2            | 172.17.5.91 |                 |       43013 | 2015-10-16 02:54:02.279384+00 |         1911 | streaming | 39/7B000060   | 39/7B000060    | 39/7B000060    | 39/7B000000     |             0 | async
+ 50361 |    16384 | postgres   | node3            | 172.17.5.92 |                 |       52073 | 2015-10-15 10:13:15.436745+00 |         1911 | streaming | 39/7B000060   | 39/7B000060    | 39/7B000060    | 39/7B000000     |             0 | async
+(2 rows)
+postgres=# \q
+</code></pre><h3 id="8-停止PostgreSQL服务"><a href="#8-停止PostgreSQL服务" class="headerlink" title="(8) 停止PostgreSQL服务"></a>(8) 停止PostgreSQL服务</h3><p>在node1、node2和node3上执行:</p>
+<pre><code>$ pg_ctl -D /data/postgresql/data/ -mi stop
+waiting for server to shut down.... done
+server stopped
+</code></pre><h2 id="4-配置自动切换"><a href="#4-配置自动切换" class="headerlink" title="4.配置自动切换"></a>4.配置自动切换</h2><h3 id="1-配置"><a href="#1-配置" class="headerlink" title="(1) 配置"></a>(1) 配置</h3><p>在node1执行:</p>
+<p>1）将配置步骤先写到脚本</p>
+<pre><code>$ vim cluster_setup.sh
+# 将cib配置保存到文件
+pcs cluster cib pgsql_cfg
+# 在pacemaker级别忽略quorum
+pcs -f pgsql_cfg property set no-quorum-policy=&quot;ignore&quot;
+# 禁用STONITH
+pcs -f pgsql_cfg property set stonith-enabled=&quot;false&quot;
+# 设置资源粘性,防止节点在故障恢复后发生迁移
+pcs -f pgsql_cfg resource defaults resource-stickiness=&quot;INFINITY&quot;
+# 设置多少次失败后迁移
+pcs -f pgsql_cfg resource defaults migration-threshold=&quot;3&quot;
+# 设置master节点虚ip
+pcs -f pgsql_cfg resource create vip-master IPaddr2 ip=&quot;172.17.5.99&quot; cidr_netmask=&quot;24&quot;    op start   timeout=&quot;60s&quot; interval=&quot;0s&quot;  on-fail=&quot;restart&quot;    op monitor timeout=&quot;60s&quot; interval=&quot;10s&quot; on-fail=&quot;restart&quot;    op stop    timeout=&quot;60s&quot; interval=&quot;0s&quot;  on-fail=&quot;block&quot;
+# 设置slave节点虚ip
+pcs -f pgsql_cfg resource create vip-slave IPaddr2 ip=&quot;172.17.5.98&quot; cidr_netmask=&quot;24&quot;    op start   timeout=&quot;60s&quot; interval=&quot;0s&quot;  on-fail=&quot;restart&quot;    op monitor timeout=&quot;60s&quot; interval=&quot;10s&quot; on-fail=&quot;restart&quot;    op stop    timeout=&quot;60s&quot; interval=&quot;0s&quot;  on-fail=&quot;block&quot;
+# 设置pgsql集群资源
+# pgctl、psql、pgdata和config等配置根据自己的环境修改
+pcs -f pgsql_cfg resource create pgsql pgsql pgctl=&quot;/opt/pgsql/bin/pg_ctl&quot; psql=&quot;/opt/pgsql/bin/psql&quot; pgdata=&quot;/data/postgresql/data/&quot; config=&quot;/data/postgresql/data/postgresql.conf&quot; rep_mode=&quot;sync&quot; node_list=&quot;zhaopin-5-90 zhaopin-5-91 zhaopin-5-92&quot; master_ip=&quot;172.17.5.98&quot;  repuser=&quot;replicator&quot; primary_conninfo_opt=&quot;password=8d5e9531-3817-460d-a851-659d2e51ca99 keepalives_idle=60 keepalives_interval=5 keepalives_count=5&quot; restore_command=&quot;cp /data/postgresql/xlog_archive/%f %p&quot; restart_on_promote=&apos;true&apos; op start   timeout=&quot;60s&quot; interval=&quot;0s&quot;  on-fail=&quot;restart&quot; op monitor timeout=&quot;60s&quot; interval=&quot;4s&quot; on-fail=&quot;restart&quot; op monitor timeout=&quot;60s&quot; interval=&quot;3s&quot;  on-fail=&quot;restart&quot; role=&quot;Master&quot; op promote timeout=&quot;60s&quot; interval=&quot;0s&quot;  on-fail=&quot;restart&quot; op demote  timeout=&quot;60s&quot; interval=&quot;0s&quot;  on-fail=&quot;stop&quot; op stop    timeout=&quot;60s&quot; interval=&quot;0s&quot;  on-fail=&quot;block&quot;
+ # 设置master/slave模式
+pcs -f pgsql_cfg resource master pgsql-cluster pgsql master-max=1 master-node-max=1 clone-max=3 clone-node-max=1 notify=true
+# 配置master ip组
+pcs -f pgsql_cfg resource group add master-group vip-master
+# 配置slave ip组
+pcs -f pgsql_cfg resource group add slave-group vip-slave
+# 配置master ip组绑定master节点
+pcs -f pgsql_cfg constraint colocation add master-group with master pgsql-cluster INFINITY
+# 配置启动master节点
+pcs -f pgsql_cfg constraint order promote pgsql-cluster then start master-group symmetrical=false score=INFINITY
+# 配置停止master节点
+pcs -f pgsql_cfg constraint order demote  pgsql-cluster then stop  master-group symmetrical=false score=0
+# 配置slave ip组绑定slave节点
+pcs -f pgsql_cfg constraint colocation add slave-group with slave pgsql-cluster INFINITY
+# 配置启动slave节点
+pcs -f pgsql_cfg constraint order promote pgsql-cluster then start slave-group symmetrical=false score=INFINITY
+# 配置停止slave节点
+pcs -f pgsql_cfg constraint order demote  pgsql-cluster then stop  slave-group symmetrical=false score=0
+# 把配置文件push到cib
+pcs cluster cib-push pgsql_cfg
+</code></pre><p>2）执行操作文件</p>
+<pre><code>$ sudo sh cluster_setup.sh
+</code></pre><h3 id="2-查看状态"><a href="#2-查看状态" class="headerlink" title="(2) 查看状态"></a>(2) 查看状态</h3><p>1）查看cluster状态</p>
+<p>在node1上执行:</p>
+<pre><code>$ sudo pcs status
+Cluster name: pgcluster
+WARNING: corosync and pacemaker node names do not match (IPs used in setup?)
+Last updated: Mon Oct 19 15:10:52 2015          Last change: Mon Oct 19 15:10:12 2015 by root via crm_attribute on zhaopin-5-92
+Stack: corosync
+Current DC: zhaopin-5-90 (version 1.1.13-a14efad) - partition with quorum
+3 nodes and 5 resources configured
+Online: [ zhaopin-5-90 zhaopin-5-91 zhaopin-5-92 ]
+Full list of resources:
+ Master/Slave Set: pgsql-cluster [pgsql]
+     Masters: [ zhaopin-5-92 ]
+     Slaves: [ zhaopin-5-90 zhaopin-5-91 ]
+ Resource Group: master-group
+     vip-master (ocf::heartbeat:IPaddr2):       Started zhaopin-5-92
+ Resource Group: slave-group
+     vip-slave  (ocf::heartbeat:IPaddr2):       Started zhaopin-5-90
+PCSD Status:
+  zhaopin-5-90 (172.17.5.90): Online
+  zhaopin-5-91 (172.17.5.91): Online
+  zhaopin-5-92 (172.17.5.92): Online
+Daemon Status:
+  corosync: active/disabled
+  pacemaker: active/disabled
+  pcsd: active/disabled
+</code></pre><p>2）查看PostgreSQL集群状态</p>
+<p>在node3上执行:</p>
+<pre><code>$ psql -U postgres
+psql (9.2.13)
+Type &quot;help&quot; for help.
+postgres=# select * from pg_stat_replication ;
+  pid  | usesysid |  usename   | application_name |  client_addr  | client_hostname | client_port |         backend_start         | backend_xmin |   state   | sent_location | write_location | flush_location | replay_location | sync_priority | sync_state
+-------+----------+------------+------------------+---------------+-----------------+-------------+-------------------------------+--------------+-----------+---------------+----------------+----------------+-----------------+---------------+------------
+ 11522 |    16384 | replicator | zhaopin-5-91     | 172.17.5.91   |                 |       41356 | 2015-10-19 07:10:01.898257+00 |         1915 | streaming | 81/D9000000   | 81/D9000000    | 81/D9000000    | 81/D9000000     |             2 | potential
+ 11532 |    16384 | replicator | zhaopin-5-90     | 172.17.5.99   |                 |       41786 | 2015-10-19 07:10:01.945532+00 |         1915 | streaming | 81/D9000000   | 81/D9000000    | 81/D9000000    | 81/D9000000     |             1 | sync
+(2 rows)
+</code></pre><h2 id="5-参考"><a href="#5-参考" class="headerlink" title="5.参考"></a>5.参考</h2><p><a href="http://clusterlabs.org/doc/zh-CN/Pacemaker/1.1-pcs/html-single/Clusters_from_Scratch/index.html#_verify_corosync_installation" target="_blank" rel="external">从头开始搭建集群</a></p>
+<p><a href="http://clusterlabs.org/wiki/PgSQL_Replicated_Cluster" target="_blank" rel="external">PgSQL Replicated Cluster</a></p>
+
+      
+    </div>
+    
+  </div>
+  
+    
+    <div class="copyright">
+        <p><span>本文标题:</span><a href="/2016/07/05/PostgreSQL/2016-07-05-Pacemaker+Corosync搭建2016-07-05-PostgreSQL集群/">Pacemaker+Corosync搭建PostgreSQL集群</a></p>
+        <p><span>文章作者:</span><a href="/" title="回到主页">panwenhang</a></p>
+        <p><span>发布时间:</span>2016-07-05, 00:00:00</p>
+        <p><span>最后更新:</span>2016-09-02, 00:53:40</p>
+        <p>
+            <span>原始链接:</span><a class="post-url" href="/2016/07/05/PostgreSQL/2016-07-05-Pacemaker+Corosync搭建2016-07-05-PostgreSQL集群/" title="Pacemaker+Corosync搭建PostgreSQL集群">http://panwenhang.github.io/2016/07/05/PostgreSQL/2016-07-05-Pacemaker+Corosync搭建2016-07-05-PostgreSQL集群/</a>
+            <span class="copy-path" data-clipboard-text="原文: http://panwenhang.github.io/2016/07/05/PostgreSQL/2016-07-05-Pacemaker+Corosync搭建2016-07-05-PostgreSQL集群/　　作者: panwenhang" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <script> var clipboard = new Clipboard('.copy-path'); </script>
+        </p>
+        <p>
+            <span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/" title="CC BY-NC-SA 4.0 International" target = "_blank">"署名-非商用-相同方式共享 4.0"</a> 转载请保留原文链接及作者。
+        </p>
+    </div>
+
+
+
+    <nav id="article-nav">
+        
+        
+            <div id="article-nav-older" class="article-nav-title">
+                <a href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL之网络地址类型/">
+                    PostgreSQL之网络地址类型
+                </a>
+            </div>
+        
+    </nav>
+
+  
+</article>
+
+    <div id="toc" class="toc-article">
+        <strong class="toc-title">文章目录</strong>
+        
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-环境"><span class="toc-number">1.</span> <span class="toc-text">1.环境</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-配置Linux集群环境"><span class="toc-number">2.</span> <span class="toc-text">2.配置Linux集群环境</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-安装Pacemaker和Corosync包"><span class="toc-number">2.1.</span> <span class="toc-text">(1) 安装Pacemaker和Corosync包</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-禁用防火墙"><span class="toc-number">2.2.</span> <span class="toc-text">(2) 禁用防火墙</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-启用pcs"><span class="toc-number">2.3.</span> <span class="toc-text">(3) 启用pcs</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-集群认证"><span class="toc-number">2.4.</span> <span class="toc-text">(4) 集群认证</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-同步配置"><span class="toc-number">2.5.</span> <span class="toc-text">(5) 同步配置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-启动集群"><span class="toc-number">2.6.</span> <span class="toc-text">(6) 启动集群</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-检验"><span class="toc-number">2.7.</span> <span class="toc-text">(7) 检验</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-安装和配置PostgreSQL"><span class="toc-number">3.</span> <span class="toc-text">3.安装和配置PostgreSQL</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-创建目录"><span class="toc-number">3.1.</span> <span class="toc-text">(1) 创建目录</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-初始化db"><span class="toc-number">3.2.</span> <span class="toc-text">(2) 初始化db</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-修改配置文件"><span class="toc-number">3.3.</span> <span class="toc-text">(3) 修改配置文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-启动"><span class="toc-number">3.4.</span> <span class="toc-text">(4) 启动</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-制作slave"><span class="toc-number">3.5.</span> <span class="toc-text">(5) 制作slave</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-启动slave"><span class="toc-number">3.6.</span> <span class="toc-text">(6) 启动slave</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-查看集群状态"><span class="toc-number">3.7.</span> <span class="toc-text">(7) 查看集群状态</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-停止PostgreSQL服务"><span class="toc-number">3.8.</span> <span class="toc-text">(8) 停止PostgreSQL服务</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-配置自动切换"><span class="toc-number">4.</span> <span class="toc-text">4.配置自动切换</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-配置"><span class="toc-number">4.1.</span> <span class="toc-text">(1) 配置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-查看状态"><span class="toc-number">4.2.</span> <span class="toc-text">(2) 查看状态</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-参考"><span class="toc-number">5.</span> <span class="toc-text">5.参考</span></a></li></ol>
+        
+    </div>
+    <style>
+        .left-col .switch-btn,
+        .left-col .switch-area {
+            display: none;
+        }
+        .toc-level-3 i,
+        .toc-level-3 ol {
+            display: none !important;
+        }
+    </style>
+
+    <input type="button" id="tocButton" value="隐藏目录"  title="点击按钮隐藏或者显示文章目录">
+
+    <script>
+        yiliaConfig.toc = ["隐藏目录", "显示目录", !!"false"];
+    </script>
+
+
+
+    
+<div class="share">
+    
+        <div class="bdsharebuttonbox">
+            <a href="#" class="fa fa-twitter bds_twi" data-cmd="twi" title="分享到推特"></a>
+            <a href="#" class="fa fa-weibo bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
+            <a href="#" class="fa fa-qq bds_sqq" data-cmd="sqq" title="分享给 QQ 好友"></a>
+            <a href="#" class="fa fa-files-o bds_copy" data-cmd="copy" title="复制网址"></a>
+            <a href="#" class="fa fa fa-envelope-o bds_mail" data-cmd="mail" title="通过邮件分享"></a>
+            <a href="#" class="fa fa-weixin bds_weixin" data-cmd="weixin" title="生成文章二维码"></a>
+            <a href="#" class="fa fa-share-alt bds_more" data-cmd="more"></i></a>
+        </div>
+        <script>
+            window._bd_share_config={
+                "common":{"bdSnsKey":{},"bdText":"Pacemaker+Corosync搭建PostgreSQL集群　| panwenhang's blog　","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+        </script>
+    
+
+    
+</div>
+
+
+
+
+
+
+
+    
+
+
+
+
+    <div class="scroll" id="post-nav-button">
+        
+            <a href="/" title="回到主页"><i class="fa fa-home"></i></a>
+        
+
+        <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
+
+        
+            <a href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL之网络地址类型/" title="下一篇: PostgreSQL之网络地址类型">
+                <i class="fa fa-angle-right"></i>
+            </a>
+        
+    </div>
+
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL/2016-07-05-Pacemaker+Corosync搭建2016-07-05-PostgreSQL集群/">Pacemaker+Corosync搭建PostgreSQL集群</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL之网络地址类型/">PostgreSQL之网络地址类型</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL查看没有注释的表和字段/">PostgreSQL查看没有注释的表和字段</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL权限管理之创建可更新表的普通用户/">PostgreSQL权限管理之创建可更新表的普通用户</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL日志换行处理/">PostgreSQL日志换行处理</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL日志使用rsyslog/">PostgreSQL日志使用rsyslog</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL多线程备份与恢复/">PostgreSQL多线程备份与恢复</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL恢复到任意时间点/">PostgreSQL恢复到任意时间点</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL备份之手工备份/">PostgreSQL备份之手工备份</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL备份之pg_rman/">PostgreSQL备份之pg_rman</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL备份之pg_basebackup/">PostgreSQL备份之pg_basebackup</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL备份之omniPITR/">PostgreSQL备份之omniPITR</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL同步复制故障测试/">PostgreSQL同步复制故障测试</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL同步复制搭建/">PostgreSQL同步复制搭建</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL事务特性之嵌套事务/">PostgreSQL事务特性之嵌套事务</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL之MVCC/">PostgreSQL之MVCC</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL/2016-07-05-BDR0.9.0版本测试/">BDR0.9.0版本测试</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL/2016-07-05-Pacemaker+Corosync+2016-07-05-PostgreSQL集群故障测试和解决方案/">Pacemaker+Corosync+PostgreSQL集群故障测试和解决方案</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL主键膨胀维护/">PostgreSQL主键膨胀维护</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL表空间的使用/">PostgreSQL表空间的使用</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/30/Linux/2016-06-30-DELL磁盘阵列控制卡（RAID卡）MegaCli常用管理命令汇总/">DELL磁盘阵列控制卡（RAID卡）MegaCli常用管理命令汇总</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/30/Linux/2016-06-30-设置虚ip/">设置虚ip</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/30/Linux/2016-06-30-格式化大盘/">格式化大盘</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/30/Linux/2016-06-30-在Slackware64中安装rtx/">在Slackware64中安装rtx</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/30/Linux/2016-06-30-在CenOS6.4下安装Docker/">在CenOS6.4下安装Docker</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/30/Linux/2016-06-30-crontab中PATH的坑/">crontab中PATH的坑</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/30/Linux/2016-06-30-ssd优化/">ssd优化</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/30/Linux/2016-06-30-部署Docker下打包环境/">部署Docker下打包环境</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/30/Linux/2016-06-30-Linux查看硬件信息/">Linux查看硬件信息</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/30/Linux/2016-06-30-Linux代理设置/">Linux代理设置</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/30/Linux/2016-06-30-HP机器RAID和2016-06-30-LVM创建/">HP机器RAID和LVM创建</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/30/Linux/2016-06-30-Linux下打包/">Linux下打包</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/30/Linux/2016-06-30-Linux之间ssh免密码登录/">Linux之间ssh免密码登录</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/30/Linux/2016-06-30-Linux中时间同步/">Linux中时间同步</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/30/Linux/2016-06-30-Shell脚本-良好的习惯/">Shell脚本-良好的习惯</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/23/C/2016-06-23-C语言side effect和sequence point/">C语言side effect和sequence point</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/23/C/2016-06-23-C语言类型转换/">C语言类型转换</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/23/MongoDB/2016-06-23-Linux下2016-06-23-MongoDB安装和配置/">Linux下MongoDB安装和配置</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/23/MongoDB/2016-06-23-MongoDB主从集群/">MongoDB主从集群</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/23/MongoDB/2016-06-23-MongoDB分片搭建/">MongoDB分片搭建</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/23/MongoDB/2016-06-23-MongoDB分片故障测试和解决方案/">MongoDB分片故障测试和解决方案</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/23/MongoDB/2016-06-23-MongoDB副本集搭建/">MongoDB副本集搭建</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/23/MongoDB/2016-06-23-MongoDB副本集故障测试和解决方案/">MongoDB副本集故障测试和解决方案</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/23/Python/2016-06-23-多版本python环境/">多版本python环境</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/23/Python/2016-06-23-flask环境配置/">flask环境配置</a></li></ul>
+
+
+
+
+    <script>
+        
+    </script>
+</div>
+      <footer id="footer">
+    <div class="outer">
+        <div id="footer-info">
+            <div class="footer-left">
+                <i class="fa fa-copyright"></i> 
+                2016 panwenhang
+            </div>
+            <div class="footer-right">
+                <a href="http://hexo.io/" target="_blank" title="快速、简洁且高效的博客框架">Hexo</a>  Theme <a href="https://github.com/MOxFIVE/hexo-theme-yelee" target="_blank" title="简而不减 Hexo 双栏博客主题  v3.5">Yelee</a> by MOxFIVE <i class="fa fa-heart animated infinite pulse"></i>
+            </div>
+        </div>
+        
+            <div class="visit">
+                
+                    <span id="busuanzi_container_site_pv" style='display:none'>
+                        <span id="site-visit" title="本站到访数"><i class="fa fa-user" aria-hidden="true"></i><span id="busuanzi_value_site_uv"></span>
+                        </span>
+                    </span>
+                
+                
+                    <span>| </span>
+                
+                
+                    <span id="busuanzi_container_page_pv" style='display:none'>
+                        <span id="page-visit"  title="本页阅读量"><i class="fa fa-eye animated infinite pulse" aria-hidden="true"></i><span id="busuanzi_value_page_pv"></span>
+                        </span>
+                    </span>
+                
+            </div>
+        
+    </div>
+</footer>
+    </div>
+    
+<script data-main="/js/main.js" src="//cdn.bootcss.com/require.js/2.2.0/require.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            var iPad = window.navigator.userAgent.indexOf('iPad');
+            if (iPad > -1 || $(".left-col").css("display") === "none") {
+                var bgColorList = ["#9db3f4", "#414141", "#e5a859", "#f5dfc6", "#c084a0", "#847e72", "#cd8390", "#996731"];
+                var bgColor = Math.ceil(Math.random() * (bgColorList.length - 1));
+                $("body").css({"background-color": bgColorList[bgColor], "background-size": "cover"});
+            }
+            else {
+                var backgroundnum = 5;
+                var backgroundimg = "url(/background/bg-x.jpg)".replace(/x/gi, Math.ceil(Math.random() * backgroundnum));
+                $("body").css({"background": backgroundimg, "background-attachment": "fixed", "background-size": "cover"});
+            }
+        })
+    </script>
+
+
+
+
+
+<div class="scroll" id="scroll">
+    <a href="#" title="返回顶部"><i class="fa fa-arrow-up"></i></a>
+    <a href="#comments" onclick="load$hide();" title="查看评论"><i class="fa fa-comments-o"></i></a>
+    <a href="#footer" title="转到底部"><i class="fa fa-arrow-down"></i></a>
+</div>
+<script>
+    // Open in New Window
+    
+        var oOpenInNew = {
+            
+            
+            
+            
+            
+            
+             archives: ".archive-article-title", 
+             miniArchives: "a.post-list-link", 
+            
+             friends: "#js-friends a", 
+             socail: ".social a" 
+        }
+        for (var x in oOpenInNew) {
+            $(oOpenInNew[x]).attr("target", "_blank");
+        }
+    
+</script>
+
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+  </div>
+</body>
+</html>
