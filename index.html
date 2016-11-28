@@ -332,19 +332,19 @@
 
 
   
-    <article id="post-PostgreSQL-2016-07-05-BDR0-9-0版本测试" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-PostgreSQL-2016-07-05-PostgreSQL主键膨胀维护" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2016/07/05/PostgreSQL-2016-07-05-BDR0-9-0版本测试/" class="article-date">
+      <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL主键膨胀维护/" class="article-date">
       <time datetime="2016-07-04T16:00:00.000Z" itemprop="datePublished">2016-07-05</time>
 </a>
 
  
-    <a href="/2016/07/05/PostgreSQL-2016-07-05-BDR0-9-0版本测试/#comments" title="查看评论">
+    <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL主键膨胀维护/#comments" title="查看评论">
         <i class="fa fa-comments-o" aria-hidden="true"></i>
         <span class="count-comment"></span>
         
-            <span class="ds-thread-count"  data-thread-key="2016/07/05/PostgreSQL-2016-07-05-BDR0-9-0版本测试/" ></span>
+            <span class="ds-thread-count"  data-thread-key="2016/07/05/PostgreSQL-2016-07-05-PostgreSQL主键膨胀维护/" ></span>
         
         
     </a>
@@ -360,7 +360,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2016/07/05/PostgreSQL-2016-07-05-BDR0-9-0版本测试/">BDR0.9.0版本测试</a>
+      <a class="article-title" href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL主键膨胀维护/">PostgreSQL主键膨胀维护</a>
     </h1>
   
 
@@ -370,7 +370,19 @@
     <div class="article-entry" itemprop="articleBody">
       
           
-              <h2 id="1-安装"><a href="#1-安装" class="headerlink" title="1. 安装"></a>1. 安装</h2><p>参考bdr官方文档<a href="bdr-project.org/docs/stable/installation.html">Chapter 3. Installation</a></p>
+              <h2 id="1-维护前"><a href="#1-维护前" class="headerlink" title="1. 维护前"></a>1. 维护前</h2><pre><code>postgres=# \d+ test
+                                                        Table
+&quot;public.test&quot;
+  Column |            Type             |                     Modifiers
+| Storage | Stats target | Description
+--------+-----------------------------+----------------------------------------------------+---------+--------------+-------------
+  id     | integer                     | not null default
+nextval(&apos;test_id_seq&apos;::regclass) | plain   |              |
+  val    | timestamp without time zone | default now()
+| plain   |              |
+Indexes:
+     &quot;test_pkey&quot; PRIMARY KEY, btree (id)
+</code></pre>
           
       
     </div>
@@ -385,12 +397,12 @@
 
       
     <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/BDR/">BDR</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PostgreSQL/">PostgreSQL</a></li></ul>
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PostgreSQL/">PostgreSQL</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/膨胀/">膨胀</a></li></ul>
     </div>
 
       
         <p class="article-more-link">
-          <a href="/2016/07/05/PostgreSQL-2016-07-05-BDR0-9-0版本测试/#more">阅读全文 >></a>
+          <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL主键膨胀维护/#more">阅读全文 >></a>
         </p>
       
       <div class="clearfix"></div>
@@ -495,6 +507,84 @@ vip-slave:  172.17.5.98
 
 
   
+    <article id="post-PostgreSQL-2016-07-05-PostgreSQL表空间的使用" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL表空间的使用/" class="article-date">
+      <time datetime="2016-07-04T16:00:00.000Z" itemprop="datePublished">2016-07-05</time>
+</a>
+
+ 
+    <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL表空间的使用/#comments" title="查看评论">
+        <i class="fa fa-comments-o" aria-hidden="true"></i>
+        <span class="count-comment"></span>
+        
+            <span class="ds-thread-count"  data-thread-key="2016/07/05/PostgreSQL-2016-07-05-PostgreSQL表空间的使用/" ></span>
+        
+        
+    </a>
+
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL表空间的使用/">PostgreSQL表空间的使用</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+              <h2 id="1-介绍"><a href="#1-介绍" class="headerlink" title="1. 介绍"></a>1. 介绍</h2><p>表空间的作用就是允许数据库管理员定义一个其他非数据目录的位置存储数据库对象。</p>
+<p>使用场景之一是,如果机器新加了ssd,但是又不够整个实例使用,可以将一些重要和使用频率高的表和索引放到ssd上,提高查询效率</p>
+          
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/PostgreSQL/">PostgreSQL</a>
+    </div>
+
+
+      
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PostgreSQL/">PostgreSQL</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/tablespace/">tablespace</a></li></ul>
+    </div>
+
+      
+        <p class="article-more-link">
+          <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL表空间的使用/#more">阅读全文 >></a>
+        </p>
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+
+  
     <article id="post-PostgreSQL-2016-07-05-PostgreSQL查看没有注释的表和字段" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
@@ -567,84 +657,6 @@ ORDER BY 1,2;
       
         <p class="article-more-link">
           <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL查看没有注释的表和字段/#more">阅读全文 >></a>
-        </p>
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-
-
-  
-    <article id="post-PostgreSQL-2016-07-05-PostgreSQL表空间的使用" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL表空间的使用/" class="article-date">
-      <time datetime="2016-07-04T16:00:00.000Z" itemprop="datePublished">2016-07-05</time>
-</a>
-
- 
-    <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL表空间的使用/#comments" title="查看评论">
-        <i class="fa fa-comments-o" aria-hidden="true"></i>
-        <span class="count-comment"></span>
-        
-            <span class="ds-thread-count"  data-thread-key="2016/07/05/PostgreSQL-2016-07-05-PostgreSQL表空间的使用/" ></span>
-        
-        
-    </a>
-
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL表空间的使用/">PostgreSQL表空间的使用</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-          
-              <h2 id="1-介绍"><a href="#1-介绍" class="headerlink" title="1. 介绍"></a>1. 介绍</h2><p>表空间的作用就是允许数据库管理员定义一个其他非数据目录的位置存储数据库对象。</p>
-<p>使用场景之一是,如果机器新加了ssd,但是又不够整个实例使用,可以将一些重要和使用频率高的表和索引放到ssd上,提高查询效率</p>
-          
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-    <div class="article-category tagcloud">
-    <a class="article-category-link" href="/categories/PostgreSQL/">PostgreSQL</a>
-    </div>
-
-
-      
-    <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PostgreSQL/">PostgreSQL</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/tablespace/">tablespace</a></li></ul>
-    </div>
-
-      
-        <p class="article-more-link">
-          <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL表空间的使用/#more">阅读全文 >></a>
         </p>
       
       <div class="clearfix"></div>

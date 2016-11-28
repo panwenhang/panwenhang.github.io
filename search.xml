@@ -30,79 +30,46 @@
     </entry>
     
     <entry>
-      <title><![CDATA[BDR0.9.0版本测试]]></title>
-      <url>http://panwenhang.github.io/2016/07/05/PostgreSQL-2016-07-05-BDR0-9-0%E7%89%88%E6%9C%AC%E6%B5%8B%E8%AF%95/</url>
-      <content type="html"><![CDATA[<h2 id="1-安装"><a href="#1-安装" class="headerlink" title="1. 安装"></a>1. 安装</h2><p>参考bdr官方文档<a href="bdr-project.org/docs/stable/installation.html">Chapter 3. Installation</a></p>
-<a id="more"></a>
-<h2 id="2-配置"><a href="#2-配置" class="headerlink" title="2. 配置"></a>2. 配置</h2><p>先initdb,然后修改配置postgresql.conf:</p>
-<pre><code>#必须的配置:
-shared_preload_libraries = &apos;bdr&apos;
-track_commit_timestamp = on
-wal_level = &apos;logical&apos;
-max_replication_slots = 30
-max_wal_senders = 10
-#可选的:
-#bdr.synchronous_commit = on
-#bdr.log_conflicts_to_table = on
-#bdr.max_workers = 512MB
-#max_worker_processes = 50
-</code></pre><p>配置pg_hba.conf,然后启动实例:</p>
-<pre><code>local   replication     postgres                                md5
-host    all             all             xxx.xxx.xxx.xxx/32       md5
-host    replication     postgres        xxx.xxx.xxx.xxx/32       md5
-</code></pre><p>配置.pgpass</p>
-<pre><code>xxx.xxx.xxx.xxx:5432:*:postgres:xxxxxxxxxxxxxxxxxxxxxxxx
-</code></pre><h2 id="3-初始化第一个节点"><a href="#3-初始化第一个节点" class="headerlink" title="3. 初始化第一个节点"></a>3. 初始化第一个节点</h2><p>进入PostgreSQL后执行:</p>
-<pre><code>bdr=# create extension btree_gist;
-bdr=# create extension bdr;
-bdr=# select bdr.bdr_group_create(
-    local_node_name := &apos;node1&apos;,
-    node_external_dsn := &apos;host=node1_ip dbname=bdr port=5432&apos;
-);
-</code></pre><p>然后你能看见第一个节点已经准备好了:</p>
-<pre><code>bdr=# select * from bdr.bdr_nodes ;
-node_sysid      | node_timeline | node_dboid | node_status | node_name |              node_local_dsn              | node_init_from_dsn
----------------------+---------------+------------+-------------+-----------+------------------------------------------+--------------------
- 6139739409922254460 |             1 |      16384 | r           | node1     | host=node1_ip dbname=bdr port=5432  |
-(1 row)
-</code></pre><h2 id="4-新节点的创建"><a href="#4-新节点的创建" class="headerlink" title="4. 新节点的创建"></a>4. 新节点的创建</h2><h3 id="1-逻辑克隆-initdb-pg-dumpall"><a href="#1-逻辑克隆-initdb-pg-dumpall" class="headerlink" title="(1) 逻辑克隆:initdb + pg_dumpall"></a>(1) 逻辑克隆:initdb + pg_dumpall</h3><blockquote>
-<ul>
-<li>1) 初始化实例:执行第一步和第二步</li>
-<li>2) 使用pg_dumpall从第一个节点复制数据,这个过程需要集群只读,否则数据就不一致了</li>
-<li>3) 在pg里面执行:</li>
-</ul>
-</blockquote>
-<pre><code>bdr=# create extension btree_gist;
-bdr=# create extension bdr;
-bdr=#  select bdr.bdr_group_join(
-    local_node_name := &apos;node2&apos;,
-    node_external_dsn := &apos;dbname=bdr host=node2_ip user=postgres port=5432&apos;,
-    join_using_dsn := &apos;dbname=bdr host=node1_ip user=postgres port=5432&apos;
-);
-</code></pre><p>查看是否加入成功:</p>
-<pre><code>bdr=# select * from bdr.bdr_nodes ;
-     node_sysid      | node_timeline | node_dboid | node_status | node_name |                     node_local_dsn                     |                   node_init_from_dsn
----------------------+---------------+------------+-------------+-----------+--------------------------------------------------------+--------------------------------------------------------
- 6139739409922254460 |             1 |      16384 | r           | node1     | host=node1_ip dbname=bdr port=5432                     |
- 6139757325958541519 |             1 |      16384 | r           | node2     | dbname=bdr host=node2_ip user=postgres port=5432       | dbname=bdr host=node1_ip user=postgres port=5432
-(2 rows)
-
-bdr=# select * from pg_replication_slots ;
-                slot_name                | plugin | slot_type | datoid | database | active | xmin | catalog_xmin | restart_lsn
------------------------------------------+--------+-----------+--------+----------+--------+------+--------------+-------------
- bdr_16384_6139739409922254460_1_16384__ | bdr    | logical   |  16384 | bdr      | t      |      |         1839 | 0/18E24A0
-(1 row)
-
-bdr=# select * from pg_stat_replication ;
-  pid  | usesysid | usename  |              application_name              |  client_addr   | client_hostname | client_port |         backend_start         | backend_xmin |   state   | sent_location | write_location | flush_location | replay_location | sync_priority | sync_state
--------+----------+----------+--------------------------------------------+----------------+-----------------+-------------+-------------------------------+--------------+-----------+---------------+----------------+----------------+-----------------+---------------+------------
- 25028 |       10 | postgres | bdr (6139739409922254460,1,16384,):receive | node1_ip       |                 |       52095 | 2015-04-20 09:56:34.211347+00 |              | streaming | 0/18E24D8     | 0/18E24D8      |             0/18E24D8      | 0/18E24D8       |            0  | async
-(1 row)
-</code></pre><h3 id="2-物理克隆-pg-basebackup-bdr-init-copy"><a href="#2-物理克隆-pg-basebackup-bdr-init-copy" class="headerlink" title="(2) 物理克隆:pg_basebackup + bdr_init_copy"></a>(2) 物理克隆:pg_basebackup + bdr_init_copy</h3><p>获取基础备份:</p>
-<pre><code>$ /opt/pg94-bdr/bin/pg_basebackup -h node1_ip -p 5432  -X stream -D PG_DATA
-</code></pre><p>bdr_init_copy:</p>
-<pre><code>$ /opt/pg94-bdr/bin/bdr_init_copy -d &quot;host=node1_ip dbname=bdr port=5432&quot; --local-dbname=&quot;host=node2_ip dbname=bdr port=5432&quot; -n node2 -D PG_DATA
-</code></pre>]]></content>
+      <title><![CDATA[PostgreSQL主键膨胀维护]]></title>
+      <url>http://panwenhang.github.io/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL%E4%B8%BB%E9%94%AE%E8%86%A8%E8%83%80%E7%BB%B4%E6%8A%A4/</url>
+      <content type="html"><![CDATA[<h2 id="1-维护前"><a href="#1-维护前" class="headerlink" title="1. 维护前"></a>1. 维护前</h2><pre><code>postgres=# \d+ test
+                                                        Table
+&quot;public.test&quot;
+  Column |            Type             |                     Modifiers
+| Storage | Stats target | Description
+--------+-----------------------------+----------------------------------------------------+---------+--------------+-------------
+  id     | integer                     | not null default
+nextval(&apos;test_id_seq&apos;::regclass) | plain   |              |
+  val    | timestamp without time zone | default now()
+| plain   |              |
+Indexes:
+     &quot;test_pkey&quot; PRIMARY KEY, btree (id)
+</code></pre><a id="more"></a>
+<h2 id="2-创建新的unique-index"><a href="#2-创建新的unique-index" class="headerlink" title="2. 创建新的unique index"></a>2. 创建新的unique index</h2><pre><code>postgres=# CREATE UNIQUE INDEX CONCURRENTLY ON test USING btree(id);
+CREATE INDEX
+</code></pre><h2 id="3-替换主键"><a href="#3-替换主键" class="headerlink" title="3. 替换主键"></a>3. 替换主键</h2><pre><code>postgres=# BEGIN;
+BEGIN
+postgres=# ALTER TABLE test DROP CONSTRAINT test_pkey;
+ALTER TABLE
+postgres=# ALTER TABLE test ADD CONSTRAINT test_id_idx PRIMARY KEY USING
+INDEX test_id_idx;
+ALTER TABLE
+postgres=# COMMIT;
+COMMIT
+</code></pre><h2 id="4-维护后"><a href="#4-维护后" class="headerlink" title="4. 维护后"></a>4. 维护后</h2><pre><code>postgres=# \d+ test
+                                                        Table
+&quot;public.test&quot;
+  Column |            Type             |                     Modifiers
+| Storage | Stats target | Description
+--------+-----------------------------+----------------------------------------------------+---------+--------------+-------------
+  id     | integer                     | not null default
+nextval(&apos;test_id_seq&apos;::regclass) | plain   |              |
+  val    | timestamp without time zone | default now()
+| plain   |              |
+Indexes:
+     &quot;test_id_idx&quot; PRIMARY KEY, btree (id)
+</code></pre><p>这样的好处是,可以在白天负载低的时候维护主键</p>
+]]></content>
     </entry>
     
     <entry>
@@ -380,44 +347,6 @@ postgres=# select * from pg_stat_replication ;
     </entry>
     
     <entry>
-      <title><![CDATA[PostgreSQL查看没有注释的表和字段]]></title>
-      <url>http://panwenhang.github.io/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL%E6%9F%A5%E7%9C%8B%E6%B2%A1%E6%9C%89%E6%B3%A8%E9%87%8A%E7%9A%84%E8%A1%A8%E5%92%8C%E5%AD%97%E6%AE%B5/</url>
-      <content type="html"><![CDATA[<h2 id="查看没有注释的表"><a href="#查看没有注释的表" class="headerlink" title="查看没有注释的表"></a>查看没有注释的表</h2><pre><code>SELECT n.nspname as &quot;Schema&quot;,
-    c.relname as &quot;Name&quot;,
-    pg_catalog.obj_description(c.oid, &apos;pg_class&apos;) as &quot;Description&quot;
-FROM pg_catalog.pg_class c
-LEFT JOIN pg_catalog.pg_namespace n
-ON n.oid = c.relnamespace
-WHERE c.relkind IN (&apos;r&apos;,&apos;&apos;)
-    AND n.nspname &lt;&gt; &apos;pg_catalog&apos;
-    AND n.nspname &lt;&gt; &apos;information_schema&apos;
-    AND n.nspname !~ &apos;^pg_toast&apos;
-    AND pg_catalog.pg_table_is_visible(c.oid)
-    AND pg_catalog.obj_description(c.oid, &apos;pg_class&apos;) is null
-ORDER BY 1,2;
-</code></pre><a id="more"></a>
-<h2 id="查看没有注释的字段"><a href="#查看没有注释的字段" class="headerlink" title="查看没有注释的字段"></a>查看没有注释的字段</h2><pre><code>SELECT b.nspname, b.relname, a.attname, pg_catalog.format_type(a.atttypid, a.atttypmod),
-  pg_catalog.col_description(a.attrelid, a.attnum)
-FROM pg_catalog.pg_attribute a,
-    (SELECT n.nspname, c.relname, c.oid
-    FROM pg_catalog.pg_class c
-    LEFT JOIN pg_catalog.pg_namespace n
-    ON n.oid = c.relnamespace
-    WHERE c.relkind IN (&apos;r&apos;,&apos;&apos;)
-        AND n.nspname &lt;&gt; &apos;pg_catalog&apos;
-        AND n.nspname &lt;&gt; &apos;information_schema&apos;
-        AND n.nspname !~ &apos;^pg_toast&apos;
-        AND pg_catalog.pg_table_is_visible(c.oid)
-    ) b
-WHERE a.attrelid = b.oid
-    AND a.attnum &gt; 0
-    AND NOT a.attisdropped
-    AND pg_catalog.col_description(a.attrelid, a.attnum) is null
-ORDER BY a.attrelid, a.attname;
-</code></pre>]]></content>
-    </entry>
-    
-    <entry>
       <title><![CDATA[PostgreSQL表空间的使用]]></title>
       <url>http://panwenhang.github.io/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL%E8%A1%A8%E7%A9%BA%E9%97%B4%E7%9A%84%E4%BD%BF%E7%94%A8/</url>
       <content type="html"><![CDATA[<h2 id="1-介绍"><a href="#1-介绍" class="headerlink" title="1. 介绍"></a>1. 介绍</h2><p>表空间的作用就是允许数据库管理员定义一个其他非数据目录的位置存储数据库对象。</p>
@@ -504,6 +433,44 @@ postgres=# select pg_relation_filepath(&apos;table_a_id_idx&apos;);
 ----------------------------------------------
  pg_tblspc/17030/PG_9.4_201409291/13003/17042
 (1 row)
+</code></pre>]]></content>
+    </entry>
+    
+    <entry>
+      <title><![CDATA[PostgreSQL查看没有注释的表和字段]]></title>
+      <url>http://panwenhang.github.io/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL%E6%9F%A5%E7%9C%8B%E6%B2%A1%E6%9C%89%E6%B3%A8%E9%87%8A%E7%9A%84%E8%A1%A8%E5%92%8C%E5%AD%97%E6%AE%B5/</url>
+      <content type="html"><![CDATA[<h2 id="查看没有注释的表"><a href="#查看没有注释的表" class="headerlink" title="查看没有注释的表"></a>查看没有注释的表</h2><pre><code>SELECT n.nspname as &quot;Schema&quot;,
+    c.relname as &quot;Name&quot;,
+    pg_catalog.obj_description(c.oid, &apos;pg_class&apos;) as &quot;Description&quot;
+FROM pg_catalog.pg_class c
+LEFT JOIN pg_catalog.pg_namespace n
+ON n.oid = c.relnamespace
+WHERE c.relkind IN (&apos;r&apos;,&apos;&apos;)
+    AND n.nspname &lt;&gt; &apos;pg_catalog&apos;
+    AND n.nspname &lt;&gt; &apos;information_schema&apos;
+    AND n.nspname !~ &apos;^pg_toast&apos;
+    AND pg_catalog.pg_table_is_visible(c.oid)
+    AND pg_catalog.obj_description(c.oid, &apos;pg_class&apos;) is null
+ORDER BY 1,2;
+</code></pre><a id="more"></a>
+<h2 id="查看没有注释的字段"><a href="#查看没有注释的字段" class="headerlink" title="查看没有注释的字段"></a>查看没有注释的字段</h2><pre><code>SELECT b.nspname, b.relname, a.attname, pg_catalog.format_type(a.atttypid, a.atttypmod),
+  pg_catalog.col_description(a.attrelid, a.attnum)
+FROM pg_catalog.pg_attribute a,
+    (SELECT n.nspname, c.relname, c.oid
+    FROM pg_catalog.pg_class c
+    LEFT JOIN pg_catalog.pg_namespace n
+    ON n.oid = c.relnamespace
+    WHERE c.relkind IN (&apos;r&apos;,&apos;&apos;)
+        AND n.nspname &lt;&gt; &apos;pg_catalog&apos;
+        AND n.nspname &lt;&gt; &apos;information_schema&apos;
+        AND n.nspname !~ &apos;^pg_toast&apos;
+        AND pg_catalog.pg_table_is_visible(c.oid)
+    ) b
+WHERE a.attrelid = b.oid
+    AND a.attnum &gt; 0
+    AND NOT a.attisdropped
+    AND pg_catalog.col_description(a.attrelid, a.attnum) is null
+ORDER BY a.attrelid, a.attname;
 </code></pre>]]></content>
     </entry>
     
@@ -1589,46 +1556,79 @@ ush_location | replay_location | sync_priority | sync_state
     </entry>
     
     <entry>
-      <title><![CDATA[PostgreSQL主键膨胀维护]]></title>
-      <url>http://panwenhang.github.io/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL%E4%B8%BB%E9%94%AE%E8%86%A8%E8%83%80%E7%BB%B4%E6%8A%A4/</url>
-      <content type="html"><![CDATA[<h2 id="1-维护前"><a href="#1-维护前" class="headerlink" title="1. 维护前"></a>1. 维护前</h2><pre><code>postgres=# \d+ test
-                                                        Table
-&quot;public.test&quot;
-  Column |            Type             |                     Modifiers
-| Storage | Stats target | Description
---------+-----------------------------+----------------------------------------------------+---------+--------------+-------------
-  id     | integer                     | not null default
-nextval(&apos;test_id_seq&apos;::regclass) | plain   |              |
-  val    | timestamp without time zone | default now()
-| plain   |              |
-Indexes:
-     &quot;test_pkey&quot; PRIMARY KEY, btree (id)
-</code></pre><a id="more"></a>
-<h2 id="2-创建新的unique-index"><a href="#2-创建新的unique-index" class="headerlink" title="2. 创建新的unique index"></a>2. 创建新的unique index</h2><pre><code>postgres=# CREATE UNIQUE INDEX CONCURRENTLY ON test USING btree(id);
-CREATE INDEX
-</code></pre><h2 id="3-替换主键"><a href="#3-替换主键" class="headerlink" title="3. 替换主键"></a>3. 替换主键</h2><pre><code>postgres=# BEGIN;
-BEGIN
-postgres=# ALTER TABLE test DROP CONSTRAINT test_pkey;
-ALTER TABLE
-postgres=# ALTER TABLE test ADD CONSTRAINT test_id_idx PRIMARY KEY USING
-INDEX test_id_idx;
-ALTER TABLE
-postgres=# COMMIT;
-COMMIT
-</code></pre><h2 id="4-维护后"><a href="#4-维护后" class="headerlink" title="4. 维护后"></a>4. 维护后</h2><pre><code>postgres=# \d+ test
-                                                        Table
-&quot;public.test&quot;
-  Column |            Type             |                     Modifiers
-| Storage | Stats target | Description
---------+-----------------------------+----------------------------------------------------+---------+--------------+-------------
-  id     | integer                     | not null default
-nextval(&apos;test_id_seq&apos;::regclass) | plain   |              |
-  val    | timestamp without time zone | default now()
-| plain   |              |
-Indexes:
-     &quot;test_id_idx&quot; PRIMARY KEY, btree (id)
-</code></pre><p>这样的好处是,可以在白天负载低的时候维护主键</p>
-]]></content>
+      <title><![CDATA[BDR0.9.0版本测试]]></title>
+      <url>http://panwenhang.github.io/2016/07/05/PostgreSQL-2016-07-05-BDR0-9-0%E7%89%88%E6%9C%AC%E6%B5%8B%E8%AF%95/</url>
+      <content type="html"><![CDATA[<h2 id="1-安装"><a href="#1-安装" class="headerlink" title="1. 安装"></a>1. 安装</h2><p>参考bdr官方文档<a href="bdr-project.org/docs/stable/installation.html">Chapter 3. Installation</a></p>
+<a id="more"></a>
+<h2 id="2-配置"><a href="#2-配置" class="headerlink" title="2. 配置"></a>2. 配置</h2><p>先initdb,然后修改配置postgresql.conf:</p>
+<pre><code>#必须的配置:
+shared_preload_libraries = &apos;bdr&apos;
+track_commit_timestamp = on
+wal_level = &apos;logical&apos;
+max_replication_slots = 30
+max_wal_senders = 10
+#可选的:
+#bdr.synchronous_commit = on
+#bdr.log_conflicts_to_table = on
+#bdr.max_workers = 512MB
+#max_worker_processes = 50
+</code></pre><p>配置pg_hba.conf,然后启动实例:</p>
+<pre><code>local   replication     postgres                                md5
+host    all             all             xxx.xxx.xxx.xxx/32       md5
+host    replication     postgres        xxx.xxx.xxx.xxx/32       md5
+</code></pre><p>配置.pgpass</p>
+<pre><code>xxx.xxx.xxx.xxx:5432:*:postgres:xxxxxxxxxxxxxxxxxxxxxxxx
+</code></pre><h2 id="3-初始化第一个节点"><a href="#3-初始化第一个节点" class="headerlink" title="3. 初始化第一个节点"></a>3. 初始化第一个节点</h2><p>进入PostgreSQL后执行:</p>
+<pre><code>bdr=# create extension btree_gist;
+bdr=# create extension bdr;
+bdr=# select bdr.bdr_group_create(
+    local_node_name := &apos;node1&apos;,
+    node_external_dsn := &apos;host=node1_ip dbname=bdr port=5432&apos;
+);
+</code></pre><p>然后你能看见第一个节点已经准备好了:</p>
+<pre><code>bdr=# select * from bdr.bdr_nodes ;
+node_sysid      | node_timeline | node_dboid | node_status | node_name |              node_local_dsn              | node_init_from_dsn
+---------------------+---------------+------------+-------------+-----------+------------------------------------------+--------------------
+ 6139739409922254460 |             1 |      16384 | r           | node1     | host=node1_ip dbname=bdr port=5432  |
+(1 row)
+</code></pre><h2 id="4-新节点的创建"><a href="#4-新节点的创建" class="headerlink" title="4. 新节点的创建"></a>4. 新节点的创建</h2><h3 id="1-逻辑克隆-initdb-pg-dumpall"><a href="#1-逻辑克隆-initdb-pg-dumpall" class="headerlink" title="(1) 逻辑克隆:initdb + pg_dumpall"></a>(1) 逻辑克隆:initdb + pg_dumpall</h3><blockquote>
+<ul>
+<li>1) 初始化实例:执行第一步和第二步</li>
+<li>2) 使用pg_dumpall从第一个节点复制数据,这个过程需要集群只读,否则数据就不一致了</li>
+<li>3) 在pg里面执行:</li>
+</ul>
+</blockquote>
+<pre><code>bdr=# create extension btree_gist;
+bdr=# create extension bdr;
+bdr=#  select bdr.bdr_group_join(
+    local_node_name := &apos;node2&apos;,
+    node_external_dsn := &apos;dbname=bdr host=node2_ip user=postgres port=5432&apos;,
+    join_using_dsn := &apos;dbname=bdr host=node1_ip user=postgres port=5432&apos;
+);
+</code></pre><p>查看是否加入成功:</p>
+<pre><code>bdr=# select * from bdr.bdr_nodes ;
+     node_sysid      | node_timeline | node_dboid | node_status | node_name |                     node_local_dsn                     |                   node_init_from_dsn
+---------------------+---------------+------------+-------------+-----------+--------------------------------------------------------+--------------------------------------------------------
+ 6139739409922254460 |             1 |      16384 | r           | node1     | host=node1_ip dbname=bdr port=5432                     |
+ 6139757325958541519 |             1 |      16384 | r           | node2     | dbname=bdr host=node2_ip user=postgres port=5432       | dbname=bdr host=node1_ip user=postgres port=5432
+(2 rows)
+
+bdr=# select * from pg_replication_slots ;
+                slot_name                | plugin | slot_type | datoid | database | active | xmin | catalog_xmin | restart_lsn
+-----------------------------------------+--------+-----------+--------+----------+--------+------+--------------+-------------
+ bdr_16384_6139739409922254460_1_16384__ | bdr    | logical   |  16384 | bdr      | t      |      |         1839 | 0/18E24A0
+(1 row)
+
+bdr=# select * from pg_stat_replication ;
+  pid  | usesysid | usename  |              application_name              |  client_addr   | client_hostname | client_port |         backend_start         | backend_xmin |   state   | sent_location | write_location | flush_location | replay_location | sync_priority | sync_state
+-------+----------+----------+--------------------------------------------+----------------+-----------------+-------------+-------------------------------+--------------+-----------+---------------+----------------+----------------+-----------------+---------------+------------
+ 25028 |       10 | postgres | bdr (6139739409922254460,1,16384,):receive | node1_ip       |                 |       52095 | 2015-04-20 09:56:34.211347+00 |              | streaming | 0/18E24D8     | 0/18E24D8      |             0/18E24D8      | 0/18E24D8       |            0  | async
+(1 row)
+</code></pre><h3 id="2-物理克隆-pg-basebackup-bdr-init-copy"><a href="#2-物理克隆-pg-basebackup-bdr-init-copy" class="headerlink" title="(2) 物理克隆:pg_basebackup + bdr_init_copy"></a>(2) 物理克隆:pg_basebackup + bdr_init_copy</h3><p>获取基础备份:</p>
+<pre><code>$ /opt/pg94-bdr/bin/pg_basebackup -h node1_ip -p 5432  -X stream -D PG_DATA
+</code></pre><p>bdr_init_copy:</p>
+<pre><code>$ /opt/pg94-bdr/bin/bdr_init_copy -d &quot;host=node1_ip dbname=bdr port=5432&quot; --local-dbname=&quot;host=node2_ip dbname=bdr port=5432&quot; -n node2 -D PG_DATA
+</code></pre>]]></content>
     </entry>
     
     <entry>
@@ -2772,191 +2772,94 @@ Daemon Status:
     </entry>
     
     <entry>
-      <title><![CDATA[HP机器RAID和LVM创建]]></title>
-      <url>http://panwenhang.github.io/2016/06/30/Linux-2016-06-30-HP%E6%9C%BA%E5%99%A8RAID%E5%92%8CLVM%E5%88%9B%E5%BB%BA/</url>
-      <content type="html"><![CDATA[<h2 id="1-环境"><a href="#1-环境" class="headerlink" title="1.环境"></a>1.环境</h2><pre><code>[root@localhost ~]# uname -a
-Linux localhost.localdomain 2.6.32-220.el6.x86_64 #1 SMP Tue Dec 6 19:48:22 GMT 2011 x86_64 x86_64 x86_64 GNU/Linux
-[root@localhost ~]# cat /etc/issue
-CentOS release 6.7 (Final)
-Kernel \r on an \m
-[root@localhost ~]# dmidecode -t bios
-# dmidecode 2.12
-SMBIOS 2.7 present.
-</code></pre><a id="more"></a>
-<pre><code>Handle 0x0000, DMI type 0, 24 bytes
-BIOS Information
-        Vendor: HP
-        Version: P71
-        Release Date: 03/01/2013
-        Address: 0xF0000
-        Runtime Size: 64 kB
-        ROM Size: 8192 kB
-</code></pre><h2 id="2-安装HP磁盘管理工具"><a href="#2-安装HP磁盘管理工具" class="headerlink" title="2.安装HP磁盘管理工具"></a>2.安装HP磁盘管理工具</h2><pre><code>[root@localhost ~]# rpm -ivh http://mirror.nforce.com/pub/software/raidtools/hpacucli-tool/hpacucli-9.40-12.0.x86_64.rpm
-</code></pre><h2 id="3-配置RAID"><a href="#3-配置RAID" class="headerlink" title="3.配置RAID"></a>3.配置RAID</h2><h3 id="1-产看当前RAID状态"><a href="#1-产看当前RAID状态" class="headerlink" title="(1) 产看当前RAID状态"></a>(1) 产看当前RAID状态</h3><pre><code>[root@localhost ~]# hpacucli ctrl all show status
-
-Smart Array P420i in Slot 0 (Embedded)
-   Controller Status: OK
-   Cache Status: OK
-   Battery/Capacitor Status: OK
-
-[root@localhost ~]# hpacucli ctrl all show config
-
-Smart Array P420i in Slot 0 (Embedded)    (sn: 500143802626A660)
-
-   array A (SAS, Unused Space: 0  MB)
-
-
-      logicaldrive 1 (558.9 GB, RAID 1, OK)
-
-      physicaldrive 1I:1:1 (port 1I:box 1:bay 1, SAS, 600 GB, OK)
-      physicaldrive 1I:1:2 (port 1I:box 1:bay 2, SAS, 600 GB, OK)
-
-   unassigned
-
-      physicaldrive 1I:1:3 (port 1I:box 1:bay 3, SAS, 600 GB, OK)
-      physicaldrive 1I:1:4 (port 1I:box 1:bay 4, SAS, 600 GB, OK)
-      physicaldrive 2I:1:5 (port 2I:box 1:bay 5, SAS, 600 GB, OK)
-      physicaldrive 2I:1:6 (port 2I:box 1:bay 6, SAS, 600 GB, OK)
-
-   SEP (Vendor ID PMCSIERA, Model SRCv8x6G) 380 (WWID: 500143802626A66F)
-</code></pre><p>发现有两块盘做了RAID 1, 剩下4块盘没有做RAID。。</p>
-<h2 id="2-创建RAID"><a href="#2-创建RAID" class="headerlink" title="(2) 创建RAID"></a>(2) 创建RAID</h2><pre><code>[root@localhost ~]# hpacucli ctrl slot=0 create type=ld drives=1I:1:3,1I:1:4,2I:1:5,2I:1:6 raid=1+0
-[root@localhost ~]# hpacucli ctrl all show config
-
-Smart Array P420i in Slot 0 (Embedded)    (sn: 500143802626A660)
-
-   array A (SAS, Unused Space: 0  MB)
-
-
-      logicaldrive 1 (558.9 GB, RAID 1, OK)
-
-      physicaldrive 1I:1:1 (port 1I:box 1:bay 1, SAS, 600 GB, OK)
-      physicaldrive 1I:1:2 (port 1I:box 1:bay 2, SAS, 600 GB, OK)
-
-   array B (SAS, Unused Space: 0  MB)
-
-
-      logicaldrive 2 (1.1 TB, RAID 1+0, OK)
-
-      physicaldrive 1I:1:3 (port 1I:box 1:bay 3, SAS, 600 GB, OK)
-      physicaldrive 1I:1:4 (port 1I:box 1:bay 4, SAS, 600 GB, OK)
-      physicaldrive 2I:1:5 (port 2I:box 1:bay 5, SAS, 600 GB, OK)
-      physicaldrive 2I:1:6 (port 2I:box 1:bay 6, SAS, 600 GB, OK)
-
-   SEP (Vendor ID PMCSIERA, Model SRCv8x6G) 380 (WWID: 500143802626A66F)
-</code></pre><p>为剩下的4块盘创建了一个RAID 1+0</p>
-<h2 id="4-配置LVM"><a href="#4-配置LVM" class="headerlink" title="4.配置LVM"></a>4.配置LVM</h2><h3 id="1-创建分区"><a href="#1-创建分区" class="headerlink" title="(1) 创建分区"></a>(1) 创建分区</h3><pre><code>[root@localhost ~]# cfdisk /dev/sdb
-</code></pre><h3 id="2-创建物理卷"><a href="#2-创建物理卷" class="headerlink" title="(2) 创建物理卷"></a>(2) 创建物理卷</h3><pre><code>[root@localhost ~]# pvs
-  PV         VG       Fmt  Attr PSize   PFree
-  /dev/sda2  VolGroup lvm2 a--  558.39g    0
-[root@localhost ~]# pvcreate /dev/sdb1
-  Physical volume &quot;/dev/sdb1&quot; successfully created
-[root@localhost ~]# pvs
-  PV         VG       Fmt  Attr PSize   PFree
-  /dev/sda2  VolGroup lvm2 a--  558.39g    0
-  /dev/sdb1           lvm2 ---    1.09t 1.09t
-</code></pre><h3 id="3-将创建的物理卷添加到卷组"><a href="#3-将创建的物理卷添加到卷组" class="headerlink" title="(3) 将创建的物理卷添加到卷组"></a>(3) 将创建的物理卷添加到卷组</h3><pre><code>[root@localhost ~]# vgs
-  VG       #PV #LV #SN Attr   VSize   VFree
-  VolGroup   1   3   0 wz--n- 558.39g    0
-[root@localhost ~]# vgextend VolGroup /dev/sdb1
-  Volume group &quot;VolGroup&quot; successfully extended
-[root@localhost ~]# vgs
-  VG       #PV #LV #SN Attr   VSize VFree
-  VolGroup   2   3   0 wz--n- 1.64t 1.09t
-</code></pre><h3 id="4-创建逻辑卷"><a href="#4-创建逻辑卷" class="headerlink" title="(4) 创建逻辑卷"></a>(4) 创建逻辑卷</h3><pre><code>[root@localhost ~]# lvs
-  LV      VG       Attr       LSize   Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert
-  lv_home VolGroup -wi-ao---- 380.25g
-  lv_root VolGroup -wi-ao----  50.00g
-  lv_swap VolGroup -wi-ao---- 128.14g
-[root@localhost ~]# lvcreate -L 1T -n lv_data VolGroup
-  Logical volume &quot;lv_data&quot; created.
-[root@localhost ~]# lvs
-  LV      VG       Attr       LSize   Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert
-  lv_data VolGroup -wi-a-----   1.00t
-  lv_home VolGroup -wi-ao---- 380.25g
-  lv_root VolGroup -wi-ao----  50.00g
-  lv_swap VolGroup -wi-ao---- 128.14g
-</code></pre><h2 id="5-格式化使用"><a href="#5-格式化使用" class="headerlink" title="5.格式化使用"></a>5.格式化使用</h2><h3 id="1-格式化"><a href="#1-格式化" class="headerlink" title="(1) 格式化"></a>(1) 格式化</h3><pre><code>[root@localhost ~]#  mkfs.ext4 /dev/VolGroup/lv_data
-mke2fs 1.41.12 (17-May-2010)
-Filesystem label=
-OS type: Linux
-Block size=4096 (log=2)
-Fragment size=4096 (log=2)
-Stride=64 blocks, Stripe width=128 blocks
-67108864 inodes, 268435456 blocks
-13421772 blocks (5.00%) reserved for the super user
-First data block=0
-Maximum filesystem blocks=4294967296
-8192 block groups
-32768 blocks per group, 32768 fragments per group
-8192 inodes per group
-Superblock backups stored on blocks:
-        32768, 98304, 163840, 229376, 294912, 819200, 884736, 1605632, 2654208,
-        4096000, 7962624, 11239424, 20480000, 23887872, 71663616, 78675968,
-        102400000, 214990848
-
-Writing inode tables: done
-Creating journal (32768 blocks): done
-Writing superblocks and filesystem accounting information: done
-
-This filesystem will be automatically checked every 28 mounts or
-180 days, whichever comes first.  Use tune2fs -c or -i to override.
-[root@localhost ~]#  e2fsck -f /dev/VolGroup/lv_data
-e2fsck 1.41.12 (17-May-2010)
-Pass 1: Checking inodes, blocks, and sizes
-Pass 2: Checking directory structure
-Pass 3: Checking directory connectivity
-Pass 4: Checking reference counts
-Pass 5: Checking group summary information
-/dev/VolGroup/lv_data: 11/67108864 files (0.0% non-contiguous), 4262937/268435456 blocks
-</code></pre><h3 id="2-挂载"><a href="#2-挂载" class="headerlink" title="(2) 挂载"></a>(2) 挂载</h3><pre><code>[root@localhost ~]# df -h
-Filesystem            Size  Used Avail Use% Mounted on
-/dev/mapper/VolGroup-lv_root
-                       50G  5.1G   42G  11% /
-tmpfs                  63G     0   63G   0% /dev/shm
-/dev/sda1             485M   67M  393M  15% /boot
-/dev/mapper/VolGroup-lv_home
-                      375G  192G  164G  55% /home
-[root@localhost ~]# mkdir -p /data
-[root@localhost ~]# mount -t ext4 /dev/VolGroup/lv_data /data
-[root@localhost ~]# df -h
-Filesystem            Size  Used Avail Use% Mounted on
-/dev/mapper/VolGroup-lv_root
-                       50G  5.1G   42G  11% /
-tmpfs                  63G     0   63G   0% /dev/shm
-/dev/sda1             485M   67M  393M  15% /boot
-/dev/mapper/VolGroup-lv_home
-                      375G  192G  164G  55% /home
-/dev/mapper/VolGroup-lv_data
-                     1008G  200M  957G   1% /data
-</code></pre><h2 id="6-参考"><a href="#6-参考" class="headerlink" title="6.参考"></a>6.参考</h2><p><a href="http://www.datadisk.co.uk/html_docs/redhat/hpacucli.htm" target="_blank" rel="external">http://www.datadisk.co.uk/html_docs/redhat/hpacucli.htm</a></p>
-]]></content>
-    </entry>
-    
-    <entry>
-      <title><![CDATA[部署Docker下打包环境]]></title>
-      <url>http://panwenhang.github.io/2016/06/30/Linux-2016-06-30-%E9%83%A8%E7%BD%B2Docker%E4%B8%8B%E6%89%93%E5%8C%85%E7%8E%AF%E5%A2%83/</url>
-      <content type="html"><![CDATA[<h2 id="1-镜像"><a href="#1-镜像" class="headerlink" title="1. 镜像"></a>1. 镜像</h2><h3 id="1-Dockerfile"><a href="#1-Dockerfile" class="headerlink" title="(1) Dockerfile"></a>(1) Dockerfile</h3><p>由于Docker Client会默认发送Dockerfile同级目录下的所有文件到Dockerdaemon中,所以建议把Dockerfile放在一个空文件夹或者比较小的文件夹中。</p>
-<pre><code>FROM centos:6
-MAINTAINER panwenhang &quot;panwenhang92@gmail.com&quot;
-</code></pre><a id="more"></a>
-<pre><code>RUN yum -q -y update
-RUN yum install -q -y rpm-build  git subversion tar gcc g++ make vim-common vim-enhanced wget
-RUN yum install -q -y libxml2-devel libxslt-devel uuid-devel readline-devel
-RUN yum install -q -y perl-ExtUtils-Embed libxml2 libxslt readline uuid
-</code></pre><h3 id="2-创建镜像"><a href="#2-创建镜像" class="headerlink" title="(2) 创建镜像"></a>(2) 创建镜像</h3><pre><code>$ sudo docker build --rm -t rpmbuild:centos6 .
-</code></pre><h3 id="3-确认"><a href="#3-确认" class="headerlink" title="(3) 确认"></a>(3) 确认</h3><pre><code>$ sudo docker images
-REPOSITORY          TAG                 IMAGE ID            CREATED             VIRTUAL SIZE
-rpmbuild            centos6             2f14e12b1008        14 minutes ago      296.5 MB
-</code></pre><h2 id="2-容器"><a href="#2-容器" class="headerlink" title="2. 容器"></a>2. 容器</h2><h3 id="1-创建"><a href="#1-创建" class="headerlink" title="(1) 创建"></a>(1) 创建</h3><pre><code>$ sudo docker run -itd -h rpmbuild_centos6 --name=rpmbuild_centos6 -v /data/rpmbuild/:/data/rpmbuild/:rw rpmbuild:centos6 /bin/bash
-</code></pre><h3 id="2-确认"><a href="#2-确认" class="headerlink" title="(2) 确认"></a>(2) 确认</h3><pre><code>$ sudo docker ps -a
-CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
-b1041bc9086c        rpmbuild:centos6    &quot;/bin/bash&quot;         About an hour ago   Up 22 minutes                           rpmbuild_centos6
-</code></pre><h2 id="3-运行"><a href="#3-运行" class="headerlink" title="3. 运行"></a>3. 运行</h2><pre><code>$ sudo docker start rpmbuild_centos6
-$ sudo docker exec -it rpmbuild_centos6 /bin/bash
-</code></pre><p>然后就可以正常打包了</p>
-<h2 id="4-备份和恢复"><a href="#4-备份和恢复" class="headerlink" title="4. 备份和恢复"></a>4. 备份和恢复</h2><h3 id="1-备份"><a href="#1-备份" class="headerlink" title="(1) 备份"></a>(1) 备份</h3><pre><code>sudo -u root sh -c &apos;docker export rpmbuild_centos6 &gt; rpmbuild_centos6.ctr&apos;
-</code></pre><h3 id="2-恢复"><a href="#2-恢复" class="headerlink" title="(2) 恢复"></a>(2) 恢复</h3><pre><code>cat rpmbuild_centos6.ctr | sudo docker import - rpmbuild:centos6
+      <title><![CDATA[DELL磁盘阵列控制卡（RAID卡）MegaCli常用管理命令汇总]]></title>
+      <url>http://panwenhang.github.io/2016/06/30/Linux-2016-06-30-DELL%E7%A3%81%E7%9B%98%E9%98%B5%E5%88%97%E6%8E%A7%E5%88%B6%E5%8D%A1%EF%BC%88RAID%E5%8D%A1%EF%BC%89MegaCli%E5%B8%B8%E7%94%A8%E7%AE%A1%E7%90%86%E5%91%BD%E4%BB%A4%E6%B1%87%E6%80%BB/</url>
+      <content type="html"><![CDATA[<h2 id="准备"><a href="#准备" class="headerlink" title="准备"></a>准备</h2><p>  新版本的 MegaCli-1.01.24-0.i386.rpm （下载地址:<a href="http://www.lsi.com/downloads/Public/MegaRAID%20Common%20Files/8.02.16_MegaCLI.zip" target="_blank" rel="external">http://www.lsi.com/downloads/Public/MegaRAID%20Common%20Files/8.02.16_MegaCLI.zip</a> ）该包会把程序安装在/opt下,当然也可以自定义安装目录,例如:rpm –relocate /opt/=/usr/sbin/ -i MegaCli-1.01.24-0.i386.rpm （即把安装目录 /opt 替换成 /usr/sbin）。</p>
+<p>(linux文件夹下有个MegaCli文件里面有I386 RPM）</p>
+<a id="more"></a>
+<p>相关命令及其解析:</p>
+<pre><code>查看机器型号    # dmidecode | grep &quot;Product&quot;
+查看厂商    # dmidecode| grep  &quot;Manufacturer&quot;
+查看序列号    # dmidecode | grep  &quot;Serial Number&quot;
+查看CPU信息    # dmidecode | grep  &quot;CPU&quot;
+查看CPU个数    # dmidecode | grep  &quot;Socket Designation: CPU&quot; |wc –l
+查看出厂日期    # dmidecode | grep &quot;Date&quot;
+查看充电状态    # MegaCli -AdpBbuCmd -GetBbuStatus -aALL |grep &quot;Charger Status&quot;
+显示BBU状态信息    # MegaCli -AdpBbuCmd -GetBbuStatus –aALL
+显示BBU容量信息    # MegaCli -AdpBbuCmd -GetBbuCapacityInfo –aALL
+显示BBU设计参数    # MegaCli -AdpBbuCmd -GetBbuDesignInfo –aALL
+显示当前BBU属性    # MegaCli -AdpBbuCmd -GetBbuProperties –aALL
+查看充电进度百分比    # MegaCli -AdpBbuCmd -GetBbuStatus -aALL |grep &quot;Relative State of Charge&quot;
+查询Raid阵列数    # MegaCli -cfgdsply -aALL |grep &quot;Number of DISK GROUPS:&quot;
+显示Raid卡型号,Raid设置,Disk相关信息      # MegaCli -cfgdsply –aALL
+显示所有物理信息    # MegaCli -PDList -aALL
+显示所有逻辑磁盘组信息    # MegaCli -LDInfo -LALL –aAll
+查看物理磁盘重建进度(重要)    # MegaCli -PDRbld -ShowProg -PhysDrv [1:5] -a0
+查看适配器个数    #MegaCli –adpCount
+查看适配器时间    #MegaCli -AdpGetTime –aALL
+显示所有适配器信息    #MegaCli -AdpAllInfo –aAll
+查看Cache 策略设置    # MegaCli -cfgdsply -aALL |grep Polic
+</code></pre><h2 id="1-查看所有物理磁盘信息"><a href="#1-查看所有物理磁盘信息" class="headerlink" title="1.查看所有物理磁盘信息"></a>1.查看所有物理磁盘信息</h2><pre><code># MegaCli -PDList -aALL
+Adapter #0
+Enclosure Number: 1
+Slot Number: 5
+Device Id: 5
+Sequence Number: 2
+Media Error Count: 0
+Other Error Count: 0
+Predictive Failure Count: 0
+Last Predictive Failure Event Seq Number: 0
+Raw Size: 140014MB [0x11177328 Sectors]
+Non Coerced Size: 139502MB [0x11077328 Sectors]
+Coerced Size: 139392MB [0x11040000 Sectors]
+Firmware state:
+Hotspare SAS Address(0): 0x5000c50008e5cca9
+SAS Address(1): 0x0
+Inquiry Data: SEAGATE ST3146855SS     S5273LN4Y1X0 .....
+</code></pre><h2 id="2-查看磁盘缓存策略"><a href="#2-查看磁盘缓存策略" class="headerlink" title="2.查看磁盘缓存策略"></a>2.查看磁盘缓存策略</h2><pre><code>MegaCli -LDGetProp -Cache -L0 -a0
+Adapter 0-VD 0: Cache Policy:WriteBack, ReadAheadNone, Direct
+or MegaCli -LDGetProp -Cache -L1 -a0
+Adapter 0-VD 1: Cache Policy:WriteBack, ReadAheadNone, Direct
+or MegaCli -LDGetProp -Cache -LALL -a0
+Adapter 0-VD 0: Cache Policy:WriteBack, ReadAheadNone, Direct Adapter 0-VD 1: Cache Policy:WriteBack, ReadAheadNone, Direct
+or MegaCli -LDGetProp -Cache -LALL -aALL
+Adapter 0-VD 0: Cache Policy:WriteBack, ReadAheadNone, Direct Adapter 0-VD 1: Cache Policy:WriteBack, ReadAheadNone, Direct
+or MegaCli -LDGetProp -DskCache -LALL -aALL
+Adapter 0-VD 0: Disk Write Cache : Disk&apos;s Default Adapter 0-VD 1: Disk Write Cache : Disk&apos;s Default
+</code></pre><h2 id="3-设置磁盘缓存策略"><a href="#3-设置磁盘缓存策略" class="headerlink" title="3.设置磁盘缓存策略"></a>3.设置磁盘缓存策略</h2><p>缓存策略解释:</p>
+<pre><code>WT    (Write through
+WB    (Write back)
+NORA  (No read ahead)
+RA    (Read ahead)
+ADRA  (Adaptive read ahead)
+Cached
+Direct
+</code></pre><p>例子:</p>
+<pre><code>MegaCli -LDSetProp WT|WB|NORA|RA|ADRA -L0 -a0
+or
+MegaCli -LDSetProp -Cached|-Direct -L0 -a0
+or
+enable / disable disk cache
+MegaCli -LDSetProp -EnDskCache|-DisDskCache -L0 -a0
+</code></pre><h2 id="4-创建-删除-阵列"><a href="#4-创建-删除-阵列" class="headerlink" title="4.创建/删除 阵列"></a>4.创建/删除 阵列</h2><h3 id="4-1-创建一个-raid5-阵列-由物理盘-2-3-4-构成-该阵列的热备盘是物理盘-5"><a href="#4-1-创建一个-raid5-阵列-由物理盘-2-3-4-构成-该阵列的热备盘是物理盘-5" class="headerlink" title="4.1 创建一个 raid5 阵列,由物理盘 2,3,4 构成,该阵列的热备盘是物理盘 5"></a>4.1 创建一个 raid5 阵列,由物理盘 2,3,4 构成,该阵列的热备盘是物理盘 5</h3><pre><code>MegaCli -CfgLdAdd -r5 [1:2,1:3,1:4] WB Direct -Hsp[1:5] –a0
+</code></pre><h3 id="4-2-创建阵列-不指定热备"><a href="#4-2-创建阵列-不指定热备" class="headerlink" title="4.2 创建阵列,不指定热备"></a>4.2 创建阵列,不指定热备</h3><pre><code>MegaCli -CfgLdAdd -r5 [1:2,1:3,1:4] WB Direct –a0
+</code></pre><h3 id="4-3-删除阵列"><a href="#4-3-删除阵列" class="headerlink" title="4.3 删除阵列"></a>4.3 删除阵列</h3><pre><code>MegaCli -CfgLdDel -L1 –a0
+</code></pre><h3 id="4-4-在线添加磁盘"><a href="#4-4-在线添加磁盘" class="headerlink" title="4.4 在线添加磁盘"></a>4.4 在线添加磁盘</h3><pre><code>MegaCli -LDRecon -Start -r5 -Add -PhysDrv[1:4] -L1 -a0
+</code></pre><p>意思是,重建逻辑磁盘组1,raid级别是5,添加物理磁盘号:1:4。重建完后,新添加的物理磁盘会自动处于重建(同步)状态,这个 时候 fdisk -l是看不到阵列的空间变大的,只有在系统重启后才能看见。</p>
+<h2 id="5-查看阵列初始化信息"><a href="#5-查看阵列初始化信息" class="headerlink" title="5.查看阵列初始化信息"></a>5.查看阵列初始化信息</h2><h3 id="5-1-阵列创建完后-会有一个初始化同步块的过程-可以看看其进度。"><a href="#5-1-阵列创建完后-会有一个初始化同步块的过程-可以看看其进度。" class="headerlink" title="5.1 阵列创建完后,会有一个初始化同步块的过程,可以看看其进度。"></a>5.1 阵列创建完后,会有一个初始化同步块的过程,可以看看其进度。</h3><pre><code>MegaCli -LDInit -ShowProg -LALL -aALL
+</code></pre><p>或者以动态可视化文字界面显示</p>
+<pre><code>MegaCli -LDInit -ProgDsply -LALL –aALL
+</code></pre><h3 id="5-2-查看阵列后台初始化进度"><a href="#5-2-查看阵列后台初始化进度" class="headerlink" title="5.2 查看阵列后台初始化进度"></a>5.2 查看阵列后台初始化进度</h3><pre><code>MegaCli -LDBI -ShowProg -LALL -aALL
+</code></pre><p>或者以动态可视化文字界面显示</p>
+<pre><code>MegaCli -LDBI -ProgDsply -LALL -aALL
+</code></pre><h2 id="6-创建全局热备"><a href="#6-创建全局热备" class="headerlink" title="6.创建全局热备"></a>6.创建全局热备</h2><p>指定第 5 块盘作为全局热备</p>
+<pre><code>MegaCli -PDHSP -Set [-EnclAffinity] [-nonRevertible] -PhysDrv[1:5] -a0
+</code></pre><p>也可以指定为某个阵列的专用热备</p>
+<pre><code>MegaCli -PDHSP -Set [-Dedicated [-Array1]] [-EnclAffinity] [-nonRevertible] -PhysDrv[1:5] -a0
+</code></pre><h2 id="7-删除全局热备"><a href="#7-删除全局热备" class="headerlink" title="7.删除全局热备"></a>7.删除全局热备</h2><pre><code>MegaCli -PDHSP -Rmv -PhysDrv[1:5] -a0
+</code></pre><h2 id="8-将某块物理盘下线-上线"><a href="#8-将某块物理盘下线-上线" class="headerlink" title="8.将某块物理盘下线/上线"></a>8.将某块物理盘下线/上线</h2><pre><code>MegaCli -PDOffline -PhysDrv [1:4] -a0
+MegaCli -PDOnline -PhysDrv [1:4] -a0
+</code></pre><h2 id="9-查看物理磁盘重建进度"><a href="#9-查看物理磁盘重建进度" class="headerlink" title="9.查看物理磁盘重建进度"></a>9.查看物理磁盘重建进度</h2><pre><code>MegaCli -PDRbld -ShowProg -PhysDrv [1:5] -a0
 </code></pre>]]></content>
     </entry>
     
@@ -3117,95 +3020,453 @@ $ sudo echo 30 &gt; /proc/sys/vm/vfs_cache_pressure
     </entry>
     
     <entry>
-      <title><![CDATA[DELL磁盘阵列控制卡（RAID卡）MegaCli常用管理命令汇总]]></title>
-      <url>http://panwenhang.github.io/2016/06/30/Linux-2016-06-30-DELL%E7%A3%81%E7%9B%98%E9%98%B5%E5%88%97%E6%8E%A7%E5%88%B6%E5%8D%A1%EF%BC%88RAID%E5%8D%A1%EF%BC%89MegaCli%E5%B8%B8%E7%94%A8%E7%AE%A1%E7%90%86%E5%91%BD%E4%BB%A4%E6%B1%87%E6%80%BB/</url>
-      <content type="html"><![CDATA[<h2 id="准备"><a href="#准备" class="headerlink" title="准备"></a>准备</h2><p>  新版本的 MegaCli-1.01.24-0.i386.rpm （下载地址:<a href="http://www.lsi.com/downloads/Public/MegaRAID%20Common%20Files/8.02.16_MegaCLI.zip" target="_blank" rel="external">http://www.lsi.com/downloads/Public/MegaRAID%20Common%20Files/8.02.16_MegaCLI.zip</a> ）该包会把程序安装在/opt下,当然也可以自定义安装目录,例如:rpm –relocate /opt/=/usr/sbin/ -i MegaCli-1.01.24-0.i386.rpm （即把安装目录 /opt 替换成 /usr/sbin）。</p>
-<p>(linux文件夹下有个MegaCli文件里面有I386 RPM）</p>
+      <title><![CDATA[crontab中PATH的坑]]></title>
+      <url>http://panwenhang.github.io/2016/06/30/Linux-2016-06-30-crontab%E4%B8%ADPATH%E7%9A%84%E5%9D%91/</url>
+      <content type="html"><![CDATA[<h2 id="1-现象"><a href="#1-现象" class="headerlink" title="1. 现象"></a>1. 现象</h2><p>在命令行里面能正常运行脚本,在crontab里面报错:</p>
+<p>lsof: No such file or directory</p>
+<p>看报错信息, 应该是找不到lsof这个命令</p>
 <a id="more"></a>
-<p>相关命令及其解析:</p>
-<pre><code>查看机器型号    # dmidecode | grep &quot;Product&quot;
-查看厂商    # dmidecode| grep  &quot;Manufacturer&quot;
-查看序列号    # dmidecode | grep  &quot;Serial Number&quot;
-查看CPU信息    # dmidecode | grep  &quot;CPU&quot;
-查看CPU个数    # dmidecode | grep  &quot;Socket Designation: CPU&quot; |wc –l
-查看出厂日期    # dmidecode | grep &quot;Date&quot;
-查看充电状态    # MegaCli -AdpBbuCmd -GetBbuStatus -aALL |grep &quot;Charger Status&quot;
-显示BBU状态信息    # MegaCli -AdpBbuCmd -GetBbuStatus –aALL
-显示BBU容量信息    # MegaCli -AdpBbuCmd -GetBbuCapacityInfo –aALL
-显示BBU设计参数    # MegaCli -AdpBbuCmd -GetBbuDesignInfo –aALL
-显示当前BBU属性    # MegaCli -AdpBbuCmd -GetBbuProperties –aALL
-查看充电进度百分比    # MegaCli -AdpBbuCmd -GetBbuStatus -aALL |grep &quot;Relative State of Charge&quot;
-查询Raid阵列数    # MegaCli -cfgdsply -aALL |grep &quot;Number of DISK GROUPS:&quot;
-显示Raid卡型号,Raid设置,Disk相关信息      # MegaCli -cfgdsply –aALL
-显示所有物理信息    # MegaCli -PDList -aALL
-显示所有逻辑磁盘组信息    # MegaCli -LDInfo -LALL –aAll
-查看物理磁盘重建进度(重要)    # MegaCli -PDRbld -ShowProg -PhysDrv [1:5] -a0
-查看适配器个数    #MegaCli –adpCount
-查看适配器时间    #MegaCli -AdpGetTime –aALL
-显示所有适配器信息    #MegaCli -AdpAllInfo –aAll
-查看Cache 策略设置    # MegaCli -cfgdsply -aALL |grep Polic
-</code></pre><h2 id="1-查看所有物理磁盘信息"><a href="#1-查看所有物理磁盘信息" class="headerlink" title="1.查看所有物理磁盘信息"></a>1.查看所有物理磁盘信息</h2><pre><code># MegaCli -PDList -aALL
-Adapter #0
-Enclosure Number: 1
-Slot Number: 5
-Device Id: 5
-Sequence Number: 2
-Media Error Count: 0
-Other Error Count: 0
-Predictive Failure Count: 0
-Last Predictive Failure Event Seq Number: 0
-Raw Size: 140014MB [0x11177328 Sectors]
-Non Coerced Size: 139502MB [0x11077328 Sectors]
-Coerced Size: 139392MB [0x11040000 Sectors]
-Firmware state:
-Hotspare SAS Address(0): 0x5000c50008e5cca9
-SAS Address(1): 0x0
-Inquiry Data: SEAGATE ST3146855SS     S5273LN4Y1X0 .....
-</code></pre><h2 id="2-查看磁盘缓存策略"><a href="#2-查看磁盘缓存策略" class="headerlink" title="2.查看磁盘缓存策略"></a>2.查看磁盘缓存策略</h2><pre><code>MegaCli -LDGetProp -Cache -L0 -a0
-Adapter 0-VD 0: Cache Policy:WriteBack, ReadAheadNone, Direct
-or MegaCli -LDGetProp -Cache -L1 -a0
-Adapter 0-VD 1: Cache Policy:WriteBack, ReadAheadNone, Direct
-or MegaCli -LDGetProp -Cache -LALL -a0
-Adapter 0-VD 0: Cache Policy:WriteBack, ReadAheadNone, Direct Adapter 0-VD 1: Cache Policy:WriteBack, ReadAheadNone, Direct
-or MegaCli -LDGetProp -Cache -LALL -aALL
-Adapter 0-VD 0: Cache Policy:WriteBack, ReadAheadNone, Direct Adapter 0-VD 1: Cache Policy:WriteBack, ReadAheadNone, Direct
-or MegaCli -LDGetProp -DskCache -LALL -aALL
-Adapter 0-VD 0: Disk Write Cache : Disk&apos;s Default Adapter 0-VD 1: Disk Write Cache : Disk&apos;s Default
-</code></pre><h2 id="3-设置磁盘缓存策略"><a href="#3-设置磁盘缓存策略" class="headerlink" title="3.设置磁盘缓存策略"></a>3.设置磁盘缓存策略</h2><p>缓存策略解释:</p>
-<pre><code>WT    (Write through
-WB    (Write back)
-NORA  (No read ahead)
-RA    (Read ahead)
-ADRA  (Adaptive read ahead)
-Cached
-Direct
-</code></pre><p>例子:</p>
-<pre><code>MegaCli -LDSetProp WT|WB|NORA|RA|ADRA -L0 -a0
-or
-MegaCli -LDSetProp -Cached|-Direct -L0 -a0
-or
-enable / disable disk cache
-MegaCli -LDSetProp -EnDskCache|-DisDskCache -L0 -a0
-</code></pre><h2 id="4-创建-删除-阵列"><a href="#4-创建-删除-阵列" class="headerlink" title="4.创建/删除 阵列"></a>4.创建/删除 阵列</h2><h3 id="4-1-创建一个-raid5-阵列-由物理盘-2-3-4-构成-该阵列的热备盘是物理盘-5"><a href="#4-1-创建一个-raid5-阵列-由物理盘-2-3-4-构成-该阵列的热备盘是物理盘-5" class="headerlink" title="4.1 创建一个 raid5 阵列,由物理盘 2,3,4 构成,该阵列的热备盘是物理盘 5"></a>4.1 创建一个 raid5 阵列,由物理盘 2,3,4 构成,该阵列的热备盘是物理盘 5</h3><pre><code>MegaCli -CfgLdAdd -r5 [1:2,1:3,1:4] WB Direct -Hsp[1:5] –a0
-</code></pre><h3 id="4-2-创建阵列-不指定热备"><a href="#4-2-创建阵列-不指定热备" class="headerlink" title="4.2 创建阵列,不指定热备"></a>4.2 创建阵列,不指定热备</h3><pre><code>MegaCli -CfgLdAdd -r5 [1:2,1:3,1:4] WB Direct –a0
-</code></pre><h3 id="4-3-删除阵列"><a href="#4-3-删除阵列" class="headerlink" title="4.3 删除阵列"></a>4.3 删除阵列</h3><pre><code>MegaCli -CfgLdDel -L1 –a0
-</code></pre><h3 id="4-4-在线添加磁盘"><a href="#4-4-在线添加磁盘" class="headerlink" title="4.4 在线添加磁盘"></a>4.4 在线添加磁盘</h3><pre><code>MegaCli -LDRecon -Start -r5 -Add -PhysDrv[1:4] -L1 -a0
-</code></pre><p>意思是,重建逻辑磁盘组1,raid级别是5,添加物理磁盘号:1:4。重建完后,新添加的物理磁盘会自动处于重建(同步)状态,这个 时候 fdisk -l是看不到阵列的空间变大的,只有在系统重启后才能看见。</p>
-<h2 id="5-查看阵列初始化信息"><a href="#5-查看阵列初始化信息" class="headerlink" title="5.查看阵列初始化信息"></a>5.查看阵列初始化信息</h2><h3 id="5-1-阵列创建完后-会有一个初始化同步块的过程-可以看看其进度。"><a href="#5-1-阵列创建完后-会有一个初始化同步块的过程-可以看看其进度。" class="headerlink" title="5.1 阵列创建完后,会有一个初始化同步块的过程,可以看看其进度。"></a>5.1 阵列创建完后,会有一个初始化同步块的过程,可以看看其进度。</h3><pre><code>MegaCli -LDInit -ShowProg -LALL -aALL
-</code></pre><p>或者以动态可视化文字界面显示</p>
-<pre><code>MegaCli -LDInit -ProgDsply -LALL –aALL
-</code></pre><h3 id="5-2-查看阵列后台初始化进度"><a href="#5-2-查看阵列后台初始化进度" class="headerlink" title="5.2 查看阵列后台初始化进度"></a>5.2 查看阵列后台初始化进度</h3><pre><code>MegaCli -LDBI -ShowProg -LALL -aALL
-</code></pre><p>或者以动态可视化文字界面显示</p>
-<pre><code>MegaCli -LDBI -ProgDsply -LALL -aALL
-</code></pre><h2 id="6-创建全局热备"><a href="#6-创建全局热备" class="headerlink" title="6.创建全局热备"></a>6.创建全局热备</h2><p>指定第 5 块盘作为全局热备</p>
-<pre><code>MegaCli -PDHSP -Set [-EnclAffinity] [-nonRevertible] -PhysDrv[1:5] -a0
-</code></pre><p>也可以指定为某个阵列的专用热备</p>
-<pre><code>MegaCli -PDHSP -Set [-Dedicated [-Array1]] [-EnclAffinity] [-nonRevertible] -PhysDrv[1:5] -a0
-</code></pre><h2 id="7-删除全局热备"><a href="#7-删除全局热备" class="headerlink" title="7.删除全局热备"></a>7.删除全局热备</h2><pre><code>MegaCli -PDHSP -Rmv -PhysDrv[1:5] -a0
-</code></pre><h2 id="8-将某块物理盘下线-上线"><a href="#8-将某块物理盘下线-上线" class="headerlink" title="8.将某块物理盘下线/上线"></a>8.将某块物理盘下线/上线</h2><pre><code>MegaCli -PDOffline -PhysDrv [1:4] -a0
-MegaCli -PDOnline -PhysDrv [1:4] -a0
-</code></pre><h2 id="9-查看物理磁盘重建进度"><a href="#9-查看物理磁盘重建进度" class="headerlink" title="9.查看物理磁盘重建进度"></a>9.查看物理磁盘重建进度</h2><pre><code>MegaCli -PDRbld -ShowProg -PhysDrv [1:5] -a0
+<h2 id="2-排查"><a href="#2-排查" class="headerlink" title="2. 排查"></a>2. 排查</h2><p>查看lsof命令的路径:</p>
+<pre><code>$ type -a lsof
+lsof is /usr/bin/lsof
+</code></pre><p>查看系统的PATH路径:</p>
+<pre><code>$ echo $PATH
+/usr/lib64/ccache:/usr/local/bin:/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/sbin:/opt/dell/srvadmin/bin:/bin
+</code></pre><p>里面是包含/usr/sbin的,这能解释为什么命令行运行正常了,那就是crontab的PATH的问题了</p>
+<p>在crontab运行一个echo $PATH的脚本,结果如下</p>
+<pre><code>/usr/bin:/bin
+</code></pre><p>果真是crontab的原因</p>
+<h2 id="3-原因"><a href="#3-原因" class="headerlink" title="3. 原因"></a>3. 原因</h2><pre><code>$ man 5 crontab
+</code></pre><p>在man page里面找到</p>
+<p>Several  environment variables are set up automatically by the cron(8) daemon.  SHELL is set to /bin/sh, and LOGNAME and HOME are set from the /etc/passwd line of the crontab’s owner. PATH is set to “/usr/bin:/bin”.  HOME, SHELL, and PATH may be overridden by settings in the crontab; LOGNAME is the user that the job is running from, and may not be changed.</p>
+<h2 id="4-解决办法"><a href="#4-解决办法" class="headerlink" title="4. 解决办法"></a>4. 解决办法</h2><p>在脚本里面export PATH=/usr/sbin:$PATH, 或者把crontab改成</p>
+<pre><code>* * * * * source /etc/profile; your command
 </code></pre>]]></content>
+    </entry>
+    
+    <entry>
+      <title><![CDATA[部署Docker下打包环境]]></title>
+      <url>http://panwenhang.github.io/2016/06/30/Linux-2016-06-30-%E9%83%A8%E7%BD%B2Docker%E4%B8%8B%E6%89%93%E5%8C%85%E7%8E%AF%E5%A2%83/</url>
+      <content type="html"><![CDATA[<h2 id="1-镜像"><a href="#1-镜像" class="headerlink" title="1. 镜像"></a>1. 镜像</h2><h3 id="1-Dockerfile"><a href="#1-Dockerfile" class="headerlink" title="(1) Dockerfile"></a>(1) Dockerfile</h3><p>由于Docker Client会默认发送Dockerfile同级目录下的所有文件到Dockerdaemon中,所以建议把Dockerfile放在一个空文件夹或者比较小的文件夹中。</p>
+<pre><code>FROM centos:6
+MAINTAINER panwenhang &quot;panwenhang92@gmail.com&quot;
+</code></pre><a id="more"></a>
+<pre><code>RUN yum -q -y update
+RUN yum install -q -y rpm-build  git subversion tar gcc g++ make vim-common vim-enhanced wget
+RUN yum install -q -y libxml2-devel libxslt-devel uuid-devel readline-devel
+RUN yum install -q -y perl-ExtUtils-Embed libxml2 libxslt readline uuid
+</code></pre><h3 id="2-创建镜像"><a href="#2-创建镜像" class="headerlink" title="(2) 创建镜像"></a>(2) 创建镜像</h3><pre><code>$ sudo docker build --rm -t rpmbuild:centos6 .
+</code></pre><h3 id="3-确认"><a href="#3-确认" class="headerlink" title="(3) 确认"></a>(3) 确认</h3><pre><code>$ sudo docker images
+REPOSITORY          TAG                 IMAGE ID            CREATED             VIRTUAL SIZE
+rpmbuild            centos6             2f14e12b1008        14 minutes ago      296.5 MB
+</code></pre><h2 id="2-容器"><a href="#2-容器" class="headerlink" title="2. 容器"></a>2. 容器</h2><h3 id="1-创建"><a href="#1-创建" class="headerlink" title="(1) 创建"></a>(1) 创建</h3><pre><code>$ sudo docker run -itd -h rpmbuild_centos6 --name=rpmbuild_centos6 -v /data/rpmbuild/:/data/rpmbuild/:rw rpmbuild:centos6 /bin/bash
+</code></pre><h3 id="2-确认"><a href="#2-确认" class="headerlink" title="(2) 确认"></a>(2) 确认</h3><pre><code>$ sudo docker ps -a
+CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
+b1041bc9086c        rpmbuild:centos6    &quot;/bin/bash&quot;         About an hour ago   Up 22 minutes                           rpmbuild_centos6
+</code></pre><h2 id="3-运行"><a href="#3-运行" class="headerlink" title="3. 运行"></a>3. 运行</h2><pre><code>$ sudo docker start rpmbuild_centos6
+$ sudo docker exec -it rpmbuild_centos6 /bin/bash
+</code></pre><p>然后就可以正常打包了</p>
+<h2 id="4-备份和恢复"><a href="#4-备份和恢复" class="headerlink" title="4. 备份和恢复"></a>4. 备份和恢复</h2><h3 id="1-备份"><a href="#1-备份" class="headerlink" title="(1) 备份"></a>(1) 备份</h3><pre><code>sudo -u root sh -c &apos;docker export rpmbuild_centos6 &gt; rpmbuild_centos6.ctr&apos;
+</code></pre><h3 id="2-恢复"><a href="#2-恢复" class="headerlink" title="(2) 恢复"></a>(2) 恢复</h3><pre><code>cat rpmbuild_centos6.ctr | sudo docker import - rpmbuild:centos6
+</code></pre>]]></content>
+    </entry>
+    
+    <entry>
+      <title><![CDATA[Linux查看硬件信息]]></title>
+      <url>http://panwenhang.github.io/2016/06/30/Linux-2016-06-30-Linux%E6%9F%A5%E7%9C%8B%E7%A1%AC%E4%BB%B6%E4%BF%A1%E6%81%AF/</url>
+      <content type="html"><![CDATA[<h2 id="CPU"><a href="#CPU" class="headerlink" title="CPU"></a>CPU</h2><h3 id="1-lscpu"><a href="#1-lscpu" class="headerlink" title="1. lscpu"></a>1. lscpu</h3><p>Lists the basic information of cpu.</p>
+<a id="more"></a>
+<h3 id="2-cat-proc-cpuinfo"><a href="#2-cat-proc-cpuinfo" class="headerlink" title="2. cat /proc/cpuinfo"></a>2. cat /proc/cpuinfo</h3><p>Lists the information of each core of cpu.</p>
+<h2 id="MEMORY"><a href="#MEMORY" class="headerlink" title="MEMORY"></a>MEMORY</h2><h3 id="1-free-m"><a href="#1-free-m" class="headerlink" title="1. free -m"></a>1. free -m</h3><p>Lists usage information of memory.</p>
+<h3 id="2-cat-proc-meminfo"><a href="#2-cat-proc-meminfo" class="headerlink" title="2. cat /proc/meminfo"></a>2. cat /proc/meminfo</h3><p>Lists the detail usage information of memory.</p>
+<h3 id="3-dmidecode-t-memory"><a href="#3-dmidecode-t-memory" class="headerlink" title="3. dmidecode -t memory"></a>3. dmidecode -t memory</h3><p>Lists the hardware information of memory.</p>
+<h2 id="DISK"><a href="#DISK" class="headerlink" title="DISK"></a>DISK</h2><h3 id="1-lsblk"><a href="#1-lsblk" class="headerlink" title="1. lsblk"></a>1. lsblk</h3><p>Lists information about all or the specified block devices.</p>
+<h3 id="2-fdisk-l"><a href="#2-fdisk-l" class="headerlink" title="2. fdisk -l"></a>2. fdisk -l</h3><p>Partition table manipulator for Linux.</p>
+<h3 id="3-df-Th"><a href="#3-df-Th" class="headerlink" title="3. df -Th"></a>3. df -Th</h3><p>Report file system disk space usage.</p>
+<h2 id="NETWORK-CARD"><a href="#NETWORK-CARD" class="headerlink" title="NETWORK CARD"></a>NETWORK CARD</h2><h3 id="1-ifconfig-a"><a href="#1-ifconfig-a" class="headerlink" title="1. ifconfig -a"></a>1. ifconfig -a</h3><p>Lists configuration of each network interface.</p>
+<h3 id="2-ip-link-show"><a href="#2-ip-link-show" class="headerlink" title="2. ip link show"></a>2. ip link show</h3><p>Show routing, devices, policy routing and tunnels.</p>
+<h2 id="BIOS"><a href="#BIOS" class="headerlink" title="BIOS"></a>BIOS</h2><h3 id="dmidecode-t-bios"><a href="#dmidecode-t-bios" class="headerlink" title="dmidecode -t bios"></a>dmidecode -t bios</h3><h2 id="PCI"><a href="#PCI" class="headerlink" title="PCI"></a>PCI</h2><h3 id="lspci"><a href="#lspci" class="headerlink" title="lspci"></a>lspci</h3>]]></content>
+    </entry>
+    
+    <entry>
+      <title><![CDATA[Linux代理设置]]></title>
+      <url>http://panwenhang.github.io/2016/06/30/Linux-2016-06-30-Linux%E4%BB%A3%E7%90%86%E8%AE%BE%E7%BD%AE/</url>
+      <content type="html"><![CDATA[<p>由于公司必须通过代理才能上外网,所以搞了下代理的设置</p>
+<h2 id="1-浏览器设置代理"><a href="#1-浏览器设置代理" class="headerlink" title="1. 浏览器设置代理"></a>1. 浏览器设置代理</h2><a id="more"></a>
+<p>将如下内容添加到你的.bashrc或者.bash_profile里面</p>
+<pre><code>export all_proxy=&apos;sockets://ip:port&apos;
+export ftp_proxy=&apos;http://ip:port&apos;
+export http_proxy=&apos;http://ip:port&apos;
+export https_proxy=&apos;http://ip:port&apos;
+export no_proxy=&quot;localhost,127.0.0.0/8,::1&quot;
+</code></pre><p>然后执行:</p>
+<pre><code>$ source ~/.bashrc
+</code></pre><p>这样浏览器就可以使用代理了。</p>
+<h2 id="2-apt-get设置代理"><a href="#2-apt-get设置代理" class="headerlink" title="2. apt-get设置代理"></a>2. apt-get设置代理</h2><p>在Ubuntu 10.10及以后版本中,apt-get不再读取$http_proxy变量,解决方法是修改apt-get的配置文件:</p>
+<pre><code>$ sudo vim /etc/apt/apt.conf
+Acquire::http::proxy &quot;http://ip:port&quot;;
+Acquire::ftp::proxy &quot;ftp://ip:port&quot;;
+Acquire::https::proxy &quot;https://ip:port&quot;;
+</code></pre><p>apt-get还支持-c模式指定配置文件和-o指定配置项:</p>
+<p>如将上面的配置加入到~/apt_proxy.conf中,可以使用,这样不会修改默认的配置,使用代理是执行</p>
+<pre><code>$ sudo apt-get -c ~/apt_proxy.conf update
+</code></pre><p>或者使用配置项:</p>
+<pre><code>$ sudo apt-get -o Acquire::http::proxy=&quot;http://ip:port&quot; update
+</code></pre>]]></content>
+    </entry>
+    
+    <entry>
+      <title><![CDATA[Linux之间ssh免密码登录]]></title>
+      <url>http://panwenhang.github.io/2016/06/30/Linux-2016-06-30-Linux%E4%B9%8B%E9%97%B4ssh%E5%85%8D%E5%AF%86%E7%A0%81%E7%99%BB%E5%BD%95/</url>
+      <content type="html"><![CDATA[<h2 id="1-生成公私钥对"><a href="#1-生成公私钥对" class="headerlink" title="1.生成公私钥对"></a>1.生成公私钥对</h2><pre><code>$ ssh-keygen -t rsa -P &apos;&apos;
+Generating public/private rsa key pair.
+Enter file in which to save the key (/root/.ssh/id_rsa):
+Your identification has been saved in /root/.ssh/id_rsa.
+Your public key has been saved in /root/.ssh/id_rsa.pub.
+</code></pre><a id="more"></a>
+<p>   The key fingerprint is:<br>    88:64:ed:a1:a7:a2:c0:b4:ee:77:38:2f:c7:39:c6:c1 root@QA-5-45<br>    The key’s randomart image is:<br>    +–[ RSA 2048 ]—-+<br>    |                 |<br>    |     .           |<br>    |    o o          |<br>    |   o + o         |<br>    | .  + + S        |<br>    |o .  E           |<br>    |.o. = o          |<br>    |o. * O           |<br>    |oo. B..          |<br>    +—————–+<br>     -P phrase   Provide old passphrase. 这个是指使用私钥的密码<br>     -t type     Specify type of key to create. 这个是创建公私钥的类型</p>
+<pre><code>$ ll .ssh/
+total 8
+-rw-------. 1 root root 1675 Sep  6 04:12 id_rsa
+-rw-r--r--. 1 root root  394 Sep  6 04:12 id_rsa.pub
+</code></pre><h2 id="2-复制公钥到免密码登录的机器"><a href="#2-复制公钥到免密码登录的机器" class="headerlink" title="2.复制公钥到免密码登录的机器"></a>2.复制公钥到免密码登录的机器</h2><pre><code>$ ssh-copy-id root@172.17.5.46
+The authenticity of host &apos;172.17.5.46 (172.17.5.46)&apos; can&apos;t be established.
+RSA key fingerprint is 8e:ac:89:5d:10:be:e7:d8:a2:34:0b:bf:70:cd:ce:33.
+Are you sure you want to continue connecting (yes/no)? yes
+Warning: Permanently added &apos;172.17.5.46&apos; (RSA) to the list of known hosts.
+root@172.17.5.46&apos;s password:
+Now try logging into the machine, with &quot;ssh &apos;root@172.17.5.46&apos;&quot;, and check in:
+
+  .ssh/authorized_keys
+
+to make sure we haven&apos;t added extra keys that you weren&apos;t expecting.
+</code></pre><p>免登录机器上:</p>
+<pre><code>$ ll .ssh/
+total 4
+-rw-------. 1 root root 394 Sep  6 04:16 authorized_keys
+</code></pre><h2 id="3-测试"><a href="#3-测试" class="headerlink" title="3.测试"></a>3.测试</h2><pre><code># ssh 172.17.5.46
+Last login: Sun Sep  6 04:06:43 2015 from 172.17.5.45
+[root@node2 ~]#
+</code></pre><p>成功免密码登录。</p>
+<h2 id="4-结论"><a href="#4-结论" class="headerlink" title="4.结论"></a>4.结论</h2><pre><code>免密码登录不用再每次都输入密码,方便了许多；
+
+rsync也可以使用ssh认证在linux服务器之间免密码传输文件；
+
+最好别配置root用户的免密码登录
+</code></pre>]]></content>
+    </entry>
+    
+    <entry>
+      <title><![CDATA[Linux下打包]]></title>
+      <url>http://panwenhang.github.io/2016/06/30/Linux-2016-06-30-Linux%E4%B8%8B%E6%89%93%E5%8C%85/</url>
+      <content type="html"><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><pre><code>打包是指将源码包编译成rpm包,在centos下通过rpmbuild命令和spec文件来实现。
+相对于源码编译安装的好处是,不需要每次安装都编译一次,那样很慢,对于打好的rpm包,直接试用rpm命令就可以安装。
+相对于一些官方提供的rpm包的优势在于,可以想源码编译一样定制化包的安装,比如修改安装的路径,添加一些自己的配置和文件等。
+</code></pre><a id="more"></a>
+<p>以下的打包以postgresql为例</p>
+<h2 id="1-安装rpmbuild"><a href="#1-安装rpmbuild" class="headerlink" title="1. 安装rpmbuild"></a>1. 安装rpmbuild</h2><pre><code>$ sudo yum install -y rpm-build
+</code></pre><h2 id="3-初始化打包目录"><a href="#3-初始化打包目录" class="headerlink" title="3. 初始化打包目录"></a>3. 初始化打包目录</h2><pre><code>$ sudo mkdir -p /data
+$ cd /data/
+$ sudo mkdir -p rpmbuild/{BUILD,BUILDROOT,RPMS,SRPMS,SOURCES,SPECS}
+$ sudo chown -R $(whoami): rpmbuild
+</code></pre><h2 id="4-准备spec文件"><a href="#4-准备spec文件" class="headerlink" title="4. 准备spec文件"></a>4. 准备spec文件</h2><pre><code>$ sudo mkdir -p rpmbuild/SPECS/postgresql/{9.4,conf}
+$ cd rpmbuild/SPECS/postgresql/9.4/
+$ vim pg94.el6.spec
+
+    %define debug_package %{nil}
+
+    Name: postgresql
+    Summary: PostgreSQL server
+    Version: 9.5.3
+    Release: 1%{?dist}
+    Source: postgresql-%{version}.tar.gz
+    URL: http://www.postgresql.org/ftp/source/
+    Group: Applications/Database
+    Vendor: PostgreSQL
+    License: Public Domain
+
+    BuildRequires    : libxml2-devel
+    BuildRequires    : libxslt-devel
+    BuildRequires    : uuid-devel
+    BuildRequires    : readline-devel
+    BuildRequires    : openssl-devel
+    BuildRequires    : python-devel
+    BuildRequires    : pam-devel
+    BuildRequires    : tcl-devel
+    BuildRequires    : openldap-devel
+
+    Requires    : tcl
+    Requires    : perl-ExtUtils-Embed
+    Requires    : libxml2
+    Requires    : libxslt
+    Requires    : readline
+    Requires    : uuid
+    Requires(pre)     : /usr/sbin/useradd
+
+    %description
+    Postgres is a truly awesome database. When we started working on Launchpad I wasn&apos;t sure if it would be up to the job. I was so wrong. It&apos;s been robust, fast, and professional in every regard.
+
+    %prep
+    %setup -q -n postgresql-%{version}
+    env CFLAGS=&quot; -march=core2 -O2 &quot; ./configure --prefix=/opt/pg95 --with-python --with-perl --with-openssl --with-libxml --with-libxslt --with-ossp-uuid --with-pam --with-ldap --with-tcl --enable-thread-safety --with-segsize=128 --with-blocksize=32 --with-wal-segsize=64 --with-wal-blocksize=32
+
+    %build
+    make -s -j8 world
+
+    %install
+    rm -fr %{buildroot}
+    make -s install DESTDIR=%{buildroot}
+    make -s install-world DESTDIR=%{buildroot}
+    install -d %{buildroot}/home/postgres
+    install -d %{buildroot}/opt/pg95/etc
+    install -d %{buildroot}/etc/ld.so.conf.d
+    install -d %{buildroot}/etc/profile.d
+
+    test -L %{buildroot}/opt/pgsql &amp;&amp; rm -f %{buildroot}/opt/pgsql
+    ln -sf /opt/pg95 %{buildroot}/opt/pgsql
+
+    echo &apos;/opt/pgsql/lib&apos; &gt; %{buildroot}/etc/ld.so.conf.d/pgsql.conf
+    echo &apos;export PATH=/opt/pgsql/bin:$PATH&apos; &gt; %{buildroot}/etc/profile.d/pgsql.sh
+
+    cat &gt; %{buildroot}/opt/pg95/etc/pg_hba.conf &lt;&lt;EOF
+    host     all               postgres             127.0.0.1/32            md5
+    host     all               monitor              127.0.0.1/32            md5
+    host     all               postgres             0.0.0.0/0               reject
+    host     all               monitor              0.0.0.0/0               reject
+    local    all               all                                          md5
+    host     replication       all                  0.0.0.0/0               md5
+    host     all               all                  0.0.0.0/0               md5
+    EOF
+
+    cat &gt; %{buildroot}/opt/pg95/etc/recovery.conf &lt;&lt;EOF
+    standby_mode = &apos;on&apos;
+    primary_conninfo = &apos;host=localhost port=5432 user=postgres password=password application_name=$(hostname)&apos;
+    ###restore_command = &apos;/bin/cp -n \$PGDATA/../arclog/%f %p&apos;
+    ###restore_command = &apos;/usr/bin/test -f $PGDATA/../arclog/\$(date +%Y%m%d)/%f.zip &amp;&amp; unzip -o \$PGDATA/../arclog/\$(date +%Y%m%d)/%f.zip&apos;
+    recovery_target_timeline = &apos;latest&apos;
+    EOF
+
+    cat &gt; %{buildroot}/opt/pg95/etc/sysctl.conf &lt;&lt;EOF
+    # Database kernel optimization
+    vm.swappiness = 0
+    vm.overcommit_memory = 2
+    vm.overcommit_ratio = 90
+    vm.zone_reclaim_mode = 0
+    net.core.somaxconn = 62144
+    vm.dirty_background_ratio = 40
+    vm.dirty_ratio = 80
+    # vm.nr_hugepages = 49631
+    EOF
+
+    cp %{buildroot}/../../SPECS/pgsql/pg95.conf %{buildroot}/opt/pg95/etc/postgresql.conf
+
+    %pre
+    getent group postgres &gt; /dev/null || groupadd -r postgres
+    getent passwd postgres &gt; /dev/null || \
+        useradd -r -g postgres -s /sbin/nologin \
+        -c &quot;PostgreSQL DataBase&quot; postgres
+
+    %post
+    /sbin/ldconfig
+
+    %postun -p /sbin/ldconfig
+
+    %clean
+    rm -fr %{buildroot}
+
+    %files
+    %defattr(-, root, root)
+    /opt/pgsql
+    /opt/pg95/*
+    /etc/ld.so.conf.d/pgsql.conf
+    /etc/profile.d/pgsql.sh
+    %defattr(0700, postgres, postgres)
+    /home/postgres/
+</code></pre><h2 id="5-打包"><a href="#5-打包" class="headerlink" title="5. 打包"></a>5. 打包</h2><p>先配置变量方便以后的使用:</p>
+<pre><code>$ sudo vim /etc/profile.d/rpmbuild.sh
+#!/bin/env bash
+alias rpmbuild=&apos;rpmbuild --define &quot;_topdir /data/rpmbuild&quot; -bb&apos;
+$ sudo source /etc/profile.d/rpmbuild.sh
+</code></pre><p>打包就只需要执行:</p>
+<pre><code>$ rpmbuild path/xxx.spec
+</code></pre><h2 id="6-rpmmacros"><a href="#6-rpmmacros" class="headerlink" title="6. ~/.rpmmacros"></a>6. ~/.rpmmacros</h2><pre><code>%_topdir      %(echo $HOME)/rpmbuild
+%_tmppath  %{_topdir}/tmp
+%buildroot  %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
+%_rpmfilename  %%{NAME}-%%{VERSION}-%%{RELEASE}.%%{ARCH}.rpm
+</code></pre><p>参考:<a href="fedoraproject.org/wiki/How_to_create_an_RPM_package">How to create an RPM package</a>和<a href="rpmbuildtut.wordpress.com/">Rpmbuild Tutorial</a></p>
+]]></content>
+    </entry>
+    
+    <entry>
+      <title><![CDATA[Linux中时间同步]]></title>
+      <url>http://panwenhang.github.io/2016/06/30/Linux-2016-06-30-Linux%E4%B8%AD%E6%97%B6%E9%97%B4%E5%90%8C%E6%AD%A5/</url>
+      <content type="html"><![CDATA[<h2 id="1-安装ntpdate"><a href="#1-安装ntpdate" class="headerlink" title="1. 安装ntpdate"></a>1. 安装ntpdate</h2><pre><code>$ sudo yum install -y ntpdate
+</code></pre><a id="more"></a>
+<h2 id="2-同步时间"><a href="#2-同步时间" class="headerlink" title="2. 同步时间"></a>2. 同步时间</h2><pre><code>$ sudo /usr/sbin/ntpdate $ntp_server
+</code></pre><h2 id="3-刷新到硬件时钟"><a href="#3-刷新到硬件时钟" class="headerlink" title="3. 刷新到硬件时钟"></a>3. 刷新到硬件时钟</h2><pre><code>$ sudo /sbin/hwclock --systohc
+</code></pre>]]></content>
+    </entry>
+    
+    <entry>
+      <title><![CDATA[HP机器RAID和LVM创建]]></title>
+      <url>http://panwenhang.github.io/2016/06/30/Linux-2016-06-30-HP%E6%9C%BA%E5%99%A8RAID%E5%92%8CLVM%E5%88%9B%E5%BB%BA/</url>
+      <content type="html"><![CDATA[<h2 id="1-环境"><a href="#1-环境" class="headerlink" title="1.环境"></a>1.环境</h2><pre><code>[root@localhost ~]# uname -a
+Linux localhost.localdomain 2.6.32-220.el6.x86_64 #1 SMP Tue Dec 6 19:48:22 GMT 2011 x86_64 x86_64 x86_64 GNU/Linux
+[root@localhost ~]# cat /etc/issue
+CentOS release 6.7 (Final)
+Kernel \r on an \m
+[root@localhost ~]# dmidecode -t bios
+# dmidecode 2.12
+SMBIOS 2.7 present.
+</code></pre><a id="more"></a>
+<pre><code>Handle 0x0000, DMI type 0, 24 bytes
+BIOS Information
+        Vendor: HP
+        Version: P71
+        Release Date: 03/01/2013
+        Address: 0xF0000
+        Runtime Size: 64 kB
+        ROM Size: 8192 kB
+</code></pre><h2 id="2-安装HP磁盘管理工具"><a href="#2-安装HP磁盘管理工具" class="headerlink" title="2.安装HP磁盘管理工具"></a>2.安装HP磁盘管理工具</h2><pre><code>[root@localhost ~]# rpm -ivh http://mirror.nforce.com/pub/software/raidtools/hpacucli-tool/hpacucli-9.40-12.0.x86_64.rpm
+</code></pre><h2 id="3-配置RAID"><a href="#3-配置RAID" class="headerlink" title="3.配置RAID"></a>3.配置RAID</h2><h3 id="1-产看当前RAID状态"><a href="#1-产看当前RAID状态" class="headerlink" title="(1) 产看当前RAID状态"></a>(1) 产看当前RAID状态</h3><pre><code>[root@localhost ~]# hpacucli ctrl all show status
+
+Smart Array P420i in Slot 0 (Embedded)
+   Controller Status: OK
+   Cache Status: OK
+   Battery/Capacitor Status: OK
+
+[root@localhost ~]# hpacucli ctrl all show config
+
+Smart Array P420i in Slot 0 (Embedded)    (sn: 500143802626A660)
+
+   array A (SAS, Unused Space: 0  MB)
+
+
+      logicaldrive 1 (558.9 GB, RAID 1, OK)
+
+      physicaldrive 1I:1:1 (port 1I:box 1:bay 1, SAS, 600 GB, OK)
+      physicaldrive 1I:1:2 (port 1I:box 1:bay 2, SAS, 600 GB, OK)
+
+   unassigned
+
+      physicaldrive 1I:1:3 (port 1I:box 1:bay 3, SAS, 600 GB, OK)
+      physicaldrive 1I:1:4 (port 1I:box 1:bay 4, SAS, 600 GB, OK)
+      physicaldrive 2I:1:5 (port 2I:box 1:bay 5, SAS, 600 GB, OK)
+      physicaldrive 2I:1:6 (port 2I:box 1:bay 6, SAS, 600 GB, OK)
+
+   SEP (Vendor ID PMCSIERA, Model SRCv8x6G) 380 (WWID: 500143802626A66F)
+</code></pre><p>发现有两块盘做了RAID 1, 剩下4块盘没有做RAID。。</p>
+<h2 id="2-创建RAID"><a href="#2-创建RAID" class="headerlink" title="(2) 创建RAID"></a>(2) 创建RAID</h2><pre><code>[root@localhost ~]# hpacucli ctrl slot=0 create type=ld drives=1I:1:3,1I:1:4,2I:1:5,2I:1:6 raid=1+0
+[root@localhost ~]# hpacucli ctrl all show config
+
+Smart Array P420i in Slot 0 (Embedded)    (sn: 500143802626A660)
+
+   array A (SAS, Unused Space: 0  MB)
+
+
+      logicaldrive 1 (558.9 GB, RAID 1, OK)
+
+      physicaldrive 1I:1:1 (port 1I:box 1:bay 1, SAS, 600 GB, OK)
+      physicaldrive 1I:1:2 (port 1I:box 1:bay 2, SAS, 600 GB, OK)
+
+   array B (SAS, Unused Space: 0  MB)
+
+
+      logicaldrive 2 (1.1 TB, RAID 1+0, OK)
+
+      physicaldrive 1I:1:3 (port 1I:box 1:bay 3, SAS, 600 GB, OK)
+      physicaldrive 1I:1:4 (port 1I:box 1:bay 4, SAS, 600 GB, OK)
+      physicaldrive 2I:1:5 (port 2I:box 1:bay 5, SAS, 600 GB, OK)
+      physicaldrive 2I:1:6 (port 2I:box 1:bay 6, SAS, 600 GB, OK)
+
+   SEP (Vendor ID PMCSIERA, Model SRCv8x6G) 380 (WWID: 500143802626A66F)
+</code></pre><p>为剩下的4块盘创建了一个RAID 1+0</p>
+<h2 id="4-配置LVM"><a href="#4-配置LVM" class="headerlink" title="4.配置LVM"></a>4.配置LVM</h2><h3 id="1-创建分区"><a href="#1-创建分区" class="headerlink" title="(1) 创建分区"></a>(1) 创建分区</h3><pre><code>[root@localhost ~]# cfdisk /dev/sdb
+</code></pre><h3 id="2-创建物理卷"><a href="#2-创建物理卷" class="headerlink" title="(2) 创建物理卷"></a>(2) 创建物理卷</h3><pre><code>[root@localhost ~]# pvs
+  PV         VG       Fmt  Attr PSize   PFree
+  /dev/sda2  VolGroup lvm2 a--  558.39g    0
+[root@localhost ~]# pvcreate /dev/sdb1
+  Physical volume &quot;/dev/sdb1&quot; successfully created
+[root@localhost ~]# pvs
+  PV         VG       Fmt  Attr PSize   PFree
+  /dev/sda2  VolGroup lvm2 a--  558.39g    0
+  /dev/sdb1           lvm2 ---    1.09t 1.09t
+</code></pre><h3 id="3-将创建的物理卷添加到卷组"><a href="#3-将创建的物理卷添加到卷组" class="headerlink" title="(3) 将创建的物理卷添加到卷组"></a>(3) 将创建的物理卷添加到卷组</h3><pre><code>[root@localhost ~]# vgs
+  VG       #PV #LV #SN Attr   VSize   VFree
+  VolGroup   1   3   0 wz--n- 558.39g    0
+[root@localhost ~]# vgextend VolGroup /dev/sdb1
+  Volume group &quot;VolGroup&quot; successfully extended
+[root@localhost ~]# vgs
+  VG       #PV #LV #SN Attr   VSize VFree
+  VolGroup   2   3   0 wz--n- 1.64t 1.09t
+</code></pre><h3 id="4-创建逻辑卷"><a href="#4-创建逻辑卷" class="headerlink" title="(4) 创建逻辑卷"></a>(4) 创建逻辑卷</h3><pre><code>[root@localhost ~]# lvs
+  LV      VG       Attr       LSize   Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert
+  lv_home VolGroup -wi-ao---- 380.25g
+  lv_root VolGroup -wi-ao----  50.00g
+  lv_swap VolGroup -wi-ao---- 128.14g
+[root@localhost ~]# lvcreate -L 1T -n lv_data VolGroup
+  Logical volume &quot;lv_data&quot; created.
+[root@localhost ~]# lvs
+  LV      VG       Attr       LSize   Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert
+  lv_data VolGroup -wi-a-----   1.00t
+  lv_home VolGroup -wi-ao---- 380.25g
+  lv_root VolGroup -wi-ao----  50.00g
+  lv_swap VolGroup -wi-ao---- 128.14g
+</code></pre><h2 id="5-格式化使用"><a href="#5-格式化使用" class="headerlink" title="5.格式化使用"></a>5.格式化使用</h2><h3 id="1-格式化"><a href="#1-格式化" class="headerlink" title="(1) 格式化"></a>(1) 格式化</h3><pre><code>[root@localhost ~]#  mkfs.ext4 /dev/VolGroup/lv_data
+mke2fs 1.41.12 (17-May-2010)
+Filesystem label=
+OS type: Linux
+Block size=4096 (log=2)
+Fragment size=4096 (log=2)
+Stride=64 blocks, Stripe width=128 blocks
+67108864 inodes, 268435456 blocks
+13421772 blocks (5.00%) reserved for the super user
+First data block=0
+Maximum filesystem blocks=4294967296
+8192 block groups
+32768 blocks per group, 32768 fragments per group
+8192 inodes per group
+Superblock backups stored on blocks:
+        32768, 98304, 163840, 229376, 294912, 819200, 884736, 1605632, 2654208,
+        4096000, 7962624, 11239424, 20480000, 23887872, 71663616, 78675968,
+        102400000, 214990848
+
+Writing inode tables: done
+Creating journal (32768 blocks): done
+Writing superblocks and filesystem accounting information: done
+
+This filesystem will be automatically checked every 28 mounts or
+180 days, whichever comes first.  Use tune2fs -c or -i to override.
+[root@localhost ~]#  e2fsck -f /dev/VolGroup/lv_data
+e2fsck 1.41.12 (17-May-2010)
+Pass 1: Checking inodes, blocks, and sizes
+Pass 2: Checking directory structure
+Pass 3: Checking directory connectivity
+Pass 4: Checking reference counts
+Pass 5: Checking group summary information
+/dev/VolGroup/lv_data: 11/67108864 files (0.0% non-contiguous), 4262937/268435456 blocks
+</code></pre><h3 id="2-挂载"><a href="#2-挂载" class="headerlink" title="(2) 挂载"></a>(2) 挂载</h3><pre><code>[root@localhost ~]# df -h
+Filesystem            Size  Used Avail Use% Mounted on
+/dev/mapper/VolGroup-lv_root
+                       50G  5.1G   42G  11% /
+tmpfs                  63G     0   63G   0% /dev/shm
+/dev/sda1             485M   67M  393M  15% /boot
+/dev/mapper/VolGroup-lv_home
+                      375G  192G  164G  55% /home
+[root@localhost ~]# mkdir -p /data
+[root@localhost ~]# mount -t ext4 /dev/VolGroup/lv_data /data
+[root@localhost ~]# df -h
+Filesystem            Size  Used Avail Use% Mounted on
+/dev/mapper/VolGroup-lv_root
+                       50G  5.1G   42G  11% /
+tmpfs                  63G     0   63G   0% /dev/shm
+/dev/sda1             485M   67M  393M  15% /boot
+/dev/mapper/VolGroup-lv_home
+                      375G  192G  164G  55% /home
+/dev/mapper/VolGroup-lv_data
+                     1008G  200M  957G   1% /data
+</code></pre><h2 id="6-参考"><a href="#6-参考" class="headerlink" title="6.参考"></a>6.参考</h2><p><a href="http://www.datadisk.co.uk/html_docs/redhat/hpacucli.htm" target="_blank" rel="external">http://www.datadisk.co.uk/html_docs/redhat/hpacucli.htm</a></p>
+]]></content>
     </entry>
     
     <entry>
@@ -3432,264 +3693,603 @@ fi
     </entry>
     
     <entry>
-      <title><![CDATA[Linux查看硬件信息]]></title>
-      <url>http://panwenhang.github.io/2016/06/30/Linux-2016-06-30-Linux%E6%9F%A5%E7%9C%8B%E7%A1%AC%E4%BB%B6%E4%BF%A1%E6%81%AF/</url>
-      <content type="html"><![CDATA[<h2 id="CPU"><a href="#CPU" class="headerlink" title="CPU"></a>CPU</h2><h3 id="1-lscpu"><a href="#1-lscpu" class="headerlink" title="1. lscpu"></a>1. lscpu</h3><p>Lists the basic information of cpu.</p>
-<a id="more"></a>
-<h3 id="2-cat-proc-cpuinfo"><a href="#2-cat-proc-cpuinfo" class="headerlink" title="2. cat /proc/cpuinfo"></a>2. cat /proc/cpuinfo</h3><p>Lists the information of each core of cpu.</p>
-<h2 id="MEMORY"><a href="#MEMORY" class="headerlink" title="MEMORY"></a>MEMORY</h2><h3 id="1-free-m"><a href="#1-free-m" class="headerlink" title="1. free -m"></a>1. free -m</h3><p>Lists usage information of memory.</p>
-<h3 id="2-cat-proc-meminfo"><a href="#2-cat-proc-meminfo" class="headerlink" title="2. cat /proc/meminfo"></a>2. cat /proc/meminfo</h3><p>Lists the detail usage information of memory.</p>
-<h3 id="3-dmidecode-t-memory"><a href="#3-dmidecode-t-memory" class="headerlink" title="3. dmidecode -t memory"></a>3. dmidecode -t memory</h3><p>Lists the hardware information of memory.</p>
-<h2 id="DISK"><a href="#DISK" class="headerlink" title="DISK"></a>DISK</h2><h3 id="1-lsblk"><a href="#1-lsblk" class="headerlink" title="1. lsblk"></a>1. lsblk</h3><p>Lists information about all or the specified block devices.</p>
-<h3 id="2-fdisk-l"><a href="#2-fdisk-l" class="headerlink" title="2. fdisk -l"></a>2. fdisk -l</h3><p>Partition table manipulator for Linux.</p>
-<h3 id="3-df-Th"><a href="#3-df-Th" class="headerlink" title="3. df -Th"></a>3. df -Th</h3><p>Report file system disk space usage.</p>
-<h2 id="NETWORK-CARD"><a href="#NETWORK-CARD" class="headerlink" title="NETWORK CARD"></a>NETWORK CARD</h2><h3 id="1-ifconfig-a"><a href="#1-ifconfig-a" class="headerlink" title="1. ifconfig -a"></a>1. ifconfig -a</h3><p>Lists configuration of each network interface.</p>
-<h3 id="2-ip-link-show"><a href="#2-ip-link-show" class="headerlink" title="2. ip link show"></a>2. ip link show</h3><p>Show routing, devices, policy routing and tunnels.</p>
-<h2 id="BIOS"><a href="#BIOS" class="headerlink" title="BIOS"></a>BIOS</h2><h3 id="dmidecode-t-bios"><a href="#dmidecode-t-bios" class="headerlink" title="dmidecode -t bios"></a>dmidecode -t bios</h3><h2 id="PCI"><a href="#PCI" class="headerlink" title="PCI"></a>PCI</h2><h3 id="lspci"><a href="#lspci" class="headerlink" title="lspci"></a>lspci</h3>]]></content>
-    </entry>
-    
-    <entry>
-      <title><![CDATA[Linux代理设置]]></title>
-      <url>http://panwenhang.github.io/2016/06/30/Linux-2016-06-30-Linux%E4%BB%A3%E7%90%86%E8%AE%BE%E7%BD%AE/</url>
-      <content type="html"><![CDATA[<p>由于公司必须通过代理才能上外网,所以搞了下代理的设置</p>
-<h2 id="1-浏览器设置代理"><a href="#1-浏览器设置代理" class="headerlink" title="1. 浏览器设置代理"></a>1. 浏览器设置代理</h2><a id="more"></a>
-<p>将如下内容添加到你的.bashrc或者.bash_profile里面</p>
-<pre><code>export all_proxy=&apos;sockets://ip:port&apos;
-export ftp_proxy=&apos;http://ip:port&apos;
-export http_proxy=&apos;http://ip:port&apos;
-export https_proxy=&apos;http://ip:port&apos;
-export no_proxy=&quot;localhost,127.0.0.0/8,::1&quot;
-</code></pre><p>然后执行:</p>
-<pre><code>$ source ~/.bashrc
-</code></pre><p>这样浏览器就可以使用代理了。</p>
-<h2 id="2-apt-get设置代理"><a href="#2-apt-get设置代理" class="headerlink" title="2. apt-get设置代理"></a>2. apt-get设置代理</h2><p>在Ubuntu 10.10及以后版本中,apt-get不再读取$http_proxy变量,解决方法是修改apt-get的配置文件:</p>
-<pre><code>$ sudo vim /etc/apt/apt.conf
-Acquire::http::proxy &quot;http://ip:port&quot;;
-Acquire::ftp::proxy &quot;ftp://ip:port&quot;;
-Acquire::https::proxy &quot;https://ip:port&quot;;
-</code></pre><p>apt-get还支持-c模式指定配置文件和-o指定配置项:</p>
-<p>如将上面的配置加入到~/apt_proxy.conf中,可以使用,这样不会修改默认的配置,使用代理是执行</p>
-<pre><code>$ sudo apt-get -c ~/apt_proxy.conf update
-</code></pre><p>或者使用配置项:</p>
-<pre><code>$ sudo apt-get -o Acquire::http::proxy=&quot;http://ip:port&quot; update
+      <title><![CDATA[MongoDB分片搭建]]></title>
+      <url>http://panwenhang.github.io/2016/06/23/MongoDB-2016-06-23-MongoDB%E5%88%86%E7%89%87%E6%90%AD%E5%BB%BA/</url>
+      <content type="html"><![CDATA[<h2 id="1-环境"><a href="#1-环境" class="headerlink" title="1. 环境"></a>1. 环境</h2><pre><code>$ cat /etc/redhat-release
+CentOS Linux release 7.0.1406 (Core)
+$ uname -a
+Linux zhaopin-2-201 3.10.0-123.el7.x86_64 #1 SMP Mon Jun 30 12:09:22 UTC 2014 x86_64 x86_64 x86_64 GNU/Linux
+</code></pre><a id="more"></a>
+<p>  $ mongo –version<br>    MongoDB shell version: 3.0.6</p>
+<pre><code>node1: 172.30.2.201
+node2: 172.30.2.202
+node3: 172.30.2.203
+</code></pre><h2 id="2-配置-Shard-Server"><a href="#2-配置-Shard-Server" class="headerlink" title="2. 配置 Shard Server"></a>2. 配置 Shard Server</h2><p>在 3 个节点分别执行:</p>
+<h3 id="1-创建目录"><a href="#1-创建目录" class="headerlink" title="(1) 创建目录"></a>(1) 创建目录</h3><pre><code>$ sudo mkdir -p /data/mongodb/{sh0,sh1}/{data,backup,log,conf}
+</code></pre><h3 id="2-准备配置文件"><a href="#2-准备配置文件" class="headerlink" title="(2) 准备配置文件"></a>(2) 准备配置文件</h3><p>第一个分片:</p>
+<pre><code>$ sudo vim /data/mongodb/sh0/conf/mongodb.conf
+# base
+port = 27010
+maxConns = 800
+filePermissions = 0700
+fork = true
+noauth = true
+directoryperdb = true
+dbpath = /data/mongodb/sh0/data
+pidfilepath = /data/mongodb/sh0/data/mongodb.pid
+oplogSize = 10
+journal = true
+# security
+nohttpinterface = true
+rest = false
+# log
+logpath = /data/mongodb/sh0/log/mongodb.log
+logRotate = rename
+logappend = true
+slowms = 50
+replSet = sh0
+shardsvr = true
+</code></pre><p>第二个分片:</p>
+<pre><code>$ sudo vim /data/mongodb/sh1/conf/mongodb.conf
+# base
+port = 27011
+maxConns = 800
+filePermissions = 0700
+fork = true
+noauth = true
+directoryperdb = true
+dbpath = /data/mongodb/sh1/data
+pidfilepath = /data/mongodb/sh1/data/mongodb.pid
+oplogSize = 10
+journal = true
+# security
+nohttpinterface = true
+rest = false
+# log
+logpath = /data/mongodb/sh1/log/mongodb.log
+logRotate = rename
+logappend = true
+slowms = 50
+replSet = sh1
+shardsvr = true
+</code></pre><h3 id="3-启动-Shard-Server"><a href="#3-启动-Shard-Server" class="headerlink" title="(3) 启动 Shard Server"></a>(3) 启动 Shard Server</h3><pre><code>$ sudo /opt/mongodb/bin/mongod --config /data/mongodb/sh0/conf/mongodb.conf
+about to fork child process, waiting until server is ready for connections.
+forked process: 41492
+child process started successfully, parent exiting
+$ sudo /opt/mongodb/bin/mongod --config /data/mongodb/sh1/conf/mongodb.conf
+about to fork child process, waiting until server is ready for connections.
+forked process: 41509
+child process started successfully, parent exiting
+$ ps aux | grep mongo | grep -v grep
+root     41492  0.5  0.0 518016 54604 ?        Sl   10:09   0:00 /opt/mongodb/bin/mongod --config /data/mongodb/conf/sh0/mongodb.conf
+root     41509  0.5  0.0 516988 51824 ?        Sl   10:09   0:00 /opt/mongodb/bin/mongod --config /data/mongodb/conf/sh1/mongodb.conf
+$ mongo --port 27010
+MongoDB shell version: 3.0.6
+connecting to: 127.0.0.1:27010/test
+&gt;
+bye
+$ mongo --port 27011
+MongoDB shell version: 3.0.6
+connecting to: 127.0.0.1:27011/test
+&gt;
+bye
+</code></pre><h2 id="3-配置-Config-Server"><a href="#3-配置-Config-Server" class="headerlink" title="3.配置 Config Server"></a>3.配置 Config Server</h2><p>在 3 个节点分别执行:</p>
+<h3 id="1-创建目录-1"><a href="#1-创建目录-1" class="headerlink" title="(1) 创建目录"></a>(1) 创建目录</h3><pre><code>$ sudo mkdir -p /data/mongodb/cf0/{data,backup,log,conf}
+</code></pre><h3 id="2-准备配置文件-1"><a href="#2-准备配置文件-1" class="headerlink" title="(2) 准备配置文件"></a>(2) 准备配置文件</h3><pre><code>$ sudo vim /data/mongodb/cf0/conf/config.conf
+# base
+port = 27000
+maxConns = 800
+filePermissions = 0700
+fork = true
+noauth = true
+directoryperdb = true
+dbpath = /data/mongodb/cf0/data
+pidfilepath = /data/mongodb/cf0/data/config.pid
+oplogSize = 10
+journal = true
+# security
+nohttpinterface = true
+rest = false
+# log
+logpath = /data/mongodb/cf0/log/config.log
+logRotate = rename
+logappend = true
+slowms = 50
+configsvr = true
+</code></pre><h3 id="3-启动"><a href="#3-启动" class="headerlink" title="(3) 启动"></a>(3) 启动</h3><pre><code>$ sudo /opt/mongodb/bin/mongod --config /data/mongodb/cf0/conf/config.conf
+about to fork child process, waiting until server is ready for connections.
+forked process: 41759
+child process started successfully, parent exiting
+$ ps aux | grep mongo | grep -v grep
+root     41492  0.3  0.0 518016 54728 ?        Sl   10:09   0:06 /opt/mongodb/bin/mongod --config /data/mongodb/sh0/conf/mongodb.conf
+root     41509  0.3  0.0 518016 54760 ?        Sl   10:09   0:06 /opt/mongodb/bin/mongod --config /data/mongodb/sh1/conf/mongodb.conf
+root     41855  0.4  0.0 467828 51684 ?        Sl   10:25   0:03 /opt/mongodb/bin/mongod --config /data/mongodb/cf0/conf/config.conf
+</code></pre><h3 id="4-配置-Query-Routers"><a href="#4-配置-Query-Routers" class="headerlink" title="4. 配置 Query Routers"></a>4. 配置 Query Routers</h3><p>在 3 个节点分别执行:</p>
+<h3 id="1-创建目录-2"><a href="#1-创建目录-2" class="headerlink" title="(1) 创建目录"></a>(1) 创建目录</h3><pre><code>$ sudo mkdir -p /data/mongodb/ms0/{data,backup,log,conf}
+</code></pre><h3 id="2-准备配置文件-2"><a href="#2-准备配置文件-2" class="headerlink" title="(2) 准备配置文件"></a>(2) 准备配置文件</h3><pre><code>$ sudo vim /data/mongodb/ms0/conf/mongos.conf
+# base
+port = 30000
+maxConns = 800
+filePermissions = 0700
+fork = true
+pidfilepath = /data/mongodb/ms0/data/mongos.pid
+# log
+logpath = /data/mongodb/ms0/log/mongos.log
+logRotate = rename
+logappend = true
+configdb = 172.30.2.201:27000,172.30.2.202:27000,172.30.2.203:27000
+</code></pre><h3 id="3-启动-1"><a href="#3-启动-1" class="headerlink" title="(3) 启动"></a>(3) 启动</h3><pre><code>$ sudo /opt/mongodb/bin/mongos --config /data/mongodb/ms0/conf/mongos.conf
+about to fork child process, waiting until server is ready for connections.
+forked process: 42233
+child process started successfully, parent exiting
+$ ps aux | grep mongo | grep -v grep
+root     41492  0.3  0.0 518016 54728 ?        Sl   10:09   0:06 /opt/mongodb/bin/mongod --config /data/mongodb/sh0/conf/mongodb.conf
+root     41509  0.3  0.0 518016 54760 ?        Sl   10:09   0:07 /opt/mongodb/bin/mongod --config /data/mongodb/sh1/conf/mongodb.conf
+root     41855  0.4  0.0 546724 37812 ?        Sl   10:25   0:03 /opt/mongodb/bin/mongod --config /data/mongodb/cf0/conf/config.conf
+root     42233  0.5  0.0 233536 10188 ?        Sl   10:38   0:00 /opt/mongodb/bin/mongos --config /data/mongodb/ms0/conf/mongos.conf
+</code></pre><h2 id="5-初始化副本集"><a href="#5-初始化副本集" class="headerlink" title="5. 初始化副本集"></a>5. 初始化副本集</h2><p>配置副本集的好处是为了高可用,配置单节点是我自己为了节省时间,后续添加节点和副本集的操作一样,分片的配置不需要修改,在任何一个节点执行,这里在 node1 上执行</p>
+<p>分片一:</p>
+<pre><code>$ mongo --port 27010
+MongoDB shell version: 3.0.6
+connecting to: 127.0.0.1:27010/test
+&gt; use admin
+switched to db admin
+&gt; cfg={_id:&quot;sh0&quot;, members:[ {_id:0,host:&quot;172.30.2.201:27010&quot;}, {_id:1,host:&quot;172.30.2.202:27010&quot;}, {_id:2,host:&quot;172.30.2.203:27010&quot;} ] }
+{
+        &quot;_id&quot; : &quot;sh0&quot;,
+        &quot;members&quot; : [
+                {
+                        &quot;_id&quot; : 0,
+                        &quot;host&quot; : &quot;172.30.2.201:27010&quot;
+                },
+                {
+                        &quot;_id&quot; : 1,
+                        &quot;host&quot; : &quot;172.30.2.202:27010&quot;
+                },
+                {
+                        &quot;_id&quot; : 2,
+                        &quot;host&quot; : &quot;172.30.2.203:27010&quot;
+                }
+        ]
+}
+&gt; rs.initiate( cfg );
+{ &quot;ok&quot; : 1 }
+sh0:OTHER&gt; rs.status()
+{
+        &quot;set&quot; : &quot;sh0&quot;,
+        &quot;date&quot; : ISODate(&quot;2015-10-23T05:33:31.920Z&quot;),
+        &quot;myState&quot; : 1,
+        &quot;members&quot; : [
+                {
+                        &quot;_id&quot; : 0,
+                        &quot;name&quot; : &quot;172.30.2.201:27010&quot;,
+                        &quot;health&quot; : 1,
+                        &quot;state&quot; : 1,
+                        &quot;stateStr&quot; : &quot;PRIMARY&quot;,
+                        &quot;uptime&quot; : 270,
+                        &quot;optime&quot; : Timestamp(1445578404, 1),
+                        &quot;optimeDate&quot; : ISODate(&quot;2015-10-23T05:33:24Z&quot;),
+                        &quot;electionTime&quot; : Timestamp(1445578408, 1),
+                        &quot;electionDate&quot; : ISODate(&quot;2015-10-23T05:33:28Z&quot;),
+                        &quot;configVersion&quot; : 1,
+                        &quot;self&quot; : true
+                },
+                {
+                        &quot;_id&quot; : 1,
+                        &quot;name&quot; : &quot;172.30.2.202:27010&quot;,
+                        &quot;health&quot; : 1,
+                        &quot;state&quot; : 5,
+                        &quot;stateStr&quot; : &quot;STARTUP2&quot;,
+                        &quot;uptime&quot; : 7,
+                        &quot;optime&quot; : Timestamp(0, 0),
+                        &quot;optimeDate&quot; : ISODate(&quot;1970-01-01T00:00:00Z&quot;),
+                        &quot;lastHeartbeat&quot; : ISODate(&quot;2015-10-23T05:33:30.289Z&quot;),
+                        &quot;lastHeartbeatRecv&quot; : ISODate(&quot;2015-10-23T05:33:30.295Z&quot;),
+                        &quot;pingMs&quot; : 1,
+                        &quot;configVersion&quot; : 1
+                },
+                {
+                        &quot;_id&quot; : 2,
+                        &quot;name&quot; : &quot;172.30.2.203:27010&quot;,
+                        &quot;health&quot; : 1,
+                        &quot;state&quot; : 5,
+                        &quot;stateStr&quot; : &quot;STARTUP2&quot;,
+                        &quot;uptime&quot; : 7,
+                        &quot;optime&quot; : Timestamp(0, 0),
+                        &quot;optimeDate&quot; : ISODate(&quot;1970-01-01T00:00:00Z&quot;),
+                        &quot;lastHeartbeat&quot; : ISODate(&quot;2015-10-23T05:33:30.289Z&quot;),
+                        &quot;lastHeartbeatRecv&quot; : ISODate(&quot;2015-10-23T05:33:30.293Z&quot;),
+                        &quot;pingMs&quot; : 1,
+                        &quot;configVersion&quot; : 1
+                }
+        ],
+        &quot;ok&quot; : 1
+}
+sh0:PRIMARY&gt;
+bye
+</code></pre><p>分片二:</p>
+<pre><code>$ mongo --port 27011
+MongoDB shell version: 3.0.6
+connecting to: 127.0.0.1:27011/test
+&gt; use admin
+switched to db admin
+&gt; cfg={_id:&quot;sh1&quot;, members:[ {_id:0,host:&quot;172.30.2.201:27011&quot;}, {_id:1,host:&quot;172.30.2.202:27011&quot;}, {_id:2,host:&quot;172.30.2.203:27011&quot;} ] }
+{
+        &quot;_id&quot; : &quot;sh1&quot;,
+        &quot;members&quot; : [
+                {
+                        &quot;_id&quot; : 0,
+                        &quot;host&quot; : &quot;172.30.2.201:27011&quot;
+                },
+                {
+                        &quot;_id&quot; : 1,
+                        &quot;host&quot; : &quot;172.30.2.202:27011&quot;
+                },
+                {
+                        &quot;_id&quot; : 2,
+                        &quot;host&quot; : &quot;172.30.2.203:27011&quot;
+                }
+        ]
+}
+&gt; rs.initiate( cfg );
+{ &quot;ok&quot; : 1 }
+sh1:OTHER&gt; rs.status();
+{
+        &quot;set&quot; : &quot;sh1&quot;,
+        &quot;date&quot; : ISODate(&quot;2015-10-23T05:36:02.365Z&quot;),
+        &quot;myState&quot; : 1,
+        &quot;members&quot; : [
+                {
+                        &quot;_id&quot; : 0,
+                        &quot;name&quot; : &quot;172.30.2.201:27011&quot;,
+                        &quot;health&quot; : 1,
+                        &quot;state&quot; : 1,
+                        &quot;stateStr&quot; : &quot;PRIMARY&quot;,
+                        &quot;uptime&quot; : 406,
+                        &quot;optime&quot; : Timestamp(1445578557, 1),
+                        &quot;optimeDate&quot; : ISODate(&quot;2015-10-23T05:35:57Z&quot;),
+                        &quot;electionTime&quot; : Timestamp(1445578561, 1),
+                        &quot;electionDate&quot; : ISODate(&quot;2015-10-23T05:36:01Z&quot;),
+                        &quot;configVersion&quot; : 1,
+                        &quot;self&quot; : true
+                },
+                {
+                        &quot;_id&quot; : 1,
+                        &quot;name&quot; : &quot;172.30.2.202:27011&quot;,
+                        &quot;health&quot; : 1,
+                        &quot;state&quot; : 5,
+                        &quot;stateStr&quot; : &quot;STARTUP2&quot;,
+                        &quot;uptime&quot; : 5,
+                        &quot;optime&quot; : Timestamp(0, 0),
+                        &quot;optimeDate&quot; : ISODate(&quot;1970-01-01T00:00:00Z&quot;),
+                        &quot;lastHeartbeat&quot; : ISODate(&quot;2015-10-23T05:36:01.168Z&quot;),
+                        &quot;lastHeartbeatRecv&quot; : ISODate(&quot;2015-10-23T05:36:01.175Z&quot;),
+                        &quot;pingMs&quot; : 0,
+                        &quot;configVersion&quot; : 1
+                },
+                {
+                        &quot;_id&quot; : 2,
+                        &quot;name&quot; : &quot;172.30.2.203:27011&quot;,
+                        &quot;health&quot; : 1,
+                        &quot;state&quot; : 5,
+                        &quot;stateStr&quot; : &quot;STARTUP2&quot;,
+                        &quot;uptime&quot; : 5,
+                        &quot;optime&quot; : Timestamp(0, 0),
+                        &quot;optimeDate&quot; : ISODate(&quot;1970-01-01T00:00:00Z&quot;),
+                        &quot;lastHeartbeat&quot; : ISODate(&quot;2015-10-23T05:36:01.167Z&quot;),
+                        &quot;lastHeartbeatRecv&quot; : ISODate(&quot;2015-10-23T05:36:01.172Z&quot;),
+                        &quot;pingMs&quot; : 0,
+                        &quot;configVersion&quot; : 1
+                }
+        ],
+        &quot;ok&quot; : 1
+}
+sh1:PRIMARY&gt;
+bye
+</code></pre><h2 id="6-配置分片"><a href="#6-配置分片" class="headerlink" title="6. 配置分片"></a>6. 配置分片</h2><pre><code>$ mongo --port 30000
+MongoDB shell version: 3.0.6
+connecting to: 127.0.0.1:30000/test
+mongos&gt; use admin;
+switched to db admin
+mongos&gt; sh.addShard(&quot;sh0/172.30.2.201:27010,172.30.2.202:27010,172.30.2.203:27010&quot;);
+{ &quot;shardAdded&quot; : &quot;sh0&quot;, &quot;ok&quot; : 1 }
+mongos&gt; sh.addShard(&quot;sh1/172.30.2.201:27011,172.30.2.202:27011,172.30.2.203:27011&quot;);
+{ &quot;shardAdded&quot; : &quot;sh1&quot;, &quot;ok&quot; : 1 }
+mongos&gt; use mydb;
+switched to db mydb
+mongos&gt; db.createCollection(&quot;test&quot;);
+{
+        &quot;ok&quot; : 1,
+        &quot;$gleStats&quot; : {
+                &quot;lastOpTime&quot; : Timestamp(1444358911, 1),
+                &quot;electionId&quot; : ObjectId(&quot;56172a4bc03d9b1667f8e928&quot;)
+        }
+}
+mongos&gt; sh.enableSharding(&quot;mydb&quot;);
+{ &quot;ok&quot; : 1 }
+mongos&gt; sh.shardCollection(&quot;mydb.test&quot;, {&quot;_id&quot;:1});
+{ &quot;collectionsharded&quot; : &quot;mydb.test&quot;, &quot;ok&quot; : 1 }
+mongos&gt; sh.status();
+--- Sharding Status ---
+  sharding version: {
+        &quot;_id&quot; : 1,
+        &quot;minCompatibleVersion&quot; : 5,
+        &quot;currentVersion&quot; : 6,
+        &quot;clusterId&quot; : ObjectId(&quot;561728b4030ea038bcb57fa0&quot;)
+}
+  shards:
+        {  &quot;_id&quot; : &quot;sh0&quot;,  &quot;host&quot; : &quot;sh0/172.30.2.201:27010,172.30.2.202:27010,172.30.2.203:27010&quot; }
+        {  &quot;_id&quot; : &quot;sh1&quot;,  &quot;host&quot; : &quot;sh1/172.30.2.201:27011,172.30.2.202:27011,172.30.2.203:27011&quot; }
+  balancer:
+        Currently enabled:  yes
+        Currently running:  no
+        Failed balancer rounds in last 5 attempts:  0
+        Migration Results for the last 24 hours:
+                No recent migrations
+  databases:
+        {  &quot;_id&quot; : &quot;admin&quot;,  &quot;partitioned&quot; : false,  &quot;primary&quot; : &quot;config&quot; }
+        {  &quot;_id&quot; : &quot;mydb&quot;,  &quot;partitioned&quot; : true,  &quot;primary&quot; : &quot;sh0&quot; }
+                mydb.test
+                        shard key: { &quot;_id&quot; : 1 }
+                        chunks:
+                                sh0     1
+                        { &quot;_id&quot; : { &quot;$minKey&quot; : 1 } } --&gt;&gt; { &quot;_id&quot; : { &quot;$maxKey&quot; : 1 } } on : sh0 Timestamp(1, 0)
+</code></pre><p>可见分片已经配置完成了</p>
+<h2 id="7-添加开机启动项"><a href="#7-添加开机启动项" class="headerlink" title="7. 添加开机启动项"></a>7. 添加开机启动项</h2><pre><code>$ sudo vim /etc/rc.local
+ulimit -SHn 65535
+/opt/mongodb/bin/mongod --config /data/mongodb/sh0/conf/mongodb.conf
+/opt/mongodb/bin/mongod --config /data/mongodb/sh1/conf/mongodb.conf
+/opt/mongodb/bin/mongod --config /data/mongodb/cf0/conf/config.conf
+/opt/mongodb/bin/mongos --config /data/mongodb/ms0/conf/mongos.conf
+</code></pre><h2 id="8-备注"><a href="#8-备注" class="headerlink" title="8. 备注"></a>8. 备注</h2><pre><code>虽然也是 3 台机器,使用分片的好处是可以把两个分片的 primary 设置在不同的节点,这个可以分摊单节点的压力,当然有更多机器就可以把分片放到不同机器上。
 </code></pre>]]></content>
     </entry>
     
     <entry>
-      <title><![CDATA[Linux之间ssh免密码登录]]></title>
-      <url>http://panwenhang.github.io/2016/06/30/Linux-2016-06-30-Linux%E4%B9%8B%E9%97%B4ssh%E5%85%8D%E5%AF%86%E7%A0%81%E7%99%BB%E5%BD%95/</url>
-      <content type="html"><![CDATA[<h2 id="1-生成公私钥对"><a href="#1-生成公私钥对" class="headerlink" title="1.生成公私钥对"></a>1.生成公私钥对</h2><pre><code>$ ssh-keygen -t rsa -P &apos;&apos;
-Generating public/private rsa key pair.
-Enter file in which to save the key (/root/.ssh/id_rsa):
-Your identification has been saved in /root/.ssh/id_rsa.
-Your public key has been saved in /root/.ssh/id_rsa.pub.
+      <title><![CDATA[MongoDB副本集搭建]]></title>
+      <url>http://panwenhang.github.io/2016/06/23/MongoDB-2016-06-23-MongoDB%E5%89%AF%E6%9C%AC%E9%9B%86%E6%90%AD%E5%BB%BA/</url>
+      <content type="html"><![CDATA[<h2 id="1-环境"><a href="#1-环境" class="headerlink" title="1. 环境"></a>1. 环境</h2><pre><code>$ cat /etc/redhat-release
+CentOS Linux release 7.0.1406 (Core)
+$ uname -a
+Linux zhaopin-2-201 3.10.0-123.el7.x86_64 #1 SMP Mon Jun 30 12:09:22 UTC 2014 x86_64 x86_64 x86_64 GNU/Linux
+$ mongo --version
+MongoDB shell version: 3.0.6
 </code></pre><a id="more"></a>
-<p>   The key fingerprint is:<br>    88:64:ed:a1:a7:a2:c0:b4:ee:77:38:2f:c7:39:c6:c1 root@QA-5-45<br>    The key’s randomart image is:<br>    +–[ RSA 2048 ]—-+<br>    |                 |<br>    |     .           |<br>    |    o o          |<br>    |   o + o         |<br>    | .  + + S        |<br>    |o .  E           |<br>    |.o. = o          |<br>    |o. * O           |<br>    |oo. B..          |<br>    +—————–+<br>     -P phrase   Provide old passphrase. 这个是指使用私钥的密码<br>     -t type     Specify type of key to create. 这个是创建公私钥的类型</p>
-<pre><code>$ ll .ssh/
-total 8
--rw-------. 1 root root 1675 Sep  6 04:12 id_rsa
--rw-r--r--. 1 root root  394 Sep  6 04:12 id_rsa.pub
-</code></pre><h2 id="2-复制公钥到免密码登录的机器"><a href="#2-复制公钥到免密码登录的机器" class="headerlink" title="2.复制公钥到免密码登录的机器"></a>2.复制公钥到免密码登录的机器</h2><pre><code>$ ssh-copy-id root@172.17.5.46
-The authenticity of host &apos;172.17.5.46 (172.17.5.46)&apos; can&apos;t be established.
-RSA key fingerprint is 8e:ac:89:5d:10:be:e7:d8:a2:34:0b:bf:70:cd:ce:33.
-Are you sure you want to continue connecting (yes/no)? yes
-Warning: Permanently added &apos;172.17.5.46&apos; (RSA) to the list of known hosts.
-root@172.17.5.46&apos;s password:
-Now try logging into the machine, with &quot;ssh &apos;root@172.17.5.46&apos;&quot;, and check in:
+<h2 id="2-准备"><a href="#2-准备" class="headerlink" title="2. 准备"></a>2. 准备</h2><h3 id="1-创建目录"><a href="#1-创建目录" class="headerlink" title="(1) 创建目录"></a>(1) 创建目录</h3><pre><code>$ sudo mkdir -p /data/mongodb/db0/{data,backup,log,conf}
+</code></pre><h3 id="2-编写配置文件"><a href="#2-编写配置文件" class="headerlink" title="(2) 编写配置文件"></a>(2) 编写配置文件</h3><pre><code>$ sudo vim /data/mongodb/db0/conf/mongodb.conf
+# base
+port = 27017
+maxConns = 800
+filePermissions = 0700
+fork = true
+noauth = true
+directoryperdb = true
+dbpath = /data/mongodb/db0/data
+pidfilepath = /data/mongodb/db0/data/mongodb.pid
+journal = true
 
-  .ssh/authorized_keys
+# security
+nohttpinterface = true
+rest = false
 
-to make sure we haven&apos;t added extra keys that you weren&apos;t expecting.
-</code></pre><p>免登录机器上:</p>
-<pre><code>$ ll .ssh/
-total 4
--rw-------. 1 root root 394 Sep  6 04:16 authorized_keys
-</code></pre><h2 id="3-测试"><a href="#3-测试" class="headerlink" title="3.测试"></a>3.测试</h2><pre><code># ssh 172.17.5.46
-Last login: Sun Sep  6 04:06:43 2015 from 172.17.5.45
-[root@node2 ~]#
-</code></pre><p>成功免密码登录。</p>
-<h2 id="4-结论"><a href="#4-结论" class="headerlink" title="4.结论"></a>4.结论</h2><pre><code>免密码登录不用再每次都输入密码,方便了许多；
-
-rsync也可以使用ssh认证在linux服务器之间免密码传输文件；
-
-最好别配置root用户的免密码登录
-</code></pre>]]></content>
-    </entry>
-    
-    <entry>
-      <title><![CDATA[Linux中时间同步]]></title>
-      <url>http://panwenhang.github.io/2016/06/30/Linux-2016-06-30-Linux%E4%B8%AD%E6%97%B6%E9%97%B4%E5%90%8C%E6%AD%A5/</url>
-      <content type="html"><![CDATA[<h2 id="1-安装ntpdate"><a href="#1-安装ntpdate" class="headerlink" title="1. 安装ntpdate"></a>1. 安装ntpdate</h2><pre><code>$ sudo yum install -y ntpdate
-</code></pre><a id="more"></a>
-<h2 id="2-同步时间"><a href="#2-同步时间" class="headerlink" title="2. 同步时间"></a>2. 同步时间</h2><pre><code>$ sudo /usr/sbin/ntpdate $ntp_server
-</code></pre><h2 id="3-刷新到硬件时钟"><a href="#3-刷新到硬件时钟" class="headerlink" title="3. 刷新到硬件时钟"></a>3. 刷新到硬件时钟</h2><pre><code>$ sudo /sbin/hwclock --systohc
-</code></pre>]]></content>
-    </entry>
-    
-    <entry>
-      <title><![CDATA[Linux下打包]]></title>
-      <url>http://panwenhang.github.io/2016/06/30/Linux-2016-06-30-Linux%E4%B8%8B%E6%89%93%E5%8C%85/</url>
-      <content type="html"><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><pre><code>打包是指将源码包编译成rpm包,在centos下通过rpmbuild命令和spec文件来实现。
-相对于源码编译安装的好处是,不需要每次安装都编译一次,那样很慢,对于打好的rpm包,直接试用rpm命令就可以安装。
-相对于一些官方提供的rpm包的优势在于,可以想源码编译一样定制化包的安装,比如修改安装的路径,添加一些自己的配置和文件等。
-</code></pre><a id="more"></a>
-<p>以下的打包以postgresql为例</p>
-<h2 id="1-安装rpmbuild"><a href="#1-安装rpmbuild" class="headerlink" title="1. 安装rpmbuild"></a>1. 安装rpmbuild</h2><pre><code>$ sudo yum install -y rpm-build
-</code></pre><h2 id="3-初始化打包目录"><a href="#3-初始化打包目录" class="headerlink" title="3. 初始化打包目录"></a>3. 初始化打包目录</h2><pre><code>$ sudo mkdir -p /data
-$ cd /data/
-$ sudo mkdir -p rpmbuild/{BUILD,BUILDROOT,RPMS,SRPMS,SOURCES,SPECS}
-$ sudo chown -R $(whoami): rpmbuild
-</code></pre><h2 id="4-准备spec文件"><a href="#4-准备spec文件" class="headerlink" title="4. 准备spec文件"></a>4. 准备spec文件</h2><pre><code>$ sudo mkdir -p rpmbuild/SPECS/postgresql/{9.4,conf}
-$ cd rpmbuild/SPECS/postgresql/9.4/
-$ vim pg94.el6.spec
-
-    %define debug_package %{nil}
-
-    Name: postgresql
-    Summary: PostgreSQL server
-    Version: 9.5.3
-    Release: 1%{?dist}
-    Source: postgresql-%{version}.tar.gz
-    URL: http://www.postgresql.org/ftp/source/
-    Group: Applications/Database
-    Vendor: PostgreSQL
-    License: Public Domain
-
-    BuildRequires    : libxml2-devel
-    BuildRequires    : libxslt-devel
-    BuildRequires    : uuid-devel
-    BuildRequires    : readline-devel
-    BuildRequires    : openssl-devel
-    BuildRequires    : python-devel
-    BuildRequires    : pam-devel
-    BuildRequires    : tcl-devel
-    BuildRequires    : openldap-devel
-
-    Requires    : tcl
-    Requires    : perl-ExtUtils-Embed
-    Requires    : libxml2
-    Requires    : libxslt
-    Requires    : readline
-    Requires    : uuid
-    Requires(pre)     : /usr/sbin/useradd
-
-    %description
-    Postgres is a truly awesome database. When we started working on Launchpad I wasn&apos;t sure if it would be up to the job. I was so wrong. It&apos;s been robust, fast, and professional in every regard.
-
-    %prep
-    %setup -q -n postgresql-%{version}
-    env CFLAGS=&quot; -march=core2 -O2 &quot; ./configure --prefix=/opt/pg95 --with-python --with-perl --with-openssl --with-libxml --with-libxslt --with-ossp-uuid --with-pam --with-ldap --with-tcl --enable-thread-safety --with-segsize=128 --with-blocksize=32 --with-wal-segsize=64 --with-wal-blocksize=32
-
-    %build
-    make -s -j8 world
-
-    %install
-    rm -fr %{buildroot}
-    make -s install DESTDIR=%{buildroot}
-    make -s install-world DESTDIR=%{buildroot}
-    install -d %{buildroot}/home/postgres
-    install -d %{buildroot}/opt/pg95/etc
-    install -d %{buildroot}/etc/ld.so.conf.d
-    install -d %{buildroot}/etc/profile.d
-
-    test -L %{buildroot}/opt/pgsql &amp;&amp; rm -f %{buildroot}/opt/pgsql
-    ln -sf /opt/pg95 %{buildroot}/opt/pgsql
-
-    echo &apos;/opt/pgsql/lib&apos; &gt; %{buildroot}/etc/ld.so.conf.d/pgsql.conf
-    echo &apos;export PATH=/opt/pgsql/bin:$PATH&apos; &gt; %{buildroot}/etc/profile.d/pgsql.sh
-
-    cat &gt; %{buildroot}/opt/pg95/etc/pg_hba.conf &lt;&lt;EOF
-    host     all               postgres             127.0.0.1/32            md5
-    host     all               monitor              127.0.0.1/32            md5
-    host     all               postgres             0.0.0.0/0               reject
-    host     all               monitor              0.0.0.0/0               reject
-    local    all               all                                          md5
-    host     replication       all                  0.0.0.0/0               md5
-    host     all               all                  0.0.0.0/0               md5
-    EOF
-
-    cat &gt; %{buildroot}/opt/pg95/etc/recovery.conf &lt;&lt;EOF
-    standby_mode = &apos;on&apos;
-    primary_conninfo = &apos;host=localhost port=5432 user=postgres password=password application_name=$(hostname)&apos;
-    ###restore_command = &apos;/bin/cp -n \$PGDATA/../arclog/%f %p&apos;
-    ###restore_command = &apos;/usr/bin/test -f $PGDATA/../arclog/\$(date +%Y%m%d)/%f.zip &amp;&amp; unzip -o \$PGDATA/../arclog/\$(date +%Y%m%d)/%f.zip&apos;
-    recovery_target_timeline = &apos;latest&apos;
-    EOF
-
-    cat &gt; %{buildroot}/opt/pg95/etc/sysctl.conf &lt;&lt;EOF
-    # Database kernel optimization
-    vm.swappiness = 0
-    vm.overcommit_memory = 2
-    vm.overcommit_ratio = 90
-    vm.zone_reclaim_mode = 0
-    net.core.somaxconn = 62144
-    vm.dirty_background_ratio = 40
-    vm.dirty_ratio = 80
-    # vm.nr_hugepages = 49631
-    EOF
-
-    cp %{buildroot}/../../SPECS/pgsql/pg95.conf %{buildroot}/opt/pg95/etc/postgresql.conf
-
-    %pre
-    getent group postgres &gt; /dev/null || groupadd -r postgres
-    getent passwd postgres &gt; /dev/null || \
-        useradd -r -g postgres -s /sbin/nologin \
-        -c &quot;PostgreSQL DataBase&quot; postgres
-
-    %post
-    /sbin/ldconfig
-
-    %postun -p /sbin/ldconfig
-
-    %clean
-    rm -fr %{buildroot}
-
-    %files
-    %defattr(-, root, root)
-    /opt/pgsql
-    /opt/pg95/*
-    /etc/ld.so.conf.d/pgsql.conf
-    /etc/profile.d/pgsql.sh
-    %defattr(0700, postgres, postgres)
-    /home/postgres/
-</code></pre><h2 id="5-打包"><a href="#5-打包" class="headerlink" title="5. 打包"></a>5. 打包</h2><p>先配置变量方便以后的使用:</p>
-<pre><code>$ sudo vim /etc/profile.d/rpmbuild.sh
-#!/bin/env bash
-alias rpmbuild=&apos;rpmbuild --define &quot;_topdir /data/rpmbuild&quot; -bb&apos;
-$ sudo source /etc/profile.d/rpmbuild.sh
-</code></pre><p>打包就只需要执行:</p>
-<pre><code>$ rpmbuild path/xxx.spec
-</code></pre><h2 id="6-rpmmacros"><a href="#6-rpmmacros" class="headerlink" title="6. ~/.rpmmacros"></a>6. ~/.rpmmacros</h2><pre><code>%_topdir      %(echo $HOME)/rpmbuild
-%_tmppath  %{_topdir}/tmp
-%buildroot  %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-%_rpmfilename  %%{NAME}-%%{VERSION}-%%{RELEASE}.%%{ARCH}.rpm
-</code></pre><p>参考:<a href="fedoraproject.org/wiki/How_to_create_an_RPM_package">How to create an RPM package</a>和<a href="rpmbuildtut.wordpress.com/">Rpmbuild Tutorial</a></p>
+# log
+logpath = /data/mongodb/db0/log/mongodb.log
+logRotate = rename
+logappend = true
+slowms = 50
+replSet = rs0
+</code></pre><h2 id="3-配置副本集"><a href="#3-配置副本集" class="headerlink" title="3. 配置副本集"></a>3. 配置副本集</h2><h3 id="1-配置-primary"><a href="#1-配置-primary" class="headerlink" title="(1) 配置 primary"></a>(1) 配置 primary</h3><p>1) 启动</p>
+<pre><code>$ sudo /opt/mongodb/bin/mongod --config /data/mongodb/db0/conf/mongodb.conf
+about to fork child process, waiting until server is ready for connections.
+forked process: 48583
+child process started successfully, parent exiting
+$ mongo
+MongoDB shell version: 3.0.6
+connecting to: test
+&gt; rs.status();
+{
+        &quot;info&quot; : &quot;run rs.initiate(...) if not yet done for the set&quot;,
+        &quot;ok&quot; : 0,
+        &quot;errmsg&quot; : &quot;no replset config has been received&quot;,
+        &quot;code&quot; : 94
+}
+</code></pre><p>2) 初始化</p>
+<pre><code>&gt; cfg={_id:&quot;rs0&quot;, members:[ {_id:0,host:&quot;172.30.2.201:27017&quot;}] }
+{
+        &quot;_id&quot; : &quot;rs0&quot;,
+        &quot;members&quot; : [
+                {
+                        &quot;_id&quot; : 0,
+                        &quot;host&quot; : &quot;172.30.2.201:27017&quot;
+                }
+        ]
+}
+&gt; rs.initiate( cfg );
+{ &quot;ok&quot; : 1 }
+rs0:OTHER&gt; rs.status();
+{
+        &quot;set&quot; : &quot;rs0&quot;,
+        &quot;date&quot; : ISODate(&quot;2015-09-25T08:31:36.354Z&quot;),
+        &quot;myState&quot; : 1,
+        &quot;members&quot; : [
+                {
+                        &quot;_id&quot; : 0,
+                        &quot;name&quot; : &quot;172.30.2.201:27017&quot;,
+                        &quot;health&quot; : 1,
+                        &quot;state&quot; : 1,
+                        &quot;stateStr&quot; : &quot;PRIMARY&quot;,
+                        &quot;uptime&quot; : 112,
+                        &quot;optime&quot; : Timestamp(1443169891, 1),
+                        &quot;optimeDate&quot; : ISODate(&quot;2015-09-25T08:31:31Z&quot;),
+                        &quot;electionTime&quot; : Timestamp(1443169891, 2),
+                        &quot;electionDate&quot; : ISODate(&quot;2015-09-25T08:31:31Z&quot;),
+                        &quot;configVersion&quot; : 1,
+                        &quot;self&quot; : true
+                }
+        ],
+        &quot;ok&quot; : 1
+}
+</code></pre><h3 id="2-添加节点"><a href="#2-添加节点" class="headerlink" title="(2) 添加节点"></a>(2) 添加节点</h3><p>1) 启动新的节点</p>
+<pre><code>$ sudo /opt/mongodb/bin/mongod --config /data/mongodb/db0/conf/mongodb.conf
+about to fork child process, waiting until server is ready for connections.
+forked process: 41794
+child process started successfully, parent exiting
+$ sudo /opt/mongodb/bin/mongod --config /data/mongodb/db0/conf/mongodb.conf
+about to fork child process, waiting until server is ready for connections.
+forked process: 3761
+child process started successfully, parent exiting
+</code></pre><p>2) 添加新的节点</p>
+<p>在 primary 上执行:</p>
+<pre><code>rs0:PRIMARY&gt; rs.add( &quot;172.30.2.202:27017&quot; );
+{ &quot;ok&quot; : 1 }
+rs0:PRIMARY&gt; rs.status();
+{
+        &quot;set&quot; : &quot;rs0&quot;,
+        &quot;date&quot; : ISODate(&quot;2015-09-25T08:34:48.161Z&quot;),
+        &quot;myState&quot; : 1,
+        &quot;members&quot; : [
+                {
+                        &quot;_id&quot; : 0,
+                        &quot;name&quot; : &quot;172.30.2.201:27017&quot;,
+                        &quot;health&quot; : 1,
+                        &quot;state&quot; : 1,
+                        &quot;stateStr&quot; : &quot;PRIMARY&quot;,
+                        &quot;uptime&quot; : 304,
+                        &quot;optime&quot; : Timestamp(1443170060, 1),
+                        &quot;optimeDate&quot; : ISODate(&quot;2015-09-25T08:34:20Z&quot;),
+                        &quot;electionTime&quot; : Timestamp(1443169891, 2),
+                        &quot;electionDate&quot; : ISODate(&quot;2015-09-25T08:31:31Z&quot;),
+                        &quot;configVersion&quot; : 2,
+                        &quot;self&quot; : true
+                },
+                {
+                        &quot;_id&quot; : 1,
+                        &quot;name&quot; : &quot;172.30.2.202:27017&quot;,
+                        &quot;health&quot; : 1,
+                        &quot;state&quot; : 2,
+                        &quot;stateStr&quot; : &quot;SECONDARY&quot;,
+                        &quot;uptime&quot; : 27,
+                        &quot;optime&quot; : Timestamp(1443170060, 1),
+                        &quot;optimeDate&quot; : ISODate(&quot;2015-09-25T08:34:20Z&quot;),
+                        &quot;lastHeartbeat&quot; : ISODate(&quot;2015-09-25T08:34:46.884Z&quot;),
+                        &quot;lastHeartbeatRecv&quot; : ISODate(&quot;2015-09-25T08:34:46.896Z&quot;),
+                        &quot;pingMs&quot; : 0,
+                        &quot;configVersion&quot; : 2
+                }
+        ],
+        &quot;ok&quot; : 1
+}
+rs0:PRIMARY&gt; rs.add( &quot;172.30.2.203:27017&quot; );
+{ &quot;ok&quot; : 1 }
+rs0:PRIMARY&gt; rs.status();
+{
+        &quot;set&quot; : &quot;rs0&quot;,
+        &quot;date&quot; : ISODate(&quot;2015-09-25T08:36:22.579Z&quot;),
+        &quot;myState&quot; : 1,
+        &quot;members&quot; : [
+                {
+                        &quot;_id&quot; : 0,
+                        &quot;name&quot; : &quot;172.30.2.201:27017&quot;,
+                        &quot;health&quot; : 1,
+                        &quot;state&quot; : 1,
+                        &quot;stateStr&quot; : &quot;PRIMARY&quot;,
+                        &quot;uptime&quot; : 398,
+                        &quot;optime&quot; : Timestamp(1443170158, 1),
+                        &quot;optimeDate&quot; : ISODate(&quot;2015-09-25T08:35:58Z&quot;),
+                        &quot;electionTime&quot; : Timestamp(1443169891, 2),
+                        &quot;electionDate&quot; : ISODate(&quot;2015-09-25T08:31:31Z&quot;),
+                        &quot;configVersion&quot; : 3,
+                        &quot;self&quot; : true
+                },
+                {
+                        &quot;_id&quot; : 1,
+                        &quot;name&quot; : &quot;172.30.2.202:27017&quot;,
+                        &quot;health&quot; : 1,
+                        &quot;state&quot; : 2,
+                        &quot;stateStr&quot; : &quot;SECONDARY&quot;,
+                        &quot;uptime&quot; : 121,
+                        &quot;optime&quot; : Timestamp(1443170158, 1),
+                        &quot;optimeDate&quot; : ISODate(&quot;2015-09-25T08:35:58Z&quot;),
+                        &quot;lastHeartbeat&quot; : ISODate(&quot;2015-09-25T08:36:22.268Z&quot;),
+                        &quot;lastHeartbeatRecv&quot; : ISODate(&quot;2015-09-25T08:36:20.949Z&quot;),
+                        &quot;pingMs&quot; : 0,
+                        &quot;syncingTo&quot; : &quot;172.30.2.201:27017&quot;,
+                        &quot;configVersion&quot; : 3
+                },
+                {
+                        &quot;_id&quot; : 2,
+                        &quot;name&quot; : &quot;172.30.2.203:27017&quot;,
+                        &quot;health&quot; : 1,
+                        &quot;state&quot; : 2,
+                        &quot;stateStr&quot; : &quot;SECONDARY&quot;,
+                        &quot;uptime&quot; : 24,
+                        &quot;optime&quot; : Timestamp(1443170158, 1),
+                        &quot;optimeDate&quot; : ISODate(&quot;2015-09-25T08:35:58Z&quot;),
+                        &quot;lastHeartbeat&quot; : ISODate(&quot;2015-09-25T08:36:22.267Z&quot;),
+                        &quot;lastHeartbeatRecv&quot; : ISODate(&quot;2015-09-25T08:36:22.275Z&quot;),
+                        &quot;pingMs&quot; : 0,
+                        &quot;configVersion&quot; : 3
+                }
+        ],
+        &quot;ok&quot; : 1
+}
+</code></pre><h3 id="3-设置开机启动"><a href="#3-设置开机启动" class="headerlink" title="(3) 设置开机启动"></a>(3) 设置开机启动</h3><pre><code>$ sudo vim /etc/rc.local
+/opt/mongodb/bin/mongod --config /data/mongodb/db0/conf/mongodb.conf
+</code></pre><h2 id="4-验证"><a href="#4-验证" class="headerlink" title="4.验证"></a>4.验证</h2><h3 id="1-数据同步"><a href="#1-数据同步" class="headerlink" title="(1) 数据同步"></a>(1) 数据同步</h3><p>1) primary:</p>
+<pre><code>$ mongo
+MongoDB shell version: 3.0.6
+connecting to: test
+rs0:PRIMARY&gt; use aaa;
+switched to db aaa
+rs0:PRIMARY&gt; db.createCollection( &quot;test&quot; );
+{ &quot;ok&quot; : 1 }
+rs0:PRIMARY&gt; show collections;
+system.indexes
+test
+</code></pre><p>2) secondary:</p>
+<pre><code>$ mongo
+MongoDB shell version: 3.0.6
+connecting to: test
+rs0:SECONDARY&gt; rs.slaveOk();
+rs0:SECONDARY&gt; use aaa;
+switched to db aaa
+rs0:SECONDARY&gt; show collections;
+system.indexes
+test
+$ mongo
+MongoDB shell version: 3.0.6
+connecting to: test
+rs0:SECONDARY&gt; rs.slaveOk();
+rs0:SECONDARY&gt; use aaa;
+switched to db aaa
+rs0:SECONDARY&gt; show collections;
+system.indexes
+test
+</code></pre><h3 id="2-读写验证"><a href="#2-读写验证" class="headerlink" title="(2) 读写验证"></a>(2) 读写验证</h3><p>由上可知,primary 是可读写的</p>
+<p>在 secondary 上写测试:</p>
+<pre><code>$ mongo
+MongoDB shell version: 3.0.6
+connecting to: test
+&gt; use aaa;
+switched to db aaa
+&gt; db.createCollection(&quot;test2&quot;);
+{ &quot;note&quot; : &quot;from execCommand&quot;, &quot;ok&quot; : 0, &quot;errmsg&quot; : &quot;not master&quot; }
+&gt; show collections;
+2015-09-23T15:57:49.240+0800 E QUERY    Error: listCollections failed: { &quot;note&quot; : &quot;from execCommand&quot;, &quot;ok&quot; : 0, &quot;errmsg&quot; : &quot;not master&quot; }
+    at Error (&lt;anonymous&gt;)
+    at DB._getCollectionInfosCommand (src/mongo/shell/db.js:646:15)
+    at DB.getCollectionInfos (src/mongo/shell/db.js:658:20)
+    at DB.getCollectionNames (src/mongo/shell/db.js:669:17)
+    at shellHelper.show (src/mongo/shell/utils.js:625:12)
+    at shellHelper (src/mongo/shell/utils.js:524:36)
+    at (shellhelp2):1:1 at src/mongo/shell/db.js:646
+&gt; rs.slaveOk();
+&gt; show collections;
+system.indexes
+test
+</code></pre><p>证明 secondary 节点是不能写,默认也是不可读的,需要执行 rs.slaveOk(); 或者 db.getMongo().setSlaveOk(); 并且只对当前 session 有效,所以每次连接从库都需要执行。</p>
+<h2 id="4-说明"><a href="#4-说明" class="headerlink" title="4. 说明"></a>4. 说明</h2><p>mongodb 的副本集至少需要3台以上才能实现高可用,并且节点的个数最好是基数。</p>
 ]]></content>
-    </entry>
-    
-    <entry>
-      <title><![CDATA[crontab中PATH的坑]]></title>
-      <url>http://panwenhang.github.io/2016/06/30/Linux-2016-06-30-crontab%E4%B8%ADPATH%E7%9A%84%E5%9D%91/</url>
-      <content type="html"><![CDATA[<h2 id="1-现象"><a href="#1-现象" class="headerlink" title="1. 现象"></a>1. 现象</h2><p>在命令行里面能正常运行脚本,在crontab里面报错:</p>
-<p>lsof: No such file or directory</p>
-<p>看报错信息, 应该是找不到lsof这个命令</p>
-<a id="more"></a>
-<h2 id="2-排查"><a href="#2-排查" class="headerlink" title="2. 排查"></a>2. 排查</h2><p>查看lsof命令的路径:</p>
-<pre><code>$ type -a lsof
-lsof is /usr/bin/lsof
-</code></pre><p>查看系统的PATH路径:</p>
-<pre><code>$ echo $PATH
-/usr/lib64/ccache:/usr/local/bin:/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/sbin:/opt/dell/srvadmin/bin:/bin
-</code></pre><p>里面是包含/usr/sbin的,这能解释为什么命令行运行正常了,那就是crontab的PATH的问题了</p>
-<p>在crontab运行一个echo $PATH的脚本,结果如下</p>
-<pre><code>/usr/bin:/bin
-</code></pre><p>果真是crontab的原因</p>
-<h2 id="3-原因"><a href="#3-原因" class="headerlink" title="3. 原因"></a>3. 原因</h2><pre><code>$ man 5 crontab
-</code></pre><p>在man page里面找到</p>
-<p>Several  environment variables are set up automatically by the cron(8) daemon.  SHELL is set to /bin/sh, and LOGNAME and HOME are set from the /etc/passwd line of the crontab’s owner. PATH is set to “/usr/bin:/bin”.  HOME, SHELL, and PATH may be overridden by settings in the crontab; LOGNAME is the user that the job is running from, and may not be changed.</p>
-<h2 id="4-解决办法"><a href="#4-解决办法" class="headerlink" title="4. 解决办法"></a>4. 解决办法</h2><p>在脚本里面export PATH=/usr/sbin:$PATH, 或者把crontab改成</p>
-<pre><code>* * * * * source /etc/profile; your command
-</code></pre>]]></content>
     </entry>
     
     <entry>
@@ -4362,385 +4962,6 @@ int n = c1 + c2;
     </entry>
     
     <entry>
-      <title><![CDATA[Linux下MongoDB安装和配置]]></title>
-      <url>http://panwenhang.github.io/2016/06/23/MongoDB-2016-06-23-Linux%E4%B8%8BMongoDB%E5%AE%89%E8%A3%85%E5%92%8C%E9%85%8D%E7%BD%AE/</url>
-      <content type="html"><![CDATA[<h2 id="1-环境"><a href="#1-环境" class="headerlink" title="1. 环境"></a>1. 环境</h2><pre><code>$ cat /etc/redhat-release
-CentOS Linux release 7.0.1406 (Core)
-$ uname -a
-Linux zhaopin-2-201 3.10.0-123.el7.x86_64 #1 SMP Mon Jun 30 12:09:22 UTC 2014 x86_64 x86_64 x86_64 GNU/Linux
-</code></pre><a id="more"></a>
-<h2 id="2-准备"><a href="#2-准备" class="headerlink" title="2. 准备"></a>2. 准备</h2><h3 id="1-下载包"><a href="#1-下载包" class="headerlink" title="(1) 下载包"></a>(1) 下载包</h3><pre><code>$ sudo wget -c -P /opt/ https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-rhel70-3.0.6.tgz
---2015-09-23 10:18:24--  https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-rhel70-3.0.6.tgz
-Resolving fastdl.mongodb.org (fastdl.mongodb.org)... 54.230.108.68, 54.230.108.110, 54.230.108.116, ...
-Connecting to fastdl.mongodb.org (fastdl.mongodb.org)|54.230.108.68|:443... connected.
-HTTP request sent, awaiting response... 200 OK
-Length: 50210575 (48M) [application/x-gzip]
-Saving to: ‘/opt/mongodb-linux-x86_64-rhel70-3.0.6.tgz’
-100%[======================================================================================================================================================================================================================&gt;] 50,210,575  1.20MB/s   in 50s
-2015-09-23 10:19:19 (978 KB/s) - ‘/opt/mongodb-linux-x86_64-rhel70-3.0.6.tgz’ saved [50210575/50210575]
-</code></pre><h3 id="2-环境"><a href="#2-环境" class="headerlink" title="(2) 环境"></a>(2) 环境</h3><pre><code>$ cd /opt/
-$ sudo tar -zxf mongodb-linux-x86_64-rhel70-3.0.6.tgz
-$ ll
-total 49052
-drwxr-xr-x. 3 root root     4096 Sep 23 10:20 mongodb-linux-x86_64-rhel70-3.0.6
--rw-r--r--. 1 root root 50210575 Aug 24 11:38 mongodb-linux-x86_64-rhel70-3.0.6.tgz
-drwxr-xr-x. 8 root root     4096 Sep 21 15:41 omnipitr
-drwxr-xr-x. 6 root root     4096 Sep 21 15:53 pg94
-lrwxrwxrwx. 1 root root        9 Sep 21 15:53 pgsql -&gt; /opt/pg94
-drwxr-xr-x. 2 root root     4096 Jun 10  2014 rh
-$ sudo ln -sf /opt/mongodb-linux-x86_64-rhel70-3.0.6 /opt/mongodb
-$ ll
-total 49052
-lrwxrwxrwx. 1 root root       38 Sep 23 10:21 mongodb -&gt; /opt/mongodb-linux-x86_64-rhel70-3.0.6
-drwxr-xr-x. 3 root root     4096 Sep 23 10:20 mongodb-linux-x86_64-rhel70-3.0.6
--rw-r--r--. 1 root root 50210575 Aug 24 11:38 mongodb-linux-x86_64-rhel70-3.0.6.tgz
-drwxr-xr-x. 8 root root     4096 Sep 21 15:41 omnipitr
-drwxr-xr-x. 6 root root     4096 Sep 21 15:53 pg94
-lrwxrwxrwx. 1 root root        9 Sep 21 15:53 pgsql -&gt; /opt/pg94
-drwxr-xr-x. 2 root root     4096 Jun 10  2014 rh
-$
-$ sudo vim /etc/profile.d/mongodb.sh
-#!/bin/env bash
-export PATH=&quot;/opt/mongodb/bin:$PATH&quot;
-$ source /etc/profile.d/mongodb.sh
-$ mongo --version
-MongoDB shell version: 3.0.6
-</code></pre><h2 id="3-配置"><a href="#3-配置" class="headerlink" title="3. 配置"></a>3. 配置</h2><pre><code>$ sudo mkdir -p /data/mongodb/db0/{data,backup,log,conf}
-$ sudo vim /data/mongodb/db0/conf/mongodb.conf
-# base
-port = 27017
-maxConns = 800
-filePermissions = 0700
-fork = true
-noauth = true
-directoryperdb = true
-dbpath = /data/mongodb/db0/data
-pidfilepath = /data/mongodb/db0/data/mongodb.pid
-journal = true
-
-# security
-nohttpinterface = true
-rest = false
-
-# log
-logpath = /data/mongodb/db0/log/mongodb.log
-logRotate = rename
-logappend = true
-slowms = 50
-profile = 0
-verbose = false
-objcheck = false
-</code></pre><h2 id="4-启动"><a href="#4-启动" class="headerlink" title="4. 启动"></a>4. 启动</h2><pre><code>$ sudo systemctl stop firewalld.service
-$ sudo systemctl disable firewalld.service
-rm &apos;/etc/systemd/system/dbus-org.fedoraproject.FirewallD1.service&apos;
-rm &apos;/etc/systemd/system/basic.target.wants/firewalld.service&apos;
-$ sudo /opt/mongodb/bin/mongod --config /data/mongodb/db0/conf/mongodb.conf
-$ mongo
-MongoDB shell version: 3.0.6
-connecting to: test
-&gt; db.version();
-3.0.6
-&gt;
-bye
-</code></pre>]]></content>
-    </entry>
-    
-    <entry>
-      <title><![CDATA[MongoDB主从集群]]></title>
-      <url>http://panwenhang.github.io/2016/06/23/MongoDB-2016-06-23-MongoDB%E4%B8%BB%E4%BB%8E%E9%9B%86%E7%BE%A4/</url>
-      <content type="html"><![CDATA[<h2 id="1-环境"><a href="#1-环境" class="headerlink" title="1. 环境"></a>1. 环境</h2><pre><code>$ cat /etc/redhat-release
-CentOS Linux release 7.0.1406 (Core)
-$ uname -a
-Linux zhaopin-2-201 3.10.0-123.el7.x86_64 #1 SMP Mon Jun 30 12:09:22 UTC 2014 x86_64 x86_64 x86_64 GNU/Linux
-$ mongo --version
-MongoDB shell version: 3.0.6
-</code></pre><a id="more"></a>
-<h2 id="2-准备"><a href="#2-准备" class="headerlink" title="2. 准备"></a>2. 准备</h2><h3 id="1-创建目录"><a href="#1-创建目录" class="headerlink" title="(1) 创建目录"></a>(1) 创建目录</h3><pre><code>$ sudo mkdir -p /data/mongodb/db0/{data,backup,log,conf}
-</code></pre><h3 id="2-编写配置文件"><a href="#2-编写配置文件" class="headerlink" title="(2) 编写配置文件"></a>(2) 编写配置文件</h3><p>1) master:</p>
-<pre><code>$ sudo vim /data/mongodb/db0/conf/mongodb.conf
-# base
-port = 27017
-maxConns = 800
-filePermissions = 0700
-fork = true
-noauth = true
-directoryperdb = true
-dbpath = /data/mongodb/db0/data
-pidfilepath = /data/mongodb/db0/data/mongodb.pid
-journal = true
-
-# security
-nohttpinterface = true
-rest = false
-
-# log
-logpath = /data/mongodb/db0/log/monodb.log
-logRotate = rename
-logappend = true
-slowms = 50
-master = true
-</code></pre><p>2) slave:</p>
-<pre><code>$ sudo vim /data/mongodb/db0/conf/mongodb.conf
-# base
-port = 27017
-maxConns = 800
-filePermissions = 0700
-fork = true
-noauth = true
-directoryperdb = true
-dbpath = /data/mongodb/db0/data
-pidfilepath = /data/mongodb/db0/data/mongodb.pid
-journal = true
-
-# security
-nohttpinterface = true
-rest = false
-
-# log
-logpath = /data/mongodb/db0/log/mongodb.log
-logRotate = rename
-logappend = true
-slowms = 50
-
-slave = true
-source = 172.30.2.201:27017
-</code></pre><h2 id="3-启动"><a href="#3-启动" class="headerlink" title="3. 启动"></a>3. 启动</h2><h3 id="1-先启动-master"><a href="#1-先启动-master" class="headerlink" title="(1) 先启动 master"></a>(1) 先启动 master</h3><pre><code>$ sudo /opt/mongodb/bin/mongod --config /data/mongodb/db0/conf/mongodb.conf
-about to fork child process, waiting until server is ready for connections.
-forked process: 48583
-child process started successfully, parent exiting
-$ mongo
-MongoDB shell version: 3.0.6
-connecting to: test
-&gt; db.isMaster();
-{
-        &quot;ismaster&quot; : 0,
-        &quot;info&quot; : &quot;dead: data too stale halted replication&quot;,
-        &quot;maxBsonObjectSize&quot; : 16777216,
-        &quot;maxMessageSizeBytes&quot; : 48000000,
-        &quot;maxWriteBatchSize&quot; : 1000,
-        &quot;localTime&quot; : ISODate(&quot;2015-09-23T07:47:52.957Z&quot;),
-        &quot;maxWireVersion&quot; : 3,
-        &quot;minWireVersion&quot; : 0,
-        &quot;ok&quot; : 1
-}
-&gt;
-bye
-</code></pre><h3 id="2-启动-slave"><a href="#2-启动-slave" class="headerlink" title="(2) 启动 slave"></a>(2) 启动 slave</h3><pre><code>$ sudo /opt/mongodb/bin/mongod --config /data/mongodb/db0/conf/mongodb.conf
-about to fork child process, waiting until server is ready for connections.
-forked process: 36715
-child process started successfully, parent exiting
-$ mongo
-MongoDB shell version: 3.0.6
-connecting to: test
-&gt; db.isMaster();
-{
-        &quot;ismaster&quot; : false,
-        &quot;maxBsonObjectSize&quot; : 16777216,
-        &quot;maxMessageSizeBytes&quot; : 48000000,
-        &quot;maxWriteBatchSize&quot; : 1000,
-        &quot;localTime&quot; : ISODate(&quot;2015-09-23T07:49:32.934Z&quot;),
-        &quot;maxWireVersion&quot; : 3,
-        &quot;minWireVersion&quot; : 0,
-        &quot;ok&quot; : 1
-}
-&gt;
-bye
-</code></pre><h3 id="3-设置开机启动"><a href="#3-设置开机启动" class="headerlink" title="(3) 设置开机启动"></a>(3) 设置开机启动</h3><pre><code>$ sudo vim /etc/rc.local
-/opt/mongodb/bin/mongod --config /data/mongodb/db0/conf/mongodb.conf
-</code></pre><h2 id="4-验证"><a href="#4-验证" class="headerlink" title="4. 验证"></a>4. 验证</h2><h3 id="1-数据同步"><a href="#1-数据同步" class="headerlink" title="(1) 数据同步"></a>(1) 数据同步</h3><p>1) master:</p>
-<pre><code>$ mongo
-MongoDB shell version: 3.0.6
-connecting to: test
-&gt; use aaa;
-switched to db aaa
-&gt; db.createCollection(&quot;test&quot;);
-{ &quot;ok&quot; : 1 }
-&gt; show collections;
-system.indexes
-system.profile
-test
-</code></pre><p>2) slave:</p>
-<pre><code>$ mongo
-MongoDB shell version: 3.0.6
-connecting to: test
-&gt; rs.slaveOk();
-&gt; show dbs;
-aaa    0.078GB
-local  0.078GB
-&gt; use aaa;
-switched to db aaa
-&gt; show collections;
-system.indexes
-test
-</code></pre><h3 id="2-读写验证"><a href="#2-读写验证" class="headerlink" title="(2) 读写验证"></a>(2) 读写验证</h3><p>由上可知,master 是可读写的</p>
-<p>在从库上写测试:</p>
-<pre><code>$ mongo
-MongoDB shell version: 3.0.6
-connecting to: test
-&gt; use aaa;
-switched to db aaa
-&gt; db.createCollection(&quot;test2&quot;);
-{ &quot;note&quot; : &quot;from execCommand&quot;, &quot;ok&quot; : 0, &quot;errmsg&quot; : &quot;not master&quot; }
-&gt; show collections;
-2015-09-23T15:57:49.240+0800 E QUERY    Error: listCollections failed: { &quot;note&quot; : &quot;from execCommand&quot;, &quot;ok&quot; : 0, &quot;errmsg&quot; : &quot;not master&quot; }
-    at Error (&lt;anonymous&gt;)
-    at DB._getCollectionInfosCommand (src/mongo/shell/db.js:646:15)
-    at DB.getCollectionInfos (src/mongo/shell/db.js:658:20)
-    at DB.getCollectionNames (src/mongo/shell/db.js:669:17)
-    at shellHelper.show (src/mongo/shell/utils.js:625:12)
-    at shellHelper (src/mongo/shell/utils.js:524:36)
-    at (shellhelp2):1:1 at src/mongo/shell/db.js:646
-&gt; rs.slaveOk();
-&gt; show collections;
-system.indexes
-test
-</code></pre><p>证明从库是不能写,默认也是不可读的,需要执行 rs.slaveOk(); 或者 db.getMongo().setSlaveOk(); 并且只对当前 session 有效,所以每次连接从库都需要执行。</p>
-<h2 id="5-故障测试及解决方案"><a href="#5-故障测试及解决方案" class="headerlink" title="5.故障测试及解决方案"></a>5.故障测试及解决方案</h2><h3 id="1-master-宕机"><a href="#1-master-宕机" class="headerlink" title="(1) master 宕机"></a>(1) master 宕机</h3><p>1) 将 master 停机</p>
-<pre><code>$ mongo
-MongoDB shell version: 3.0.6
-connecting to: test
-&gt; use admin;
-switched to db admin
-&gt; db.shutdownServer();
-2015-09-23T16:02:16.983+0800 I NETWORK  DBClientCursor::init call() failed
-server should be down...
-2015-09-23T16:02:16.986+0800 I NETWORK  trying reconnect to 127.0.0.1:27017 (127.0.0.1) failed
-2015-09-23T16:02:16.987+0800 I NETWORK  reconnect 127.0.0.1:27017 (127.0.0.1) ok
-2015-09-23T16:02:16.992+0800 I NETWORK  Socket recv() errno:104 Connection reset by peer 127.0.0.1:27017
-2015-09-23T16:02:16.992+0800 I NETWORK  SocketException: remote: 127.0.0.1:27017 error: 9001 socket exception [RECV_ERROR] server [127.0.0.1:27017]
-2015-09-23T16:02:16.992+0800 I NETWORK  DBClientCursor::init call() failed
-&gt;
-bye
-$ ps aux | grep mongo | grep -v grep
-</code></pre><p>2) 查看 slave 状态</p>
-<pre><code>$ mongo
-MongoDB shell version: 3.0.6
-connecting to: test
-&gt; rs.slaveOk();
-&gt; show dbs;
-aaa    0.078GB
-local  0.078GB
-&gt; use aaa;
-switched to db aaa
-&gt; show collections;
-system.indexes
-test
-&gt; db.createCollection(&quot;test2&quot;);
-{ &quot;note&quot; : &quot;from execCommand&quot;, &quot;ok&quot; : 0, &quot;errmsg&quot; : &quot;not master&quot; }
-</code></pre><p>可见 slave 还是只读,不能写</p>
-<p>3) 解决方法</p>
-<p>将 slave 停机,变为 master 后启动</p>
-<pre><code>&gt; use admin;
-switched to db admin
-&gt; db.shutdownServer();
-2015-09-23T16:05:28.355+0800 I NETWORK  DBClientCursor::init call() failed
-server should be down...
-2015-09-23T16:05:28.357+0800 I NETWORK  trying reconnect to 127.0.0.1:27017 (127.0.0.1) failed
-2015-09-23T16:05:28.357+0800 W NETWORK  Failed to connect to 127.0.0.1:27017, reason: errno:111 Connection refused
-2015-09-23T16:05:28.358+0800 I NETWORK  reconnect 127.0.0.1:27017 (127.0.0.1) failed failed couldn&apos;t connect to server 127.0.0.1:27017 (127.0.0.1), connection attempt  failed
-&gt;
-bye
-$ ps aux | grep mongo | grep -v grep
-$ sudo vim /data/mongodb/db0/conf/mongodb.conf
-master = true
-#slave = true
-#source = 172.30.2.201:27017
-$ sudo /opt/mongodb/bin/mongod --config /data/mongodb/db0/conf/mongodb.conf
-about to fork child process, waiting until server is ready for connections.
-forked process: 36988
-child process started successfully, parent exiting
-$ mongo
-MongoDB shell version: 3.0.6
-connecting to: test
-&gt; show dbs;
-aaa     0.078GB
-local  50.054GB
-&gt; use aaa;
-switched to db aaa
-&gt; db.createCollection(&quot;test2&quot;);
-{ &quot;ok&quot; : 1 }
-&gt; show collections;
-system.indexes
-system.profile
-test
-test2
-&gt; db.isMaster();
-{
-        &quot;ismaster&quot; : true,
-        &quot;maxBsonObjectSize&quot; : 16777216,
-        &quot;maxMessageSizeBytes&quot; : 48000000,
-        &quot;maxWriteBatchSize&quot; : 1000,
-        &quot;localTime&quot; : ISODate(&quot;2015-09-23T08:07:41.812Z&quot;),
-        &quot;maxWireVersion&quot; : 3,
-        &quot;minWireVersion&quot; : 0,
-        &quot;ok&quot; : 1
-}
-&gt;
-bye
-</code></pre><p>这样 slave 就变为新的 master 了</p>
-<h3 id="2-slave-宕机"><a href="#2-slave-宕机" class="headerlink" title="(2) slave 宕机"></a>(2) slave 宕机</h3><p>1) 制作新的 slave</p>
-<pre><code>$ sudo rm -fr /data/mongodb/db0/data/*
-$ sudo vim /data/mongodb/db0/conf/mongodb.conf
-#master = true
-slave = true
-source = 172.30.2.202:27017
-$ sudo /opt/mongodb/bin/mongod --config /data/mongodb/db0/conf/mongodb.conf
-about to fork child process, waiting until server is ready for connections.
-forked process: 48779
-child process started successfully, parent exiting
-$ mongo
-MongoDB shell version: 3.0.6
-connecting to: test
-&gt; db.isMaster();
-{
-        &quot;ismaster&quot; : false,
-        &quot;maxBsonObjectSize&quot; : 16777216,
-        &quot;maxMessageSizeBytes&quot; : 48000000,
-        &quot;maxWriteBatchSize&quot; : 1000,
-        &quot;localTime&quot; : ISODate(&quot;2015-09-23T08:14:51.283Z&quot;),
-        &quot;maxWireVersion&quot; : 3,
-        &quot;minWireVersion&quot; : 0,
-        &quot;ok&quot; : 1
-}
-</code></pre><p>2) 将新的 slave 停机</p>
-<pre><code>&gt; use admin;
-switched to db admin
-&gt; db.shutdownServer();
-2015-09-23T16:15:31.329+0800 I NETWORK  DBClientCursor::init call() failed
-server should be down...
-2015-09-23T16:15:31.331+0800 I NETWORK  trying reconnect to 127.0.0.1:27017 (127.0.0.1) failed
-2015-09-23T16:15:31.332+0800 I NETWORK  reconnect 127.0.0.1:27017 (127.0.0.1) ok
-2015-09-23T16:15:31.333+0800 I NETWORK  Socket recv() errno:104 Connection reset by peer 127.0.0.1:27017
-2015-09-23T16:15:31.333+0800 I NETWORK  SocketException: remote: 127.0.0.1:27017 error: 9001 socket exception [RECV_ERROR] server [127.0.0.1:27017]
-2015-09-23T16:15:31.333+0800 I NETWORK  DBClientCursor::init call() failed
-&gt;
-bye
-$ ps aux | grep mongo | grep -v grep
-</code></pre><p>3) 查看新 master 状况</p>
-<pre><code>$ mongo
-MongoDB shell version: 3.0.6
-connecting to: test
-&gt; show dbs;
-aaa     0.078GB
-local  50.054GB
-&gt; use aaa;
-switched to db aaa
-&gt; db.createCollection(&quot;test3&quot;);
-{ &quot;ok&quot; : 1 }
-&gt; show collections;
-system.indexes
-system.profile
-test
-test2
-test3
-&gt;
-bye
-</code></pre><p>4) 结论</p>
-<p>可见 master 是可以正常读写的,只需要再制作从库即可</p>
-]]></content>
-    </entry>
-    
-    <entry>
       <title><![CDATA[MongoDB分片故障测试和解决方案]]></title>
       <url>http://panwenhang.github.io/2016/06/23/MongoDB-2016-06-23-MongoDB%E5%88%86%E7%89%87%E6%95%85%E9%9A%9C%E6%B5%8B%E8%AF%95%E5%92%8C%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/</url>
       <content type="html"><![CDATA[<h2 id="1-环境"><a href="#1-环境" class="headerlink" title="1. 环境"></a>1. 环境</h2><pre><code>$ cat /etc/redhat-release
@@ -5125,356 +5346,424 @@ MongoClient mg = new MongoClient(mongoHostList);
     </entry>
     
     <entry>
-      <title><![CDATA[MongoDB分片搭建]]></title>
-      <url>http://panwenhang.github.io/2016/06/23/MongoDB-2016-06-23-MongoDB%E5%88%86%E7%89%87%E6%90%AD%E5%BB%BA/</url>
+      <title><![CDATA[C语言side effect和sequence point]]></title>
+      <url>http://panwenhang.github.io/2016/06/23/C-2016-06-23-C%E8%AF%AD%E8%A8%80side-effect%E5%92%8Csequence-point/</url>
+      <content type="html"><![CDATA[<p>  C 语言中副作用 ( side effect ) : 是指对数据对象或者文件的修改。例如,语句 var = 99 ; 的副作用是把 var 的值修改成 99 。对表达式求值也可能产生副作用,例如,对表达式求 se = 100;<br>求值所产生的副作用就是 se 的值被修改成 100。<br>  序列点 ( sequence point ) : 是指程序运行中的一个特殊的时间点,在该点之前的所有副作用已经结束,并且后续的副作用还没发生。C 语句结束标志——分号 ( ; ) 是序列点。标准规定,在两个序列点之间,一个对象所保存的值最多只能被修改一次。</p>
+<a id="more"></a>
+<p>  C 语句中由赋值、自增或者自减等引起的副作用在分号之前必须结束。我们以后会说到一些包含序列点的运算符。任何完整表达式 ( full expression ) 运算结束的那个时间点也是序列点。所谓完整表达式,就是说这个表达式不是子表达式。而所谓的子表达式,则是指表达式中的表达式。例如:f = ++e % 3 这整个表达式就是一个完整表达式。这个表达式中的 ++e、3 和 ++e % 3 都是它的子表达式。</p>
+<p>有了序列点的概念,我们下面来分析一下一个很常见的错误 :</p>
+<pre><code>int x = 1, y ;
+y = x++ + x++ ;
+</code></pre><p>这里 y = x++ + x++ 是完整表达式,而 x++ 是它的子表达式。这个完整表达式运算结束的那一点是一个序列点,int x = 1, y ; 中的 ; 也是一个序列点。也就是说 x++ + x++ 位于两个序列点之间。标准规定,在两个序列点之间,一个对象所保存的值最多只能被修改一次。但是我们清楚可以看到,上面这个例子中,x 的值在两个序列点之间被修改了两次。这显然是错误的！这段代码在不同的编译器上编译可能会导致 y 的值有所不同。比较常见的结果是 y 的值最后被修改为 2 或者 3 。在此,我不打算就这个问题作更深入的分析,各位只要记住这是错误的,别这么用就可以了。有兴趣的话,可以看看以下列出的相关资料。</p>
+<p>C 语言标准对副作用和序列点的定义如下:<br>Accessing a volatile object, modifying an object, modifying a file, or calling a function that does any of those operations are all side effects, which are changes in the state of the execution environment. Evaluation of an expression may produce side effects. At certain specified points in the execution sequence called sequence points, all side effects of previous evaluations shall be complete and no side effects of subsequent evaluations shall have taken place.<br>翻译如下:</p>
+<p>访问易变对象,修改对象或文件,或者调用包含这些操作的函数都是副作用,它们都会改变执行环境的状态。计算表达式也会引起副作用。执行序列中某些特定的点被称为序列点。在序列点上,该点之前所有运算的副作用都应该结束,并且后继运算的副作用还没发生。</p>
+<p>顺序点有:</p>
+<ol>
+<li>The point of calling a function, after evaluating its arguments.</li>
+<li>The end of the first operand of the &amp;&amp; operator.</li>
+<li>The end of the first operand of the || operator.</li>
+<li>The end of the first operand of the ?: conditional operator.</li>
+<li>The end of the each operand of the comma operator.</li>
+<li>Completing the evaluation of a full expression. They are the following:</li>
+<li>Evaluating the initializer of an auto object.</li>
+<li>The expression in an ‘ordinary’ statement—an expression followed by semicolon.</li>
+<li>The controlling expressions in do , while , if , switch or for statements.</li>
+<li>The other two expressions in a for statement.</li>
+<li>The expression in a return statement.</li>
+</ol>
+<p>编译时可以加上 “ -Wsequence-point “ 让编译器帮我们检查可能的关于检查点的错误。</p>
+<pre><code>$ vim test_sequence_point.c
+＃include &lt;stdio.h&gt;
+int main() {
+    int i = 12 ;
+    i = i-- ;
+    printf( &quot;the i is %d/n&quot; , i ) ;
+    return 0 ;
+}
+
+$ gcc -Wsequence-point test_sequence_point.c
+test_sequence_point.c: In function `main&apos;:
+test_sequence_point.c:10: warning: operation on `i&apos; may be undefined
+</code></pre>]]></content>
+    </entry>
+    
+    <entry>
+      <title><![CDATA[Linux下MongoDB安装和配置]]></title>
+      <url>http://panwenhang.github.io/2016/06/23/MongoDB-2016-06-23-Linux%E4%B8%8BMongoDB%E5%AE%89%E8%A3%85%E5%92%8C%E9%85%8D%E7%BD%AE/</url>
       <content type="html"><![CDATA[<h2 id="1-环境"><a href="#1-环境" class="headerlink" title="1. 环境"></a>1. 环境</h2><pre><code>$ cat /etc/redhat-release
 CentOS Linux release 7.0.1406 (Core)
 $ uname -a
 Linux zhaopin-2-201 3.10.0-123.el7.x86_64 #1 SMP Mon Jun 30 12:09:22 UTC 2014 x86_64 x86_64 x86_64 GNU/Linux
 </code></pre><a id="more"></a>
-<p>  $ mongo –version<br>    MongoDB shell version: 3.0.6</p>
-<pre><code>node1: 172.30.2.201
-node2: 172.30.2.202
-node3: 172.30.2.203
-</code></pre><h2 id="2-配置-Shard-Server"><a href="#2-配置-Shard-Server" class="headerlink" title="2. 配置 Shard Server"></a>2. 配置 Shard Server</h2><p>在 3 个节点分别执行:</p>
-<h3 id="1-创建目录"><a href="#1-创建目录" class="headerlink" title="(1) 创建目录"></a>(1) 创建目录</h3><pre><code>$ sudo mkdir -p /data/mongodb/{sh0,sh1}/{data,backup,log,conf}
-</code></pre><h3 id="2-准备配置文件"><a href="#2-准备配置文件" class="headerlink" title="(2) 准备配置文件"></a>(2) 准备配置文件</h3><p>第一个分片:</p>
-<pre><code>$ sudo vim /data/mongodb/sh0/conf/mongodb.conf
-# base
-port = 27010
-maxConns = 800
-filePermissions = 0700
-fork = true
-noauth = true
-directoryperdb = true
-dbpath = /data/mongodb/sh0/data
-pidfilepath = /data/mongodb/sh0/data/mongodb.pid
-oplogSize = 10
-journal = true
-# security
-nohttpinterface = true
-rest = false
-# log
-logpath = /data/mongodb/sh0/log/mongodb.log
-logRotate = rename
-logappend = true
-slowms = 50
-replSet = sh0
-shardsvr = true
-</code></pre><p>第二个分片:</p>
-<pre><code>$ sudo vim /data/mongodb/sh1/conf/mongodb.conf
-# base
-port = 27011
-maxConns = 800
-filePermissions = 0700
-fork = true
-noauth = true
-directoryperdb = true
-dbpath = /data/mongodb/sh1/data
-pidfilepath = /data/mongodb/sh1/data/mongodb.pid
-oplogSize = 10
-journal = true
-# security
-nohttpinterface = true
-rest = false
-# log
-logpath = /data/mongodb/sh1/log/mongodb.log
-logRotate = rename
-logappend = true
-slowms = 50
-replSet = sh1
-shardsvr = true
-</code></pre><h3 id="3-启动-Shard-Server"><a href="#3-启动-Shard-Server" class="headerlink" title="(3) 启动 Shard Server"></a>(3) 启动 Shard Server</h3><pre><code>$ sudo /opt/mongodb/bin/mongod --config /data/mongodb/sh0/conf/mongodb.conf
-about to fork child process, waiting until server is ready for connections.
-forked process: 41492
-child process started successfully, parent exiting
-$ sudo /opt/mongodb/bin/mongod --config /data/mongodb/sh1/conf/mongodb.conf
-about to fork child process, waiting until server is ready for connections.
-forked process: 41509
-child process started successfully, parent exiting
-$ ps aux | grep mongo | grep -v grep
-root     41492  0.5  0.0 518016 54604 ?        Sl   10:09   0:00 /opt/mongodb/bin/mongod --config /data/mongodb/conf/sh0/mongodb.conf
-root     41509  0.5  0.0 516988 51824 ?        Sl   10:09   0:00 /opt/mongodb/bin/mongod --config /data/mongodb/conf/sh1/mongodb.conf
-$ mongo --port 27010
+<h2 id="2-准备"><a href="#2-准备" class="headerlink" title="2. 准备"></a>2. 准备</h2><h3 id="1-下载包"><a href="#1-下载包" class="headerlink" title="(1) 下载包"></a>(1) 下载包</h3><pre><code>$ sudo wget -c -P /opt/ https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-rhel70-3.0.6.tgz
+--2015-09-23 10:18:24--  https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-rhel70-3.0.6.tgz
+Resolving fastdl.mongodb.org (fastdl.mongodb.org)... 54.230.108.68, 54.230.108.110, 54.230.108.116, ...
+Connecting to fastdl.mongodb.org (fastdl.mongodb.org)|54.230.108.68|:443... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 50210575 (48M) [application/x-gzip]
+Saving to: ‘/opt/mongodb-linux-x86_64-rhel70-3.0.6.tgz’
+100%[======================================================================================================================================================================================================================&gt;] 50,210,575  1.20MB/s   in 50s
+2015-09-23 10:19:19 (978 KB/s) - ‘/opt/mongodb-linux-x86_64-rhel70-3.0.6.tgz’ saved [50210575/50210575]
+</code></pre><h3 id="2-环境"><a href="#2-环境" class="headerlink" title="(2) 环境"></a>(2) 环境</h3><pre><code>$ cd /opt/
+$ sudo tar -zxf mongodb-linux-x86_64-rhel70-3.0.6.tgz
+$ ll
+total 49052
+drwxr-xr-x. 3 root root     4096 Sep 23 10:20 mongodb-linux-x86_64-rhel70-3.0.6
+-rw-r--r--. 1 root root 50210575 Aug 24 11:38 mongodb-linux-x86_64-rhel70-3.0.6.tgz
+drwxr-xr-x. 8 root root     4096 Sep 21 15:41 omnipitr
+drwxr-xr-x. 6 root root     4096 Sep 21 15:53 pg94
+lrwxrwxrwx. 1 root root        9 Sep 21 15:53 pgsql -&gt; /opt/pg94
+drwxr-xr-x. 2 root root     4096 Jun 10  2014 rh
+$ sudo ln -sf /opt/mongodb-linux-x86_64-rhel70-3.0.6 /opt/mongodb
+$ ll
+total 49052
+lrwxrwxrwx. 1 root root       38 Sep 23 10:21 mongodb -&gt; /opt/mongodb-linux-x86_64-rhel70-3.0.6
+drwxr-xr-x. 3 root root     4096 Sep 23 10:20 mongodb-linux-x86_64-rhel70-3.0.6
+-rw-r--r--. 1 root root 50210575 Aug 24 11:38 mongodb-linux-x86_64-rhel70-3.0.6.tgz
+drwxr-xr-x. 8 root root     4096 Sep 21 15:41 omnipitr
+drwxr-xr-x. 6 root root     4096 Sep 21 15:53 pg94
+lrwxrwxrwx. 1 root root        9 Sep 21 15:53 pgsql -&gt; /opt/pg94
+drwxr-xr-x. 2 root root     4096 Jun 10  2014 rh
+$
+$ sudo vim /etc/profile.d/mongodb.sh
+#!/bin/env bash
+export PATH=&quot;/opt/mongodb/bin:$PATH&quot;
+$ source /etc/profile.d/mongodb.sh
+$ mongo --version
 MongoDB shell version: 3.0.6
-connecting to: 127.0.0.1:27010/test
+</code></pre><h2 id="3-配置"><a href="#3-配置" class="headerlink" title="3. 配置"></a>3. 配置</h2><pre><code>$ sudo mkdir -p /data/mongodb/db0/{data,backup,log,conf}
+$ sudo vim /data/mongodb/db0/conf/mongodb.conf
+# base
+port = 27017
+maxConns = 800
+filePermissions = 0700
+fork = true
+noauth = true
+directoryperdb = true
+dbpath = /data/mongodb/db0/data
+pidfilepath = /data/mongodb/db0/data/mongodb.pid
+journal = true
+
+# security
+nohttpinterface = true
+rest = false
+
+# log
+logpath = /data/mongodb/db0/log/mongodb.log
+logRotate = rename
+logappend = true
+slowms = 50
+profile = 0
+verbose = false
+objcheck = false
+</code></pre><h2 id="4-启动"><a href="#4-启动" class="headerlink" title="4. 启动"></a>4. 启动</h2><pre><code>$ sudo systemctl stop firewalld.service
+$ sudo systemctl disable firewalld.service
+rm &apos;/etc/systemd/system/dbus-org.fedoraproject.FirewallD1.service&apos;
+rm &apos;/etc/systemd/system/basic.target.wants/firewalld.service&apos;
+$ sudo /opt/mongodb/bin/mongod --config /data/mongodb/db0/conf/mongodb.conf
+$ mongo
+MongoDB shell version: 3.0.6
+connecting to: test
+&gt; db.version();
+3.0.6
 &gt;
 bye
-$ mongo --port 27011
-MongoDB shell version: 3.0.6
-connecting to: 127.0.0.1:27011/test
-&gt;
-bye
-</code></pre><h2 id="3-配置-Config-Server"><a href="#3-配置-Config-Server" class="headerlink" title="3.配置 Config Server"></a>3.配置 Config Server</h2><p>在 3 个节点分别执行:</p>
-<h3 id="1-创建目录-1"><a href="#1-创建目录-1" class="headerlink" title="(1) 创建目录"></a>(1) 创建目录</h3><pre><code>$ sudo mkdir -p /data/mongodb/cf0/{data,backup,log,conf}
-</code></pre><h3 id="2-准备配置文件-1"><a href="#2-准备配置文件-1" class="headerlink" title="(2) 准备配置文件"></a>(2) 准备配置文件</h3><pre><code>$ sudo vim /data/mongodb/cf0/conf/config.conf
-# base
-port = 27000
-maxConns = 800
-filePermissions = 0700
-fork = true
-noauth = true
-directoryperdb = true
-dbpath = /data/mongodb/cf0/data
-pidfilepath = /data/mongodb/cf0/data/config.pid
-oplogSize = 10
-journal = true
-# security
-nohttpinterface = true
-rest = false
-# log
-logpath = /data/mongodb/cf0/log/config.log
-logRotate = rename
-logappend = true
-slowms = 50
-configsvr = true
-</code></pre><h3 id="3-启动"><a href="#3-启动" class="headerlink" title="(3) 启动"></a>(3) 启动</h3><pre><code>$ sudo /opt/mongodb/bin/mongod --config /data/mongodb/cf0/conf/config.conf
-about to fork child process, waiting until server is ready for connections.
-forked process: 41759
-child process started successfully, parent exiting
-$ ps aux | grep mongo | grep -v grep
-root     41492  0.3  0.0 518016 54728 ?        Sl   10:09   0:06 /opt/mongodb/bin/mongod --config /data/mongodb/sh0/conf/mongodb.conf
-root     41509  0.3  0.0 518016 54760 ?        Sl   10:09   0:06 /opt/mongodb/bin/mongod --config /data/mongodb/sh1/conf/mongodb.conf
-root     41855  0.4  0.0 467828 51684 ?        Sl   10:25   0:03 /opt/mongodb/bin/mongod --config /data/mongodb/cf0/conf/config.conf
-</code></pre><h3 id="4-配置-Query-Routers"><a href="#4-配置-Query-Routers" class="headerlink" title="4. 配置 Query Routers"></a>4. 配置 Query Routers</h3><p>在 3 个节点分别执行:</p>
-<h3 id="1-创建目录-2"><a href="#1-创建目录-2" class="headerlink" title="(1) 创建目录"></a>(1) 创建目录</h3><pre><code>$ sudo mkdir -p /data/mongodb/ms0/{data,backup,log,conf}
-</code></pre><h3 id="2-准备配置文件-2"><a href="#2-准备配置文件-2" class="headerlink" title="(2) 准备配置文件"></a>(2) 准备配置文件</h3><pre><code>$ sudo vim /data/mongodb/ms0/conf/mongos.conf
-# base
-port = 30000
-maxConns = 800
-filePermissions = 0700
-fork = true
-pidfilepath = /data/mongodb/ms0/data/mongos.pid
-# log
-logpath = /data/mongodb/ms0/log/mongos.log
-logRotate = rename
-logappend = true
-configdb = 172.30.2.201:27000,172.30.2.202:27000,172.30.2.203:27000
-</code></pre><h3 id="3-启动-1"><a href="#3-启动-1" class="headerlink" title="(3) 启动"></a>(3) 启动</h3><pre><code>$ sudo /opt/mongodb/bin/mongos --config /data/mongodb/ms0/conf/mongos.conf
-about to fork child process, waiting until server is ready for connections.
-forked process: 42233
-child process started successfully, parent exiting
-$ ps aux | grep mongo | grep -v grep
-root     41492  0.3  0.0 518016 54728 ?        Sl   10:09   0:06 /opt/mongodb/bin/mongod --config /data/mongodb/sh0/conf/mongodb.conf
-root     41509  0.3  0.0 518016 54760 ?        Sl   10:09   0:07 /opt/mongodb/bin/mongod --config /data/mongodb/sh1/conf/mongodb.conf
-root     41855  0.4  0.0 546724 37812 ?        Sl   10:25   0:03 /opt/mongodb/bin/mongod --config /data/mongodb/cf0/conf/config.conf
-root     42233  0.5  0.0 233536 10188 ?        Sl   10:38   0:00 /opt/mongodb/bin/mongos --config /data/mongodb/ms0/conf/mongos.conf
-</code></pre><h2 id="5-初始化副本集"><a href="#5-初始化副本集" class="headerlink" title="5. 初始化副本集"></a>5. 初始化副本集</h2><p>配置副本集的好处是为了高可用,配置单节点是我自己为了节省时间,后续添加节点和副本集的操作一样,分片的配置不需要修改,在任何一个节点执行,这里在 node1 上执行</p>
-<p>分片一:</p>
-<pre><code>$ mongo --port 27010
-MongoDB shell version: 3.0.6
-connecting to: 127.0.0.1:27010/test
-&gt; use admin
-switched to db admin
-&gt; cfg={_id:&quot;sh0&quot;, members:[ {_id:0,host:&quot;172.30.2.201:27010&quot;}, {_id:1,host:&quot;172.30.2.202:27010&quot;}, {_id:2,host:&quot;172.30.2.203:27010&quot;} ] }
-{
-        &quot;_id&quot; : &quot;sh0&quot;,
-        &quot;members&quot; : [
-                {
-                        &quot;_id&quot; : 0,
-                        &quot;host&quot; : &quot;172.30.2.201:27010&quot;
-                },
-                {
-                        &quot;_id&quot; : 1,
-                        &quot;host&quot; : &quot;172.30.2.202:27010&quot;
-                },
-                {
-                        &quot;_id&quot; : 2,
-                        &quot;host&quot; : &quot;172.30.2.203:27010&quot;
-                }
-        ]
-}
-&gt; rs.initiate( cfg );
-{ &quot;ok&quot; : 1 }
-sh0:OTHER&gt; rs.status()
-{
-        &quot;set&quot; : &quot;sh0&quot;,
-        &quot;date&quot; : ISODate(&quot;2015-10-23T05:33:31.920Z&quot;),
-        &quot;myState&quot; : 1,
-        &quot;members&quot; : [
-                {
-                        &quot;_id&quot; : 0,
-                        &quot;name&quot; : &quot;172.30.2.201:27010&quot;,
-                        &quot;health&quot; : 1,
-                        &quot;state&quot; : 1,
-                        &quot;stateStr&quot; : &quot;PRIMARY&quot;,
-                        &quot;uptime&quot; : 270,
-                        &quot;optime&quot; : Timestamp(1445578404, 1),
-                        &quot;optimeDate&quot; : ISODate(&quot;2015-10-23T05:33:24Z&quot;),
-                        &quot;electionTime&quot; : Timestamp(1445578408, 1),
-                        &quot;electionDate&quot; : ISODate(&quot;2015-10-23T05:33:28Z&quot;),
-                        &quot;configVersion&quot; : 1,
-                        &quot;self&quot; : true
-                },
-                {
-                        &quot;_id&quot; : 1,
-                        &quot;name&quot; : &quot;172.30.2.202:27010&quot;,
-                        &quot;health&quot; : 1,
-                        &quot;state&quot; : 5,
-                        &quot;stateStr&quot; : &quot;STARTUP2&quot;,
-                        &quot;uptime&quot; : 7,
-                        &quot;optime&quot; : Timestamp(0, 0),
-                        &quot;optimeDate&quot; : ISODate(&quot;1970-01-01T00:00:00Z&quot;),
-                        &quot;lastHeartbeat&quot; : ISODate(&quot;2015-10-23T05:33:30.289Z&quot;),
-                        &quot;lastHeartbeatRecv&quot; : ISODate(&quot;2015-10-23T05:33:30.295Z&quot;),
-                        &quot;pingMs&quot; : 1,
-                        &quot;configVersion&quot; : 1
-                },
-                {
-                        &quot;_id&quot; : 2,
-                        &quot;name&quot; : &quot;172.30.2.203:27010&quot;,
-                        &quot;health&quot; : 1,
-                        &quot;state&quot; : 5,
-                        &quot;stateStr&quot; : &quot;STARTUP2&quot;,
-                        &quot;uptime&quot; : 7,
-                        &quot;optime&quot; : Timestamp(0, 0),
-                        &quot;optimeDate&quot; : ISODate(&quot;1970-01-01T00:00:00Z&quot;),
-                        &quot;lastHeartbeat&quot; : ISODate(&quot;2015-10-23T05:33:30.289Z&quot;),
-                        &quot;lastHeartbeatRecv&quot; : ISODate(&quot;2015-10-23T05:33:30.293Z&quot;),
-                        &quot;pingMs&quot; : 1,
-                        &quot;configVersion&quot; : 1
-                }
-        ],
-        &quot;ok&quot; : 1
-}
-sh0:PRIMARY&gt;
-bye
-</code></pre><p>分片二:</p>
-<pre><code>$ mongo --port 27011
-MongoDB shell version: 3.0.6
-connecting to: 127.0.0.1:27011/test
-&gt; use admin
-switched to db admin
-&gt; cfg={_id:&quot;sh1&quot;, members:[ {_id:0,host:&quot;172.30.2.201:27011&quot;}, {_id:1,host:&quot;172.30.2.202:27011&quot;}, {_id:2,host:&quot;172.30.2.203:27011&quot;} ] }
-{
-        &quot;_id&quot; : &quot;sh1&quot;,
-        &quot;members&quot; : [
-                {
-                        &quot;_id&quot; : 0,
-                        &quot;host&quot; : &quot;172.30.2.201:27011&quot;
-                },
-                {
-                        &quot;_id&quot; : 1,
-                        &quot;host&quot; : &quot;172.30.2.202:27011&quot;
-                },
-                {
-                        &quot;_id&quot; : 2,
-                        &quot;host&quot; : &quot;172.30.2.203:27011&quot;
-                }
-        ]
-}
-&gt; rs.initiate( cfg );
-{ &quot;ok&quot; : 1 }
-sh1:OTHER&gt; rs.status();
-{
-        &quot;set&quot; : &quot;sh1&quot;,
-        &quot;date&quot; : ISODate(&quot;2015-10-23T05:36:02.365Z&quot;),
-        &quot;myState&quot; : 1,
-        &quot;members&quot; : [
-                {
-                        &quot;_id&quot; : 0,
-                        &quot;name&quot; : &quot;172.30.2.201:27011&quot;,
-                        &quot;health&quot; : 1,
-                        &quot;state&quot; : 1,
-                        &quot;stateStr&quot; : &quot;PRIMARY&quot;,
-                        &quot;uptime&quot; : 406,
-                        &quot;optime&quot; : Timestamp(1445578557, 1),
-                        &quot;optimeDate&quot; : ISODate(&quot;2015-10-23T05:35:57Z&quot;),
-                        &quot;electionTime&quot; : Timestamp(1445578561, 1),
-                        &quot;electionDate&quot; : ISODate(&quot;2015-10-23T05:36:01Z&quot;),
-                        &quot;configVersion&quot; : 1,
-                        &quot;self&quot; : true
-                },
-                {
-                        &quot;_id&quot; : 1,
-                        &quot;name&quot; : &quot;172.30.2.202:27011&quot;,
-                        &quot;health&quot; : 1,
-                        &quot;state&quot; : 5,
-                        &quot;stateStr&quot; : &quot;STARTUP2&quot;,
-                        &quot;uptime&quot; : 5,
-                        &quot;optime&quot; : Timestamp(0, 0),
-                        &quot;optimeDate&quot; : ISODate(&quot;1970-01-01T00:00:00Z&quot;),
-                        &quot;lastHeartbeat&quot; : ISODate(&quot;2015-10-23T05:36:01.168Z&quot;),
-                        &quot;lastHeartbeatRecv&quot; : ISODate(&quot;2015-10-23T05:36:01.175Z&quot;),
-                        &quot;pingMs&quot; : 0,
-                        &quot;configVersion&quot; : 1
-                },
-                {
-                        &quot;_id&quot; : 2,
-                        &quot;name&quot; : &quot;172.30.2.203:27011&quot;,
-                        &quot;health&quot; : 1,
-                        &quot;state&quot; : 5,
-                        &quot;stateStr&quot; : &quot;STARTUP2&quot;,
-                        &quot;uptime&quot; : 5,
-                        &quot;optime&quot; : Timestamp(0, 0),
-                        &quot;optimeDate&quot; : ISODate(&quot;1970-01-01T00:00:00Z&quot;),
-                        &quot;lastHeartbeat&quot; : ISODate(&quot;2015-10-23T05:36:01.167Z&quot;),
-                        &quot;lastHeartbeatRecv&quot; : ISODate(&quot;2015-10-23T05:36:01.172Z&quot;),
-                        &quot;pingMs&quot; : 0,
-                        &quot;configVersion&quot; : 1
-                }
-        ],
-        &quot;ok&quot; : 1
-}
-sh1:PRIMARY&gt;
-bye
-</code></pre><h2 id="6-配置分片"><a href="#6-配置分片" class="headerlink" title="6. 配置分片"></a>6. 配置分片</h2><pre><code>$ mongo --port 30000
-MongoDB shell version: 3.0.6
-connecting to: 127.0.0.1:30000/test
-mongos&gt; use admin;
-switched to db admin
-mongos&gt; sh.addShard(&quot;sh0/172.30.2.201:27010,172.30.2.202:27010,172.30.2.203:27010&quot;);
-{ &quot;shardAdded&quot; : &quot;sh0&quot;, &quot;ok&quot; : 1 }
-mongos&gt; sh.addShard(&quot;sh1/172.30.2.201:27011,172.30.2.202:27011,172.30.2.203:27011&quot;);
-{ &quot;shardAdded&quot; : &quot;sh1&quot;, &quot;ok&quot; : 1 }
-mongos&gt; use mydb;
-switched to db mydb
-mongos&gt; db.createCollection(&quot;test&quot;);
-{
-        &quot;ok&quot; : 1,
-        &quot;$gleStats&quot; : {
-                &quot;lastOpTime&quot; : Timestamp(1444358911, 1),
-                &quot;electionId&quot; : ObjectId(&quot;56172a4bc03d9b1667f8e928&quot;)
-        }
-}
-mongos&gt; sh.enableSharding(&quot;mydb&quot;);
-{ &quot;ok&quot; : 1 }
-mongos&gt; sh.shardCollection(&quot;mydb.test&quot;, {&quot;_id&quot;:1});
-{ &quot;collectionsharded&quot; : &quot;mydb.test&quot;, &quot;ok&quot; : 1 }
-mongos&gt; sh.status();
---- Sharding Status ---
-  sharding version: {
-        &quot;_id&quot; : 1,
-        &quot;minCompatibleVersion&quot; : 5,
-        &quot;currentVersion&quot; : 6,
-        &quot;clusterId&quot; : ObjectId(&quot;561728b4030ea038bcb57fa0&quot;)
-}
-  shards:
-        {  &quot;_id&quot; : &quot;sh0&quot;,  &quot;host&quot; : &quot;sh0/172.30.2.201:27010,172.30.2.202:27010,172.30.2.203:27010&quot; }
-        {  &quot;_id&quot; : &quot;sh1&quot;,  &quot;host&quot; : &quot;sh1/172.30.2.201:27011,172.30.2.202:27011,172.30.2.203:27011&quot; }
-  balancer:
-        Currently enabled:  yes
-        Currently running:  no
-        Failed balancer rounds in last 5 attempts:  0
-        Migration Results for the last 24 hours:
-                No recent migrations
-  databases:
-        {  &quot;_id&quot; : &quot;admin&quot;,  &quot;partitioned&quot; : false,  &quot;primary&quot; : &quot;config&quot; }
-        {  &quot;_id&quot; : &quot;mydb&quot;,  &quot;partitioned&quot; : true,  &quot;primary&quot; : &quot;sh0&quot; }
-                mydb.test
-                        shard key: { &quot;_id&quot; : 1 }
-                        chunks:
-                                sh0     1
-                        { &quot;_id&quot; : { &quot;$minKey&quot; : 1 } } --&gt;&gt; { &quot;_id&quot; : { &quot;$maxKey&quot; : 1 } } on : sh0 Timestamp(1, 0)
-</code></pre><p>可见分片已经配置完成了</p>
-<h2 id="7-添加开机启动项"><a href="#7-添加开机启动项" class="headerlink" title="7. 添加开机启动项"></a>7. 添加开机启动项</h2><pre><code>$ sudo vim /etc/rc.local
-ulimit -SHn 65535
-/opt/mongodb/bin/mongod --config /data/mongodb/sh0/conf/mongodb.conf
-/opt/mongodb/bin/mongod --config /data/mongodb/sh1/conf/mongodb.conf
-/opt/mongodb/bin/mongod --config /data/mongodb/cf0/conf/config.conf
-/opt/mongodb/bin/mongos --config /data/mongodb/ms0/conf/mongos.conf
-</code></pre><h2 id="8-备注"><a href="#8-备注" class="headerlink" title="8. 备注"></a>8. 备注</h2><pre><code>虽然也是 3 台机器,使用分片的好处是可以把两个分片的 primary 设置在不同的节点,这个可以分摊单节点的压力,当然有更多机器就可以把分片放到不同机器上。
 </code></pre>]]></content>
+    </entry>
+    
+    <entry>
+      <title><![CDATA[MongoDB主从集群]]></title>
+      <url>http://panwenhang.github.io/2016/06/23/MongoDB-2016-06-23-MongoDB%E4%B8%BB%E4%BB%8E%E9%9B%86%E7%BE%A4/</url>
+      <content type="html"><![CDATA[<h2 id="1-环境"><a href="#1-环境" class="headerlink" title="1. 环境"></a>1. 环境</h2><pre><code>$ cat /etc/redhat-release
+CentOS Linux release 7.0.1406 (Core)
+$ uname -a
+Linux zhaopin-2-201 3.10.0-123.el7.x86_64 #1 SMP Mon Jun 30 12:09:22 UTC 2014 x86_64 x86_64 x86_64 GNU/Linux
+$ mongo --version
+MongoDB shell version: 3.0.6
+</code></pre><a id="more"></a>
+<h2 id="2-准备"><a href="#2-准备" class="headerlink" title="2. 准备"></a>2. 准备</h2><h3 id="1-创建目录"><a href="#1-创建目录" class="headerlink" title="(1) 创建目录"></a>(1) 创建目录</h3><pre><code>$ sudo mkdir -p /data/mongodb/db0/{data,backup,log,conf}
+</code></pre><h3 id="2-编写配置文件"><a href="#2-编写配置文件" class="headerlink" title="(2) 编写配置文件"></a>(2) 编写配置文件</h3><p>1) master:</p>
+<pre><code>$ sudo vim /data/mongodb/db0/conf/mongodb.conf
+# base
+port = 27017
+maxConns = 800
+filePermissions = 0700
+fork = true
+noauth = true
+directoryperdb = true
+dbpath = /data/mongodb/db0/data
+pidfilepath = /data/mongodb/db0/data/mongodb.pid
+journal = true
+
+# security
+nohttpinterface = true
+rest = false
+
+# log
+logpath = /data/mongodb/db0/log/monodb.log
+logRotate = rename
+logappend = true
+slowms = 50
+master = true
+</code></pre><p>2) slave:</p>
+<pre><code>$ sudo vim /data/mongodb/db0/conf/mongodb.conf
+# base
+port = 27017
+maxConns = 800
+filePermissions = 0700
+fork = true
+noauth = true
+directoryperdb = true
+dbpath = /data/mongodb/db0/data
+pidfilepath = /data/mongodb/db0/data/mongodb.pid
+journal = true
+
+# security
+nohttpinterface = true
+rest = false
+
+# log
+logpath = /data/mongodb/db0/log/mongodb.log
+logRotate = rename
+logappend = true
+slowms = 50
+
+slave = true
+source = 172.30.2.201:27017
+</code></pre><h2 id="3-启动"><a href="#3-启动" class="headerlink" title="3. 启动"></a>3. 启动</h2><h3 id="1-先启动-master"><a href="#1-先启动-master" class="headerlink" title="(1) 先启动 master"></a>(1) 先启动 master</h3><pre><code>$ sudo /opt/mongodb/bin/mongod --config /data/mongodb/db0/conf/mongodb.conf
+about to fork child process, waiting until server is ready for connections.
+forked process: 48583
+child process started successfully, parent exiting
+$ mongo
+MongoDB shell version: 3.0.6
+connecting to: test
+&gt; db.isMaster();
+{
+        &quot;ismaster&quot; : 0,
+        &quot;info&quot; : &quot;dead: data too stale halted replication&quot;,
+        &quot;maxBsonObjectSize&quot; : 16777216,
+        &quot;maxMessageSizeBytes&quot; : 48000000,
+        &quot;maxWriteBatchSize&quot; : 1000,
+        &quot;localTime&quot; : ISODate(&quot;2015-09-23T07:47:52.957Z&quot;),
+        &quot;maxWireVersion&quot; : 3,
+        &quot;minWireVersion&quot; : 0,
+        &quot;ok&quot; : 1
+}
+&gt;
+bye
+</code></pre><h3 id="2-启动-slave"><a href="#2-启动-slave" class="headerlink" title="(2) 启动 slave"></a>(2) 启动 slave</h3><pre><code>$ sudo /opt/mongodb/bin/mongod --config /data/mongodb/db0/conf/mongodb.conf
+about to fork child process, waiting until server is ready for connections.
+forked process: 36715
+child process started successfully, parent exiting
+$ mongo
+MongoDB shell version: 3.0.6
+connecting to: test
+&gt; db.isMaster();
+{
+        &quot;ismaster&quot; : false,
+        &quot;maxBsonObjectSize&quot; : 16777216,
+        &quot;maxMessageSizeBytes&quot; : 48000000,
+        &quot;maxWriteBatchSize&quot; : 1000,
+        &quot;localTime&quot; : ISODate(&quot;2015-09-23T07:49:32.934Z&quot;),
+        &quot;maxWireVersion&quot; : 3,
+        &quot;minWireVersion&quot; : 0,
+        &quot;ok&quot; : 1
+}
+&gt;
+bye
+</code></pre><h3 id="3-设置开机启动"><a href="#3-设置开机启动" class="headerlink" title="(3) 设置开机启动"></a>(3) 设置开机启动</h3><pre><code>$ sudo vim /etc/rc.local
+/opt/mongodb/bin/mongod --config /data/mongodb/db0/conf/mongodb.conf
+</code></pre><h2 id="4-验证"><a href="#4-验证" class="headerlink" title="4. 验证"></a>4. 验证</h2><h3 id="1-数据同步"><a href="#1-数据同步" class="headerlink" title="(1) 数据同步"></a>(1) 数据同步</h3><p>1) master:</p>
+<pre><code>$ mongo
+MongoDB shell version: 3.0.6
+connecting to: test
+&gt; use aaa;
+switched to db aaa
+&gt; db.createCollection(&quot;test&quot;);
+{ &quot;ok&quot; : 1 }
+&gt; show collections;
+system.indexes
+system.profile
+test
+</code></pre><p>2) slave:</p>
+<pre><code>$ mongo
+MongoDB shell version: 3.0.6
+connecting to: test
+&gt; rs.slaveOk();
+&gt; show dbs;
+aaa    0.078GB
+local  0.078GB
+&gt; use aaa;
+switched to db aaa
+&gt; show collections;
+system.indexes
+test
+</code></pre><h3 id="2-读写验证"><a href="#2-读写验证" class="headerlink" title="(2) 读写验证"></a>(2) 读写验证</h3><p>由上可知,master 是可读写的</p>
+<p>在从库上写测试:</p>
+<pre><code>$ mongo
+MongoDB shell version: 3.0.6
+connecting to: test
+&gt; use aaa;
+switched to db aaa
+&gt; db.createCollection(&quot;test2&quot;);
+{ &quot;note&quot; : &quot;from execCommand&quot;, &quot;ok&quot; : 0, &quot;errmsg&quot; : &quot;not master&quot; }
+&gt; show collections;
+2015-09-23T15:57:49.240+0800 E QUERY    Error: listCollections failed: { &quot;note&quot; : &quot;from execCommand&quot;, &quot;ok&quot; : 0, &quot;errmsg&quot; : &quot;not master&quot; }
+    at Error (&lt;anonymous&gt;)
+    at DB._getCollectionInfosCommand (src/mongo/shell/db.js:646:15)
+    at DB.getCollectionInfos (src/mongo/shell/db.js:658:20)
+    at DB.getCollectionNames (src/mongo/shell/db.js:669:17)
+    at shellHelper.show (src/mongo/shell/utils.js:625:12)
+    at shellHelper (src/mongo/shell/utils.js:524:36)
+    at (shellhelp2):1:1 at src/mongo/shell/db.js:646
+&gt; rs.slaveOk();
+&gt; show collections;
+system.indexes
+test
+</code></pre><p>证明从库是不能写,默认也是不可读的,需要执行 rs.slaveOk(); 或者 db.getMongo().setSlaveOk(); 并且只对当前 session 有效,所以每次连接从库都需要执行。</p>
+<h2 id="5-故障测试及解决方案"><a href="#5-故障测试及解决方案" class="headerlink" title="5.故障测试及解决方案"></a>5.故障测试及解决方案</h2><h3 id="1-master-宕机"><a href="#1-master-宕机" class="headerlink" title="(1) master 宕机"></a>(1) master 宕机</h3><p>1) 将 master 停机</p>
+<pre><code>$ mongo
+MongoDB shell version: 3.0.6
+connecting to: test
+&gt; use admin;
+switched to db admin
+&gt; db.shutdownServer();
+2015-09-23T16:02:16.983+0800 I NETWORK  DBClientCursor::init call() failed
+server should be down...
+2015-09-23T16:02:16.986+0800 I NETWORK  trying reconnect to 127.0.0.1:27017 (127.0.0.1) failed
+2015-09-23T16:02:16.987+0800 I NETWORK  reconnect 127.0.0.1:27017 (127.0.0.1) ok
+2015-09-23T16:02:16.992+0800 I NETWORK  Socket recv() errno:104 Connection reset by peer 127.0.0.1:27017
+2015-09-23T16:02:16.992+0800 I NETWORK  SocketException: remote: 127.0.0.1:27017 error: 9001 socket exception [RECV_ERROR] server [127.0.0.1:27017]
+2015-09-23T16:02:16.992+0800 I NETWORK  DBClientCursor::init call() failed
+&gt;
+bye
+$ ps aux | grep mongo | grep -v grep
+</code></pre><p>2) 查看 slave 状态</p>
+<pre><code>$ mongo
+MongoDB shell version: 3.0.6
+connecting to: test
+&gt; rs.slaveOk();
+&gt; show dbs;
+aaa    0.078GB
+local  0.078GB
+&gt; use aaa;
+switched to db aaa
+&gt; show collections;
+system.indexes
+test
+&gt; db.createCollection(&quot;test2&quot;);
+{ &quot;note&quot; : &quot;from execCommand&quot;, &quot;ok&quot; : 0, &quot;errmsg&quot; : &quot;not master&quot; }
+</code></pre><p>可见 slave 还是只读,不能写</p>
+<p>3) 解决方法</p>
+<p>将 slave 停机,变为 master 后启动</p>
+<pre><code>&gt; use admin;
+switched to db admin
+&gt; db.shutdownServer();
+2015-09-23T16:05:28.355+0800 I NETWORK  DBClientCursor::init call() failed
+server should be down...
+2015-09-23T16:05:28.357+0800 I NETWORK  trying reconnect to 127.0.0.1:27017 (127.0.0.1) failed
+2015-09-23T16:05:28.357+0800 W NETWORK  Failed to connect to 127.0.0.1:27017, reason: errno:111 Connection refused
+2015-09-23T16:05:28.358+0800 I NETWORK  reconnect 127.0.0.1:27017 (127.0.0.1) failed failed couldn&apos;t connect to server 127.0.0.1:27017 (127.0.0.1), connection attempt  failed
+&gt;
+bye
+$ ps aux | grep mongo | grep -v grep
+$ sudo vim /data/mongodb/db0/conf/mongodb.conf
+master = true
+#slave = true
+#source = 172.30.2.201:27017
+$ sudo /opt/mongodb/bin/mongod --config /data/mongodb/db0/conf/mongodb.conf
+about to fork child process, waiting until server is ready for connections.
+forked process: 36988
+child process started successfully, parent exiting
+$ mongo
+MongoDB shell version: 3.0.6
+connecting to: test
+&gt; show dbs;
+aaa     0.078GB
+local  50.054GB
+&gt; use aaa;
+switched to db aaa
+&gt; db.createCollection(&quot;test2&quot;);
+{ &quot;ok&quot; : 1 }
+&gt; show collections;
+system.indexes
+system.profile
+test
+test2
+&gt; db.isMaster();
+{
+        &quot;ismaster&quot; : true,
+        &quot;maxBsonObjectSize&quot; : 16777216,
+        &quot;maxMessageSizeBytes&quot; : 48000000,
+        &quot;maxWriteBatchSize&quot; : 1000,
+        &quot;localTime&quot; : ISODate(&quot;2015-09-23T08:07:41.812Z&quot;),
+        &quot;maxWireVersion&quot; : 3,
+        &quot;minWireVersion&quot; : 0,
+        &quot;ok&quot; : 1
+}
+&gt;
+bye
+</code></pre><p>这样 slave 就变为新的 master 了</p>
+<h3 id="2-slave-宕机"><a href="#2-slave-宕机" class="headerlink" title="(2) slave 宕机"></a>(2) slave 宕机</h3><p>1) 制作新的 slave</p>
+<pre><code>$ sudo rm -fr /data/mongodb/db0/data/*
+$ sudo vim /data/mongodb/db0/conf/mongodb.conf
+#master = true
+slave = true
+source = 172.30.2.202:27017
+$ sudo /opt/mongodb/bin/mongod --config /data/mongodb/db0/conf/mongodb.conf
+about to fork child process, waiting until server is ready for connections.
+forked process: 48779
+child process started successfully, parent exiting
+$ mongo
+MongoDB shell version: 3.0.6
+connecting to: test
+&gt; db.isMaster();
+{
+        &quot;ismaster&quot; : false,
+        &quot;maxBsonObjectSize&quot; : 16777216,
+        &quot;maxMessageSizeBytes&quot; : 48000000,
+        &quot;maxWriteBatchSize&quot; : 1000,
+        &quot;localTime&quot; : ISODate(&quot;2015-09-23T08:14:51.283Z&quot;),
+        &quot;maxWireVersion&quot; : 3,
+        &quot;minWireVersion&quot; : 0,
+        &quot;ok&quot; : 1
+}
+</code></pre><p>2) 将新的 slave 停机</p>
+<pre><code>&gt; use admin;
+switched to db admin
+&gt; db.shutdownServer();
+2015-09-23T16:15:31.329+0800 I NETWORK  DBClientCursor::init call() failed
+server should be down...
+2015-09-23T16:15:31.331+0800 I NETWORK  trying reconnect to 127.0.0.1:27017 (127.0.0.1) failed
+2015-09-23T16:15:31.332+0800 I NETWORK  reconnect 127.0.0.1:27017 (127.0.0.1) ok
+2015-09-23T16:15:31.333+0800 I NETWORK  Socket recv() errno:104 Connection reset by peer 127.0.0.1:27017
+2015-09-23T16:15:31.333+0800 I NETWORK  SocketException: remote: 127.0.0.1:27017 error: 9001 socket exception [RECV_ERROR] server [127.0.0.1:27017]
+2015-09-23T16:15:31.333+0800 I NETWORK  DBClientCursor::init call() failed
+&gt;
+bye
+$ ps aux | grep mongo | grep -v grep
+</code></pre><p>3) 查看新 master 状况</p>
+<pre><code>$ mongo
+MongoDB shell version: 3.0.6
+connecting to: test
+&gt; show dbs;
+aaa     0.078GB
+local  50.054GB
+&gt; use aaa;
+switched to db aaa
+&gt; db.createCollection(&quot;test3&quot;);
+{ &quot;ok&quot; : 1 }
+&gt; show collections;
+system.indexes
+system.profile
+test
+test2
+test3
+&gt;
+bye
+</code></pre><p>4) 结论</p>
+<p>可见 master 是可以正常读写的,只需要再制作从库即可</p>
+]]></content>
     </entry>
     
     <entry>
@@ -5547,295 +5836,6 @@ $ pyenv verions
 </code></pre><h3 id="2-activate-和-deactivate"><a href="#2-activate-和-deactivate" class="headerlink" title="(2) activate 和 deactivate"></a>(2) activate 和 deactivate</h3><pre><code>$ pyenv activate py27
 $ pyenv deactivate
 </code></pre><h2 id="4-修改默认python环境"><a href="#4-修改默认python环境" class="headerlink" title="4. 修改默认python环境"></a>4. 修改默认python环境</h2><pre><code>$ pyenv global py27
-</code></pre>]]></content>
-    </entry>
-    
-    <entry>
-      <title><![CDATA[MongoDB副本集搭建]]></title>
-      <url>http://panwenhang.github.io/2016/06/23/MongoDB-2016-06-23-MongoDB%E5%89%AF%E6%9C%AC%E9%9B%86%E6%90%AD%E5%BB%BA/</url>
-      <content type="html"><![CDATA[<h2 id="1-环境"><a href="#1-环境" class="headerlink" title="1. 环境"></a>1. 环境</h2><pre><code>$ cat /etc/redhat-release
-CentOS Linux release 7.0.1406 (Core)
-$ uname -a
-Linux zhaopin-2-201 3.10.0-123.el7.x86_64 #1 SMP Mon Jun 30 12:09:22 UTC 2014 x86_64 x86_64 x86_64 GNU/Linux
-$ mongo --version
-MongoDB shell version: 3.0.6
-</code></pre><a id="more"></a>
-<h2 id="2-准备"><a href="#2-准备" class="headerlink" title="2. 准备"></a>2. 准备</h2><h3 id="1-创建目录"><a href="#1-创建目录" class="headerlink" title="(1) 创建目录"></a>(1) 创建目录</h3><pre><code>$ sudo mkdir -p /data/mongodb/db0/{data,backup,log,conf}
-</code></pre><h3 id="2-编写配置文件"><a href="#2-编写配置文件" class="headerlink" title="(2) 编写配置文件"></a>(2) 编写配置文件</h3><pre><code>$ sudo vim /data/mongodb/db0/conf/mongodb.conf
-# base
-port = 27017
-maxConns = 800
-filePermissions = 0700
-fork = true
-noauth = true
-directoryperdb = true
-dbpath = /data/mongodb/db0/data
-pidfilepath = /data/mongodb/db0/data/mongodb.pid
-journal = true
-
-# security
-nohttpinterface = true
-rest = false
-
-# log
-logpath = /data/mongodb/db0/log/mongodb.log
-logRotate = rename
-logappend = true
-slowms = 50
-replSet = rs0
-</code></pre><h2 id="3-配置副本集"><a href="#3-配置副本集" class="headerlink" title="3. 配置副本集"></a>3. 配置副本集</h2><h3 id="1-配置-primary"><a href="#1-配置-primary" class="headerlink" title="(1) 配置 primary"></a>(1) 配置 primary</h3><p>1) 启动</p>
-<pre><code>$ sudo /opt/mongodb/bin/mongod --config /data/mongodb/db0/conf/mongodb.conf
-about to fork child process, waiting until server is ready for connections.
-forked process: 48583
-child process started successfully, parent exiting
-$ mongo
-MongoDB shell version: 3.0.6
-connecting to: test
-&gt; rs.status();
-{
-        &quot;info&quot; : &quot;run rs.initiate(...) if not yet done for the set&quot;,
-        &quot;ok&quot; : 0,
-        &quot;errmsg&quot; : &quot;no replset config has been received&quot;,
-        &quot;code&quot; : 94
-}
-</code></pre><p>2) 初始化</p>
-<pre><code>&gt; cfg={_id:&quot;rs0&quot;, members:[ {_id:0,host:&quot;172.30.2.201:27017&quot;}] }
-{
-        &quot;_id&quot; : &quot;rs0&quot;,
-        &quot;members&quot; : [
-                {
-                        &quot;_id&quot; : 0,
-                        &quot;host&quot; : &quot;172.30.2.201:27017&quot;
-                }
-        ]
-}
-&gt; rs.initiate( cfg );
-{ &quot;ok&quot; : 1 }
-rs0:OTHER&gt; rs.status();
-{
-        &quot;set&quot; : &quot;rs0&quot;,
-        &quot;date&quot; : ISODate(&quot;2015-09-25T08:31:36.354Z&quot;),
-        &quot;myState&quot; : 1,
-        &quot;members&quot; : [
-                {
-                        &quot;_id&quot; : 0,
-                        &quot;name&quot; : &quot;172.30.2.201:27017&quot;,
-                        &quot;health&quot; : 1,
-                        &quot;state&quot; : 1,
-                        &quot;stateStr&quot; : &quot;PRIMARY&quot;,
-                        &quot;uptime&quot; : 112,
-                        &quot;optime&quot; : Timestamp(1443169891, 1),
-                        &quot;optimeDate&quot; : ISODate(&quot;2015-09-25T08:31:31Z&quot;),
-                        &quot;electionTime&quot; : Timestamp(1443169891, 2),
-                        &quot;electionDate&quot; : ISODate(&quot;2015-09-25T08:31:31Z&quot;),
-                        &quot;configVersion&quot; : 1,
-                        &quot;self&quot; : true
-                }
-        ],
-        &quot;ok&quot; : 1
-}
-</code></pre><h3 id="2-添加节点"><a href="#2-添加节点" class="headerlink" title="(2) 添加节点"></a>(2) 添加节点</h3><p>1) 启动新的节点</p>
-<pre><code>$ sudo /opt/mongodb/bin/mongod --config /data/mongodb/db0/conf/mongodb.conf
-about to fork child process, waiting until server is ready for connections.
-forked process: 41794
-child process started successfully, parent exiting
-$ sudo /opt/mongodb/bin/mongod --config /data/mongodb/db0/conf/mongodb.conf
-about to fork child process, waiting until server is ready for connections.
-forked process: 3761
-child process started successfully, parent exiting
-</code></pre><p>2) 添加新的节点</p>
-<p>在 primary 上执行:</p>
-<pre><code>rs0:PRIMARY&gt; rs.add( &quot;172.30.2.202:27017&quot; );
-{ &quot;ok&quot; : 1 }
-rs0:PRIMARY&gt; rs.status();
-{
-        &quot;set&quot; : &quot;rs0&quot;,
-        &quot;date&quot; : ISODate(&quot;2015-09-25T08:34:48.161Z&quot;),
-        &quot;myState&quot; : 1,
-        &quot;members&quot; : [
-                {
-                        &quot;_id&quot; : 0,
-                        &quot;name&quot; : &quot;172.30.2.201:27017&quot;,
-                        &quot;health&quot; : 1,
-                        &quot;state&quot; : 1,
-                        &quot;stateStr&quot; : &quot;PRIMARY&quot;,
-                        &quot;uptime&quot; : 304,
-                        &quot;optime&quot; : Timestamp(1443170060, 1),
-                        &quot;optimeDate&quot; : ISODate(&quot;2015-09-25T08:34:20Z&quot;),
-                        &quot;electionTime&quot; : Timestamp(1443169891, 2),
-                        &quot;electionDate&quot; : ISODate(&quot;2015-09-25T08:31:31Z&quot;),
-                        &quot;configVersion&quot; : 2,
-                        &quot;self&quot; : true
-                },
-                {
-                        &quot;_id&quot; : 1,
-                        &quot;name&quot; : &quot;172.30.2.202:27017&quot;,
-                        &quot;health&quot; : 1,
-                        &quot;state&quot; : 2,
-                        &quot;stateStr&quot; : &quot;SECONDARY&quot;,
-                        &quot;uptime&quot; : 27,
-                        &quot;optime&quot; : Timestamp(1443170060, 1),
-                        &quot;optimeDate&quot; : ISODate(&quot;2015-09-25T08:34:20Z&quot;),
-                        &quot;lastHeartbeat&quot; : ISODate(&quot;2015-09-25T08:34:46.884Z&quot;),
-                        &quot;lastHeartbeatRecv&quot; : ISODate(&quot;2015-09-25T08:34:46.896Z&quot;),
-                        &quot;pingMs&quot; : 0,
-                        &quot;configVersion&quot; : 2
-                }
-        ],
-        &quot;ok&quot; : 1
-}
-rs0:PRIMARY&gt; rs.add( &quot;172.30.2.203:27017&quot; );
-{ &quot;ok&quot; : 1 }
-rs0:PRIMARY&gt; rs.status();
-{
-        &quot;set&quot; : &quot;rs0&quot;,
-        &quot;date&quot; : ISODate(&quot;2015-09-25T08:36:22.579Z&quot;),
-        &quot;myState&quot; : 1,
-        &quot;members&quot; : [
-                {
-                        &quot;_id&quot; : 0,
-                        &quot;name&quot; : &quot;172.30.2.201:27017&quot;,
-                        &quot;health&quot; : 1,
-                        &quot;state&quot; : 1,
-                        &quot;stateStr&quot; : &quot;PRIMARY&quot;,
-                        &quot;uptime&quot; : 398,
-                        &quot;optime&quot; : Timestamp(1443170158, 1),
-                        &quot;optimeDate&quot; : ISODate(&quot;2015-09-25T08:35:58Z&quot;),
-                        &quot;electionTime&quot; : Timestamp(1443169891, 2),
-                        &quot;electionDate&quot; : ISODate(&quot;2015-09-25T08:31:31Z&quot;),
-                        &quot;configVersion&quot; : 3,
-                        &quot;self&quot; : true
-                },
-                {
-                        &quot;_id&quot; : 1,
-                        &quot;name&quot; : &quot;172.30.2.202:27017&quot;,
-                        &quot;health&quot; : 1,
-                        &quot;state&quot; : 2,
-                        &quot;stateStr&quot; : &quot;SECONDARY&quot;,
-                        &quot;uptime&quot; : 121,
-                        &quot;optime&quot; : Timestamp(1443170158, 1),
-                        &quot;optimeDate&quot; : ISODate(&quot;2015-09-25T08:35:58Z&quot;),
-                        &quot;lastHeartbeat&quot; : ISODate(&quot;2015-09-25T08:36:22.268Z&quot;),
-                        &quot;lastHeartbeatRecv&quot; : ISODate(&quot;2015-09-25T08:36:20.949Z&quot;),
-                        &quot;pingMs&quot; : 0,
-                        &quot;syncingTo&quot; : &quot;172.30.2.201:27017&quot;,
-                        &quot;configVersion&quot; : 3
-                },
-                {
-                        &quot;_id&quot; : 2,
-                        &quot;name&quot; : &quot;172.30.2.203:27017&quot;,
-                        &quot;health&quot; : 1,
-                        &quot;state&quot; : 2,
-                        &quot;stateStr&quot; : &quot;SECONDARY&quot;,
-                        &quot;uptime&quot; : 24,
-                        &quot;optime&quot; : Timestamp(1443170158, 1),
-                        &quot;optimeDate&quot; : ISODate(&quot;2015-09-25T08:35:58Z&quot;),
-                        &quot;lastHeartbeat&quot; : ISODate(&quot;2015-09-25T08:36:22.267Z&quot;),
-                        &quot;lastHeartbeatRecv&quot; : ISODate(&quot;2015-09-25T08:36:22.275Z&quot;),
-                        &quot;pingMs&quot; : 0,
-                        &quot;configVersion&quot; : 3
-                }
-        ],
-        &quot;ok&quot; : 1
-}
-</code></pre><h3 id="3-设置开机启动"><a href="#3-设置开机启动" class="headerlink" title="(3) 设置开机启动"></a>(3) 设置开机启动</h3><pre><code>$ sudo vim /etc/rc.local
-/opt/mongodb/bin/mongod --config /data/mongodb/db0/conf/mongodb.conf
-</code></pre><h2 id="4-验证"><a href="#4-验证" class="headerlink" title="4.验证"></a>4.验证</h2><h3 id="1-数据同步"><a href="#1-数据同步" class="headerlink" title="(1) 数据同步"></a>(1) 数据同步</h3><p>1) primary:</p>
-<pre><code>$ mongo
-MongoDB shell version: 3.0.6
-connecting to: test
-rs0:PRIMARY&gt; use aaa;
-switched to db aaa
-rs0:PRIMARY&gt; db.createCollection( &quot;test&quot; );
-{ &quot;ok&quot; : 1 }
-rs0:PRIMARY&gt; show collections;
-system.indexes
-test
-</code></pre><p>2) secondary:</p>
-<pre><code>$ mongo
-MongoDB shell version: 3.0.6
-connecting to: test
-rs0:SECONDARY&gt; rs.slaveOk();
-rs0:SECONDARY&gt; use aaa;
-switched to db aaa
-rs0:SECONDARY&gt; show collections;
-system.indexes
-test
-$ mongo
-MongoDB shell version: 3.0.6
-connecting to: test
-rs0:SECONDARY&gt; rs.slaveOk();
-rs0:SECONDARY&gt; use aaa;
-switched to db aaa
-rs0:SECONDARY&gt; show collections;
-system.indexes
-test
-</code></pre><h3 id="2-读写验证"><a href="#2-读写验证" class="headerlink" title="(2) 读写验证"></a>(2) 读写验证</h3><p>由上可知,primary 是可读写的</p>
-<p>在 secondary 上写测试:</p>
-<pre><code>$ mongo
-MongoDB shell version: 3.0.6
-connecting to: test
-&gt; use aaa;
-switched to db aaa
-&gt; db.createCollection(&quot;test2&quot;);
-{ &quot;note&quot; : &quot;from execCommand&quot;, &quot;ok&quot; : 0, &quot;errmsg&quot; : &quot;not master&quot; }
-&gt; show collections;
-2015-09-23T15:57:49.240+0800 E QUERY    Error: listCollections failed: { &quot;note&quot; : &quot;from execCommand&quot;, &quot;ok&quot; : 0, &quot;errmsg&quot; : &quot;not master&quot; }
-    at Error (&lt;anonymous&gt;)
-    at DB._getCollectionInfosCommand (src/mongo/shell/db.js:646:15)
-    at DB.getCollectionInfos (src/mongo/shell/db.js:658:20)
-    at DB.getCollectionNames (src/mongo/shell/db.js:669:17)
-    at shellHelper.show (src/mongo/shell/utils.js:625:12)
-    at shellHelper (src/mongo/shell/utils.js:524:36)
-    at (shellhelp2):1:1 at src/mongo/shell/db.js:646
-&gt; rs.slaveOk();
-&gt; show collections;
-system.indexes
-test
-</code></pre><p>证明 secondary 节点是不能写,默认也是不可读的,需要执行 rs.slaveOk(); 或者 db.getMongo().setSlaveOk(); 并且只对当前 session 有效,所以每次连接从库都需要执行。</p>
-<h2 id="4-说明"><a href="#4-说明" class="headerlink" title="4. 说明"></a>4. 说明</h2><p>mongodb 的副本集至少需要3台以上才能实现高可用,并且节点的个数最好是基数。</p>
-]]></content>
-    </entry>
-    
-    <entry>
-      <title><![CDATA[C语言side effect和sequence point]]></title>
-      <url>http://panwenhang.github.io/2016/06/23/C-2016-06-23-C%E8%AF%AD%E8%A8%80side-effect%E5%92%8Csequence-point/</url>
-      <content type="html"><![CDATA[<p>  C 语言中副作用 ( side effect ) : 是指对数据对象或者文件的修改。例如,语句 var = 99 ; 的副作用是把 var 的值修改成 99 。对表达式求值也可能产生副作用,例如,对表达式求 se = 100;<br>求值所产生的副作用就是 se 的值被修改成 100。<br>  序列点 ( sequence point ) : 是指程序运行中的一个特殊的时间点,在该点之前的所有副作用已经结束,并且后续的副作用还没发生。C 语句结束标志——分号 ( ; ) 是序列点。标准规定,在两个序列点之间,一个对象所保存的值最多只能被修改一次。</p>
-<a id="more"></a>
-<p>  C 语句中由赋值、自增或者自减等引起的副作用在分号之前必须结束。我们以后会说到一些包含序列点的运算符。任何完整表达式 ( full expression ) 运算结束的那个时间点也是序列点。所谓完整表达式,就是说这个表达式不是子表达式。而所谓的子表达式,则是指表达式中的表达式。例如:f = ++e % 3 这整个表达式就是一个完整表达式。这个表达式中的 ++e、3 和 ++e % 3 都是它的子表达式。</p>
-<p>有了序列点的概念,我们下面来分析一下一个很常见的错误 :</p>
-<pre><code>int x = 1, y ;
-y = x++ + x++ ;
-</code></pre><p>这里 y = x++ + x++ 是完整表达式,而 x++ 是它的子表达式。这个完整表达式运算结束的那一点是一个序列点,int x = 1, y ; 中的 ; 也是一个序列点。也就是说 x++ + x++ 位于两个序列点之间。标准规定,在两个序列点之间,一个对象所保存的值最多只能被修改一次。但是我们清楚可以看到,上面这个例子中,x 的值在两个序列点之间被修改了两次。这显然是错误的！这段代码在不同的编译器上编译可能会导致 y 的值有所不同。比较常见的结果是 y 的值最后被修改为 2 或者 3 。在此,我不打算就这个问题作更深入的分析,各位只要记住这是错误的,别这么用就可以了。有兴趣的话,可以看看以下列出的相关资料。</p>
-<p>C 语言标准对副作用和序列点的定义如下:<br>Accessing a volatile object, modifying an object, modifying a file, or calling a function that does any of those operations are all side effects, which are changes in the state of the execution environment. Evaluation of an expression may produce side effects. At certain specified points in the execution sequence called sequence points, all side effects of previous evaluations shall be complete and no side effects of subsequent evaluations shall have taken place.<br>翻译如下:</p>
-<p>访问易变对象,修改对象或文件,或者调用包含这些操作的函数都是副作用,它们都会改变执行环境的状态。计算表达式也会引起副作用。执行序列中某些特定的点被称为序列点。在序列点上,该点之前所有运算的副作用都应该结束,并且后继运算的副作用还没发生。</p>
-<p>顺序点有:</p>
-<ol>
-<li>The point of calling a function, after evaluating its arguments.</li>
-<li>The end of the first operand of the &amp;&amp; operator.</li>
-<li>The end of the first operand of the || operator.</li>
-<li>The end of the first operand of the ?: conditional operator.</li>
-<li>The end of the each operand of the comma operator.</li>
-<li>Completing the evaluation of a full expression. They are the following:</li>
-<li>Evaluating the initializer of an auto object.</li>
-<li>The expression in an ‘ordinary’ statement—an expression followed by semicolon.</li>
-<li>The controlling expressions in do , while , if , switch or for statements.</li>
-<li>The other two expressions in a for statement.</li>
-<li>The expression in a return statement.</li>
-</ol>
-<p>编译时可以加上 “ -Wsequence-point “ 让编译器帮我们检查可能的关于检查点的错误。</p>
-<pre><code>$ vim test_sequence_point.c
-＃include &lt;stdio.h&gt;
-int main() {
-    int i = 12 ;
-    i = i-- ;
-    printf( &quot;the i is %d/n&quot; , i ) ;
-    return 0 ;
-}
-
-$ gcc -Wsequence-point test_sequence_point.c
-test_sequence_point.c: In function `main&apos;:
-test_sequence_point.c:10: warning: operation on `i&apos; may be undefined
 </code></pre>]]></content>
     </entry>
     

@@ -744,19 +744,19 @@ ush_location | replay_location | sync_priority | sync_state
 
 
   
-    <article id="post-PostgreSQL-2016-07-05-PostgreSQL主键膨胀维护" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-PostgreSQL-2016-07-05-BDR0-9-0版本测试" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL主键膨胀维护/" class="article-date">
+      <a href="/2016/07/05/PostgreSQL-2016-07-05-BDR0-9-0版本测试/" class="article-date">
       <time datetime="2016-07-04T16:00:00.000Z" itemprop="datePublished">2016-07-05</time>
 </a>
 
  
-    <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL主键膨胀维护/#comments" title="查看评论">
+    <a href="/2016/07/05/PostgreSQL-2016-07-05-BDR0-9-0版本测试/#comments" title="查看评论">
         <i class="fa fa-comments-o" aria-hidden="true"></i>
         <span class="count-comment"></span>
         
-            <span class="ds-thread-count"  data-thread-key="2016/07/05/PostgreSQL-2016-07-05-PostgreSQL主键膨胀维护/" ></span>
+            <span class="ds-thread-count"  data-thread-key="2016/07/05/PostgreSQL-2016-07-05-BDR0-9-0版本测试/" ></span>
         
         
     </a>
@@ -772,7 +772,7 @@ ush_location | replay_location | sync_priority | sync_state
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL主键膨胀维护/">PostgreSQL主键膨胀维护</a>
+      <a class="article-title" href="/2016/07/05/PostgreSQL-2016-07-05-BDR0-9-0版本测试/">BDR0.9.0版本测试</a>
     </h1>
   
 
@@ -782,19 +782,7 @@ ush_location | replay_location | sync_priority | sync_state
     <div class="article-entry" itemprop="articleBody">
       
           
-              <h2 id="1-维护前"><a href="#1-维护前" class="headerlink" title="1. 维护前"></a>1. 维护前</h2><pre><code>postgres=# \d+ test
-                                                        Table
-&quot;public.test&quot;
-  Column |            Type             |                     Modifiers
-| Storage | Stats target | Description
---------+-----------------------------+----------------------------------------------------+---------+--------------+-------------
-  id     | integer                     | not null default
-nextval(&apos;test_id_seq&apos;::regclass) | plain   |              |
-  val    | timestamp without time zone | default now()
-| plain   |              |
-Indexes:
-     &quot;test_pkey&quot; PRIMARY KEY, btree (id)
-</code></pre>
+              <h2 id="1-安装"><a href="#1-安装" class="headerlink" title="1. 安装"></a>1. 安装</h2><p>参考bdr官方文档<a href="bdr-project.org/docs/stable/installation.html">Chapter 3. Installation</a></p>
           
       
     </div>
@@ -809,12 +797,12 @@ Indexes:
 
       
     <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PostgreSQL/">PostgreSQL</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/膨胀/">膨胀</a></li></ul>
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/BDR/">BDR</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PostgreSQL/">PostgreSQL</a></li></ul>
     </div>
 
       
         <p class="article-more-link">
-          <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL主键膨胀维护/#more">阅读全文 >></a>
+          <a href="/2016/07/05/PostgreSQL-2016-07-05-BDR0-9-0版本测试/#more">阅读全文 >></a>
         </p>
       
       <div class="clearfix"></div>
