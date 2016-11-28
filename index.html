@@ -317,10 +317,10 @@ vip-slave:  172.17.5.98
 
 
   
-    <article id="post-PostgreSQL/2016-07-05-PostgreSQL之网络地址类型" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-PostgreSQL/2016-07-05-BDR0.9.0版本测试" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL之网络地址类型/" class="article-date">
+      <a href="/2016/07/05/PostgreSQL/2016-07-05-BDR0.9.0版本测试/" class="article-date">
       <time datetime="2016-07-04T16:00:00.000Z" itemprop="datePublished">2016-07-05</time>
 </a>
 
@@ -336,7 +336,7 @@ vip-slave:  172.17.5.98
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL之网络地址类型/">PostgreSQL之网络地址类型</a>
+      <a class="article-title" href="/2016/07/05/PostgreSQL/2016-07-05-BDR0.9.0版本测试/">BDR0.9.0版本测试</a>
     </h1>
   
 
@@ -346,16 +346,7 @@ vip-slave:  172.17.5.98
     <div class="article-entry" itemprop="articleBody">
       
           
-              <p>官方文档:<a href="http://www.postgresql.org/docs/9.4/interactive/datatype-net-types.html">http://www.postgresql.org/docs/9.4/interactive/datatype-net-types.html</a></p>
-<h2 id="1-cidr"><a href="#1-cidr" class="headerlink" title="1. cidr"></a>1. cidr</h2><pre><code>postgres=# create table test (id int, name text);
-CREATE TABLE
-postgres=# \d test
-     Table &quot;public.test&quot;
- Column |  Type   | Modifiers
---------+---------+-----------
- id     | integer |
- name   | text    |
-</code></pre>
+              <h2 id="1-安装"><a href="#1-安装" class="headerlink" title="1. 安装"></a>1. 安装</h2><p>参考bdr官方文档<a href="bdr-project.org/docs/stable/installation.html">Chapter 3. Installation</a></p>
           
       
     </div>
@@ -371,7 +362,7 @@ postgres=# \d test
       
       
         <p class="article-more-link">
-          <a href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL之网络地址类型/#more">阅读全文 >></a>
+          <a href="/2016/07/05/PostgreSQL/2016-07-05-BDR0.9.0版本测试/#more">阅读全文 >></a>
         </p>
       
       <div class="clearfix"></div>
@@ -662,6 +653,71 @@ $ cat logfile | perl -e &apos;while(&lt;&gt;){ if($_ !~ /^\t/ig) { chomp; print 
 
 
   
+    <article id="post-PostgreSQL/2016-07-05-PostgreSQL恢复到任意时间点" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL恢复到任意时间点/" class="article-date">
+      <time datetime="2016-07-04T16:00:00.000Z" itemprop="datePublished">2016-07-05</time>
+</a>
+
+
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL恢复到任意时间点/">PostgreSQL恢复到任意时间点</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+              <p>参考: <a href="http://www.postgresql.org/docs/9.4/static/recovery-config.html">Recovery Configuration</a></p>
+<h2 id="1-获取基础备份"><a href="#1-获取基础备份" class="headerlink" title="1. 获取基础备份"></a>1. 获取基础备份</h2><p>  你可以使用 pg_basebackup 或者其他工具获取Postgres的基础备份, 还要有基础备份到恢复时间点之前的 xlog 文件</p>
+          
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/PostgreSQL/">PostgreSQL</a>
+    </div>
+
+
+      
+      
+        <p class="article-more-link">
+          <a href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL恢复到任意时间点/#more">阅读全文 >></a>
+        </p>
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+
+  
     <article id="post-PostgreSQL/2016-07-05-PostgreSQL多线程备份与恢复" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
@@ -715,71 +771,6 @@ $  cat /proc/cpuinfo  | grep processor | wc -l
       
         <p class="article-more-link">
           <a href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL多线程备份与恢复/#more">阅读全文 >></a>
-        </p>
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-
-
-  
-    <article id="post-PostgreSQL/2016-07-05-PostgreSQL恢复到任意时间点" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL恢复到任意时间点/" class="article-date">
-      <time datetime="2016-07-04T16:00:00.000Z" itemprop="datePublished">2016-07-05</time>
-</a>
-
-
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL恢复到任意时间点/">PostgreSQL恢复到任意时间点</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-          
-              <p>参考: <a href="http://www.postgresql.org/docs/9.4/static/recovery-config.html">Recovery Configuration</a></p>
-<h2 id="1-获取基础备份"><a href="#1-获取基础备份" class="headerlink" title="1. 获取基础备份"></a>1. 获取基础备份</h2><p>  你可以使用 pg_basebackup 或者其他工具获取Postgres的基础备份, 还要有基础备份到恢复时间点之前的 xlog 文件</p>
-          
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-    <div class="article-category tagcloud">
-    <a class="article-category-link" href="/categories/PostgreSQL/">PostgreSQL</a>
-    </div>
-
-
-      
-      
-        <p class="article-more-link">
-          <a href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL恢复到任意时间点/#more">阅读全文 >></a>
         </p>
       
       <div class="clearfix"></div>
