@@ -15,19 +15,28 @@
 
 
 
-<meta name="description" content="参考: Recovery Configuration
-1. 获取基础备份  你可以使用 pg_basebackup 或者其他工具获取Postgres的基础备份, 还要有基础备份到恢复时间点之前的 xlog 文件">
+<meta name="description" content="1. 安装Multilib of Alien在slackware64下执行如下命令,下载和安装32位库,安装完后需要重启才能生效,因为修改了lib库:
+$ mkdir multlib
+$ lftp -c &amp;apos;open http://slackware.com/~alien/multilib/; mirror 14.1&amp;apos;
+$ cd 14.1
+$ sudo upgradepkg --">
 <meta property="og:type" content="article">
-<meta property="og:title" content="PostgreSQL恢复到任意时间点">
-<meta property="og:url" content="http://panwenhang.github.io/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL恢复到任意时间点/index.html">
+<meta property="og:title" content="在Slackware64中安装rtx">
+<meta property="og:url" content="http://panwenhang.github.io/2016/06/30/Linux-2016-06-30-在Slackware64中安装rtx/index.html">
 <meta property="og:site_name" content="panwenhang">
-<meta property="og:description" content="参考: Recovery Configuration
-1. 获取基础备份  你可以使用 pg_basebackup 或者其他工具获取Postgres的基础备份, 还要有基础备份到恢复时间点之前的 xlog 文件">
-<meta property="og:updated_time" content="2016-11-28T08:13:35.000Z">
+<meta property="og:description" content="1. 安装Multilib of Alien在slackware64下执行如下命令,下载和安装32位库,安装完后需要重启才能生效,因为修改了lib库:
+$ mkdir multlib
+$ lftp -c &amp;apos;open http://slackware.com/~alien/multilib/; mirror 14.1&amp;apos;
+$ cd 14.1
+$ sudo upgradepkg --">
+<meta property="og:updated_time" content="2016-09-01T16:53:39.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="PostgreSQL恢复到任意时间点">
-<meta name="twitter:description" content="参考: Recovery Configuration
-1. 获取基础备份  你可以使用 pg_basebackup 或者其他工具获取Postgres的基础备份, 还要有基础备份到恢复时间点之前的 xlog 文件">
+<meta name="twitter:title" content="在Slackware64中安装rtx">
+<meta name="twitter:description" content="1. 安装Multilib of Alien在slackware64下执行如下命令,下载和安装32位库,安装完后需要重启才能生效,因为修改了lib库:
+$ mkdir multlib
+$ lftp -c &amp;apos;open http://slackware.com/~alien/multilib/; mirror 14.1&amp;apos;
+$ cd 14.1
+$ sudo upgradepkg --">
 
 <link rel="apple-touch-icon" href= "/apple-touch-icon.png">
 
@@ -59,7 +68,7 @@
 <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
 
 
-<title>PostgreSQL恢复到任意时间点 | panwenhang</title>
+<title>在Slackware64中安装rtx | panwenhang</title>
 
 <script src="//cdn.bootcss.com/jquery/2.2.4/jquery.min.js"></script>
 <script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
@@ -255,15 +264,15 @@
     </div>
     <link class="menu-list" tags="标签" friends="友情链接" about="关于我"/>
 </nav>
-      <div class="body-wrap"><article id="post-PostgreSQL-2016-07-05-PostgreSQL恢复到任意时间点" class="article article-type-post" itemscope itemprop="blogPost">
+      <div class="body-wrap"><article id="post-Linux-2016-06-30-在Slackware64中安装rtx" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL恢复到任意时间点/" class="article-date">
-      <time datetime="2016-07-04T16:00:00.000Z" itemprop="datePublished">2016-07-05</time>
+      <a href="/2016/06/30/Linux-2016-06-30-在Slackware64中安装rtx/" class="article-date">
+      <time datetime="2016-06-29T16:00:00.000Z" itemprop="datePublished">2016-06-30</time>
 </a>
 
  
-    <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL恢复到任意时间点/#comments" title="查看评论">
+    <a href="/2016/06/30/Linux-2016-06-30-在Slackware64中安装rtx/#comments" title="查看评论">
         <i class="fa fa-comments-o" aria-hidden="true"></i>
         <span class="count-comment"></span>
         
@@ -283,7 +292,7 @@
         
   
     <h1 class="article-title" itemprop="name">
-      PostgreSQL恢复到任意时间点
+      在Slackware64中安装rtx
     </h1>
   
 
@@ -292,15 +301,11 @@
       <div class="article-info article-info-post">
         
     <div class="article-category tagcloud">
-    <a class="article-category-link" href="/categories/PostgreSQL/">PostgreSQL</a>
+    <a class="article-category-link" href="/categories/Linux/">Linux</a>
     </div>
 
 
         
-    <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PostgreSQL/">PostgreSQL</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/recovery/">recovery</a></li></ul>
-    </div>
-
         <div class="clearfix"></div>
       </div>
       
@@ -308,18 +313,63 @@
     <div class="article-entry" itemprop="articleBody">
       
           
-        <p>参考: <a href="http://www.postgresql.org/docs/9.4/static/recovery-config.html" target="_blank" rel="external">Recovery Configuration</a></p>
-<h2 id="1-获取基础备份"><a href="#1-获取基础备份" class="headerlink" title="1. 获取基础备份"></a>1. 获取基础备份</h2><p>  你可以使用 pg_basebackup 或者其他工具获取Postgres的基础备份, 还要有基础备份到恢复时间点之前的 xlog 文件</p>
-<a id="more"></a>
-<h2 id="2-准备"><a href="#2-准备" class="headerlink" title="2. 准备"></a>2. 准备</h2><h3 id="recovery-conf"><a href="#recovery-conf" class="headerlink" title="recovery.conf"></a>recovery.conf</h3><pre><code>recovery_target_time=&apos;2015-05-08 12:00:00+8&apos;
-pause_at_recovery_target=true
-recovery_target_inclusive=false
-restore_command=&apos;cp /xlog/%f %p&apos;
-</code></pre><ul>
-<li>注意:<br>你不能在 recovery.conf 中设置 standby_mode = ‘on’ , 并且 recovery_target_time 应该在基础备份的结束时间之后.</li>
-</ul>
-<h3 id="删除或者重命名-backup-label"><a href="#删除或者重命名-backup-label" class="headerlink" title="删除或者重命名 backup_label"></a>删除或者重命名 backup_label</h3><h3 id="启动-Postgres-实例"><a href="#启动-Postgres-实例" class="headerlink" title="启动 Postgres 实例"></a>启动 Postgres 实例</h3><p>  当 Postgres 实例到达你恢复的时间, recovery.conf 会变成 recovery.done.</p>
+        <h2 id="1-安装Multilib-of-Alien"><a href="#1-安装Multilib-of-Alien" class="headerlink" title="1. 安装Multilib of Alien"></a>1. 安装Multilib of Alien</h2><p>在slackware64下执行如下命令,下载和安装32位库,安装完后需要重启才能生效,因为修改了lib库:</p>
+<pre><code>$ mkdir multlib
+$ lftp -c &apos;open http://slackware.com/~alien/multilib/; mirror 14.1&apos;
+$ cd 14.1
+$ sudo upgradepkg --reinstall --install-new *.t?z
+$ sudo upgradepkg --install-new slackware64-compat32/*-compat32/*.t?z
+</code></pre><a id="more"></a>
+<h2 id="2-安装Wine"><a href="#2-安装Wine" class="headerlink" title="2. 安装Wine"></a>2. 安装Wine</h2><pre><code>$ wget http://sourceforge.net/projects/wine/files/Slackware%20Packages/1.7.8/x86_64/wine-1.7.8-x86_64-1sg.txz
+$ sudo installpkg wine-1.7.8-x86_64-1sg.txz
+</code></pre><h2 id="3-安装Winetricks-and-Cabextract"><a href="#3-安装Winetricks-and-Cabextract" class="headerlink" title="3. 安装Winetricks and Cabextract"></a>3. 安装Winetricks and Cabextract</h2><p><strong>winetricks:</strong></p>
+<pre><code>$ wget http://winetricks.org/winetricks
+$ chmod +x winetricks
+$ cp winetricks /usr/local/bin
+</code></pre><p><strong>cabextract:</strong></p>
+<pre><code>$ wget http://slackbuilds.org/slackbuilds/14.1/system/cabextract.tar.gz
+$ tar zxvf cabextract.tar.gz
+$ cd cabextract/
+$ wget http://www.cabextract.org.uk/cabextract-1.4.tar.gz
+$ ./cabextract.SlackBuild
+$ sudo installpkg /tmp/cabextract-1.4-x86_64-1_SBo.tgz
+</code></pre><h2 id="4-配置Wine"><a href="#4-配置Wine" class="headerlink" title="4. 配置Wine"></a>4. 配置Wine</h2><pre><code>$ winecfg
+$ winetricks msxml3 gdiplus riched20 riched30 vcrun6 vcrun2005sp1
+</code></pre><h2 id="5-安装RTX"><a href="#5-安装RTX" class="headerlink" title="5. 安装RTX"></a>5. 安装RTX</h2><pre><code>$ wget http://dldir1.qq.com/foxmail/rtx/rtxclient2013formal.exe
+$ wine rtxclient2012formal.exe
+</code></pre><h2 id="6-乱码解决"><a href="#6-乱码解决" class="headerlink" title="6. 乱码解决"></a>6. 乱码解决</h2><p> 把windows系统C:\Windows\Fonts\下的字体全部复制到linux的/usr/share/fonts/windows(这个目录需要自己创建)目录下,rtx的菜单栏应该可以正常显示中文了；如果字体乱码,选择菜单栏的编辑字体,选择宋体,然后重启rtx就可以了。</p>
+<p>如果还是乱码的话,把下面的内容保存为rtx.reg, 执行regedit rtx.reg,然后把字体simsun.ttf复制到~/.wine/drive_c/windows/Fonts目录下。</p>
+<pre><code>$ vim rtx.reg
+    REGEDIT4
+    [HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\FontSubstitutes]
+    &quot;Arial&quot;=&quot;simsun&quot;
+    &quot;Arial CE,238&quot;=&quot;simsun&quot;
+    &quot;Arial CYR,204&quot;=&quot;simsun&quot;
+    &quot;Arial Greek,161&quot;=&quot;simsun&quot;
+    &quot;Arial TUR,162&quot;=&quot;simsun&quot;
+    &quot;Courier New&quot;=&quot;simsun&quot;
+    &quot;Courier New CE,238&quot;=&quot;simsun&quot;
+    &quot;Courier New CYR,204&quot;=&quot;simsun&quot;
+    &quot;Courier New Greek,161&quot;=&quot;simsun&quot;
+    &quot;Courier New TUR,162&quot;=&quot;simsun&quot;
+    &quot;FixedSys&quot;=&quot;simsun&quot;
+    &quot;Helv&quot;=&quot;simsun&quot;
+    &quot;Helvetica&quot;=&quot;simsun&quot;
+    &quot;MS Sans Serif&quot;=&quot;simsun&quot;
+    &quot;MS Shell Dlg&quot;=&quot;simsun&quot;
+    &quot;MS Shell Dlg 2&quot;=&quot;simsun&quot;
+    &quot;System&quot;=&quot;simsun&quot;
+    &quot;Tahoma&quot;=&quot;simsun&quot;
+    &quot;Times&quot;=&quot;simsun&quot;
+    &quot;Times New Roman CE,238&quot;=&quot;simsun&quot;
+    &quot;Times New Roman CYR,204&quot;=&quot;simsun&quot;
+    &quot;Times New Roman Greek,161&quot;=&quot;simsun&quot;
+    &quot;Times New Roman TUR,162&quot;=&quot;simsun&quot;
+    &quot;Tms Rmn&quot;=&quot;simsun&quot;
 
+$ regedit rtx.reg
+$ cp simsun.ttf ~/.wine/drive_c/windows/Fonts
+</code></pre>
       
     </div>
     
@@ -327,13 +377,13 @@ restore_command=&apos;cp /xlog/%f %p&apos;
   
     
     <div class="copyright">
-        <p><span>本文标题:</span><a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL恢复到任意时间点/">PostgreSQL恢复到任意时间点</a></p>
+        <p><span>本文标题:</span><a href="/2016/06/30/Linux-2016-06-30-在Slackware64中安装rtx/">在Slackware64中安装rtx</a></p>
         <p><span>文章作者:</span><a href="/" title="回到主页">panwenhang</a></p>
-        <p><span>发布时间:</span>2016-07-05, 00:00:00</p>
-        <p><span>最后更新:</span>2016-11-28, 16:13:35</p>
+        <p><span>发布时间:</span>2016-06-30, 00:00:00</p>
+        <p><span>最后更新:</span>2016-09-02, 00:53:39</p>
         <p>
-            <span>原始链接:</span><a class="post-url" href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL恢复到任意时间点/" title="PostgreSQL恢复到任意时间点">http://panwenhang.github.io/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL恢复到任意时间点/</a>
-            <span class="copy-path" data-clipboard-text="原文: http://panwenhang.github.io/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL恢复到任意时间点/　　作者: panwenhang" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <span>原始链接:</span><a class="post-url" href="/2016/06/30/Linux-2016-06-30-在Slackware64中安装rtx/" title="在Slackware64中安装rtx">http://panwenhang.github.io/2016/06/30/Linux-2016-06-30-在Slackware64中安装rtx/</a>
+            <span class="copy-path" data-clipboard-text="原文: http://panwenhang.github.io/2016/06/30/Linux-2016-06-30-在Slackware64中安装rtx/　　作者: panwenhang" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
             <script> var clipboard = new Clipboard('.copy-path'); </script>
         </p>
         <p>
@@ -346,15 +396,15 @@ restore_command=&apos;cp /xlog/%f %p&apos;
     <nav id="article-nav">
         
             <div id="article-nav-newer" class="article-nav-title">
-                <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL日志使用rsyslog/">
-                    PostgreSQL日志使用rsyslog
+                <a href="/2016/06/30/Linux-2016-06-30-格式化大盘/">
+                    格式化大盘
                 </a>
             </div>
         
         
             <div id="article-nav-older" class="article-nav-title">
-                <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL多线程备份与恢复/">
-                    PostgreSQL多线程备份与恢复
+                <a href="/2016/06/30/Linux-2016-06-30-在CenOS6-4下安装Docker/">
+                    在CenOS6.4下安装Docker
                 </a>
             </div>
         
@@ -366,7 +416,7 @@ restore_command=&apos;cp /xlog/%f %p&apos;
     <div id="toc" class="toc-article">
         <strong class="toc-title">文章目录</strong>
         
-            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-获取基础备份"><span class="toc-number">1.</span> <span class="toc-text">1. 获取基础备份</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-准备"><span class="toc-number">2.</span> <span class="toc-text">2. 准备</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#recovery-conf"><span class="toc-number">2.1.</span> <span class="toc-text">recovery.conf</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#删除或者重命名-backup-label"><span class="toc-number">2.2.</span> <span class="toc-text">删除或者重命名 backup_label</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#启动-Postgres-实例"><span class="toc-number">2.3.</span> <span class="toc-text">启动 Postgres 实例</span></a></li></ol></li></ol>
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-安装Multilib-of-Alien"><span class="toc-number">1.</span> <span class="toc-text">1. 安装Multilib of Alien</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-安装Wine"><span class="toc-number">2.</span> <span class="toc-text">2. 安装Wine</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-安装Winetricks-and-Cabextract"><span class="toc-number">3.</span> <span class="toc-text">3. 安装Winetricks and Cabextract</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-配置Wine"><span class="toc-number">4.</span> <span class="toc-text">4. 配置Wine</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-安装RTX"><span class="toc-number">5.</span> <span class="toc-text">5. 安装RTX</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-乱码解决"><span class="toc-number">6.</span> <span class="toc-text">6. 乱码解决</span></a></li></ol>
         
     </div>
     <style>
@@ -402,7 +452,7 @@ restore_command=&apos;cp /xlog/%f %p&apos;
         </div>
         <script>
             window._bd_share_config={
-                "common":{"bdSnsKey":{},"bdText":"PostgreSQL恢复到任意时间点　| panwenhang　","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+                "common":{"bdSnsKey":{},"bdText":"在Slackware64中安装rtx　| panwenhang　","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
         </script>
     
 
@@ -418,7 +468,7 @@ restore_command=&apos;cp /xlog/%f %p&apos;
     
       <div class="duoshuo" id="comments">
     <div id="comment-box" ></div>
-    <div class="ds-thread" id="ds-thread" data-thread-key="2016/07/05/PostgreSQL-2016-07-05-PostgreSQL恢复到任意时间点/" data-title="PostgreSQL恢复到任意时间点" data-url="http://panwenhang.github.io/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL恢复到任意时间点/"></div>
+    <div class="ds-thread" id="ds-thread" data-thread-key="2016/06/30/Linux-2016-06-30-在Slackware64中安装rtx/" data-title="在Slackware64中安装rtx" data-url="http://panwenhang.github.io/2016/06/30/Linux-2016-06-30-在Slackware64中安装rtx/"></div>
     <script>
         var duoshuoQuery = {short_name:"null"};
         var loadComment = function(){
@@ -431,7 +481,7 @@ restore_command=&apos;cp /xlog/%f %p&apos;
         
             // Add comment count
             $(function(){ 
-                var jsonUrl = "http://api.duoshuo.com/threads/counts.jsonp?short_name=null&threads=2016/07/05/PostgreSQL-2016-07-05-PostgreSQL恢复到任意时间点/&callback=?";
+                var jsonUrl = "http://api.duoshuo.com/threads/counts.jsonp?short_name=null&threads=2016/06/30/Linux-2016-06-30-在Slackware64中安装rtx/&callback=?";
                 $.getJSON(jsonUrl, function(result){
                     $.each(result.response, function(i, field){
                         var value = field.comments;
@@ -478,7 +528,7 @@ restore_command=&apos;cp /xlog/%f %p&apos;
 
     <div class="scroll" id="post-nav-button">
         
-            <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL日志使用rsyslog/" title="上一篇: PostgreSQL日志使用rsyslog">
+            <a href="/2016/06/30/Linux-2016-06-30-格式化大盘/" title="上一篇: 格式化大盘">
                 <i class="fa fa-angle-left"></i>
             </a>
         
@@ -486,7 +536,7 @@ restore_command=&apos;cp /xlog/%f %p&apos;
         <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
 
         
-            <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL多线程备份与恢复/" title="下一篇: PostgreSQL多线程备份与恢复">
+            <a href="/2016/06/30/Linux-2016-06-30-在CenOS6-4下安装Docker/" title="下一篇: 在CenOS6.4下安装Docker">
                 <i class="fa fa-angle-right"></i>
             </a>
         

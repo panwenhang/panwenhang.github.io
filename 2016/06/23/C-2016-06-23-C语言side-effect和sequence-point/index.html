@@ -15,19 +15,16 @@
 
 
 
-<meta name="description" content="参考: Recovery Configuration
-1. 获取基础备份  你可以使用 pg_basebackup 或者其他工具获取Postgres的基础备份, 还要有基础备份到恢复时间点之前的 xlog 文件">
+<meta name="description" content="C 语言中副作用 ( side effect ) : 是指对数据对象或者文件的修改。例如,语句 var = 99 ; 的副作用是把 var 的值修改成 99 。对表达式求值也可能产生副作用,例如,对表达式求 se = 100;求值所产生的副作用就是 se 的值被修改成 100。  序列点 ( sequence point ) : 是指程序运行中的一个特殊的时间点,在该点之前的所有副作用已经结束">
 <meta property="og:type" content="article">
-<meta property="og:title" content="PostgreSQL恢复到任意时间点">
-<meta property="og:url" content="http://panwenhang.github.io/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL恢复到任意时间点/index.html">
+<meta property="og:title" content="C语言side effect和sequence point">
+<meta property="og:url" content="http://panwenhang.github.io/2016/06/23/C-2016-06-23-C语言side-effect和sequence-point/index.html">
 <meta property="og:site_name" content="panwenhang">
-<meta property="og:description" content="参考: Recovery Configuration
-1. 获取基础备份  你可以使用 pg_basebackup 或者其他工具获取Postgres的基础备份, 还要有基础备份到恢复时间点之前的 xlog 文件">
-<meta property="og:updated_time" content="2016-11-28T08:13:35.000Z">
+<meta property="og:description" content="C 语言中副作用 ( side effect ) : 是指对数据对象或者文件的修改。例如,语句 var = 99 ; 的副作用是把 var 的值修改成 99 。对表达式求值也可能产生副作用,例如,对表达式求 se = 100;求值所产生的副作用就是 se 的值被修改成 100。  序列点 ( sequence point ) : 是指程序运行中的一个特殊的时间点,在该点之前的所有副作用已经结束">
+<meta property="og:updated_time" content="2016-11-28T08:37:18.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="PostgreSQL恢复到任意时间点">
-<meta name="twitter:description" content="参考: Recovery Configuration
-1. 获取基础备份  你可以使用 pg_basebackup 或者其他工具获取Postgres的基础备份, 还要有基础备份到恢复时间点之前的 xlog 文件">
+<meta name="twitter:title" content="C语言side effect和sequence point">
+<meta name="twitter:description" content="C 语言中副作用 ( side effect ) : 是指对数据对象或者文件的修改。例如,语句 var = 99 ; 的副作用是把 var 的值修改成 99 。对表达式求值也可能产生副作用,例如,对表达式求 se = 100;求值所产生的副作用就是 se 的值被修改成 100。  序列点 ( sequence point ) : 是指程序运行中的一个特殊的时间点,在该点之前的所有副作用已经结束">
 
 <link rel="apple-touch-icon" href= "/apple-touch-icon.png">
 
@@ -59,7 +56,7 @@
 <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
 
 
-<title>PostgreSQL恢复到任意时间点 | panwenhang</title>
+<title>C语言side effect和sequence point | panwenhang</title>
 
 <script src="//cdn.bootcss.com/jquery/2.2.4/jquery.min.js"></script>
 <script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
@@ -255,15 +252,15 @@
     </div>
     <link class="menu-list" tags="标签" friends="友情链接" about="关于我"/>
 </nav>
-      <div class="body-wrap"><article id="post-PostgreSQL-2016-07-05-PostgreSQL恢复到任意时间点" class="article article-type-post" itemscope itemprop="blogPost">
+      <div class="body-wrap"><article id="post-C-2016-06-23-C语言side-effect和sequence-point" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL恢复到任意时间点/" class="article-date">
-      <time datetime="2016-07-04T16:00:00.000Z" itemprop="datePublished">2016-07-05</time>
+      <a href="/2016/06/23/C-2016-06-23-C语言side-effect和sequence-point/" class="article-date">
+      <time datetime="2016-06-22T16:00:00.000Z" itemprop="datePublished">2016-06-23</time>
 </a>
 
  
-    <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL恢复到任意时间点/#comments" title="查看评论">
+    <a href="/2016/06/23/C-2016-06-23-C语言side-effect和sequence-point/#comments" title="查看评论">
         <i class="fa fa-comments-o" aria-hidden="true"></i>
         <span class="count-comment"></span>
         
@@ -283,7 +280,7 @@
         
   
     <h1 class="article-title" itemprop="name">
-      PostgreSQL恢复到任意时间点
+      C语言side effect和sequence point
     </h1>
   
 
@@ -292,13 +289,13 @@
       <div class="article-info article-info-post">
         
     <div class="article-category tagcloud">
-    <a class="article-category-link" href="/categories/PostgreSQL/">PostgreSQL</a>
+    <a class="article-category-link" href="/categories/C/">C</a>
     </div>
 
 
         
     <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PostgreSQL/">PostgreSQL</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/recovery/">recovery</a></li></ul>
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/side-effect/">side effect</a></li></ul>
     </div>
 
         <div class="clearfix"></div>
@@ -308,18 +305,43 @@
     <div class="article-entry" itemprop="articleBody">
       
           
-        <p>参考: <a href="http://www.postgresql.org/docs/9.4/static/recovery-config.html" target="_blank" rel="external">Recovery Configuration</a></p>
-<h2 id="1-获取基础备份"><a href="#1-获取基础备份" class="headerlink" title="1. 获取基础备份"></a>1. 获取基础备份</h2><p>  你可以使用 pg_basebackup 或者其他工具获取Postgres的基础备份, 还要有基础备份到恢复时间点之前的 xlog 文件</p>
+        <p>  C 语言中副作用 ( side effect ) : 是指对数据对象或者文件的修改。例如,语句 var = 99 ; 的副作用是把 var 的值修改成 99 。对表达式求值也可能产生副作用,例如,对表达式求 se = 100;<br>求值所产生的副作用就是 se 的值被修改成 100。<br>  序列点 ( sequence point ) : 是指程序运行中的一个特殊的时间点,在该点之前的所有副作用已经结束,并且后续的副作用还没发生。C 语句结束标志——分号 ( ; ) 是序列点。标准规定,在两个序列点之间,一个对象所保存的值最多只能被修改一次。</p>
 <a id="more"></a>
-<h2 id="2-准备"><a href="#2-准备" class="headerlink" title="2. 准备"></a>2. 准备</h2><h3 id="recovery-conf"><a href="#recovery-conf" class="headerlink" title="recovery.conf"></a>recovery.conf</h3><pre><code>recovery_target_time=&apos;2015-05-08 12:00:00+8&apos;
-pause_at_recovery_target=true
-recovery_target_inclusive=false
-restore_command=&apos;cp /xlog/%f %p&apos;
-</code></pre><ul>
-<li>注意:<br>你不能在 recovery.conf 中设置 standby_mode = ‘on’ , 并且 recovery_target_time 应该在基础备份的结束时间之后.</li>
-</ul>
-<h3 id="删除或者重命名-backup-label"><a href="#删除或者重命名-backup-label" class="headerlink" title="删除或者重命名 backup_label"></a>删除或者重命名 backup_label</h3><h3 id="启动-Postgres-实例"><a href="#启动-Postgres-实例" class="headerlink" title="启动 Postgres 实例"></a>启动 Postgres 实例</h3><p>  当 Postgres 实例到达你恢复的时间, recovery.conf 会变成 recovery.done.</p>
+<p>  C 语句中由赋值、自增或者自减等引起的副作用在分号之前必须结束。我们以后会说到一些包含序列点的运算符。任何完整表达式 ( full expression ) 运算结束的那个时间点也是序列点。所谓完整表达式,就是说这个表达式不是子表达式。而所谓的子表达式,则是指表达式中的表达式。例如:f = ++e % 3 这整个表达式就是一个完整表达式。这个表达式中的 ++e、3 和 ++e % 3 都是它的子表达式。</p>
+<p>有了序列点的概念,我们下面来分析一下一个很常见的错误 :</p>
+<pre><code>int x = 1, y ;
+y = x++ + x++ ;
+</code></pre><p>这里 y = x++ + x++ 是完整表达式,而 x++ 是它的子表达式。这个完整表达式运算结束的那一点是一个序列点,int x = 1, y ; 中的 ; 也是一个序列点。也就是说 x++ + x++ 位于两个序列点之间。标准规定,在两个序列点之间,一个对象所保存的值最多只能被修改一次。但是我们清楚可以看到,上面这个例子中,x 的值在两个序列点之间被修改了两次。这显然是错误的！这段代码在不同的编译器上编译可能会导致 y 的值有所不同。比较常见的结果是 y 的值最后被修改为 2 或者 3 。在此,我不打算就这个问题作更深入的分析,各位只要记住这是错误的,别这么用就可以了。有兴趣的话,可以看看以下列出的相关资料。</p>
+<p>C 语言标准对副作用和序列点的定义如下:<br>Accessing a volatile object, modifying an object, modifying a file, or calling a function that does any of those operations are all side effects, which are changes in the state of the execution environment. Evaluation of an expression may produce side effects. At certain specified points in the execution sequence called sequence points, all side effects of previous evaluations shall be complete and no side effects of subsequent evaluations shall have taken place.<br>翻译如下:</p>
+<p>访问易变对象,修改对象或文件,或者调用包含这些操作的函数都是副作用,它们都会改变执行环境的状态。计算表达式也会引起副作用。执行序列中某些特定的点被称为序列点。在序列点上,该点之前所有运算的副作用都应该结束,并且后继运算的副作用还没发生。</p>
+<p>顺序点有:</p>
+<ol>
+<li>The point of calling a function, after evaluating its arguments.</li>
+<li>The end of the first operand of the &amp;&amp; operator.</li>
+<li>The end of the first operand of the || operator.</li>
+<li>The end of the first operand of the ?: conditional operator.</li>
+<li>The end of the each operand of the comma operator.</li>
+<li>Completing the evaluation of a full expression. They are the following:</li>
+<li>Evaluating the initializer of an auto object.</li>
+<li>The expression in an ‘ordinary’ statement—an expression followed by semicolon.</li>
+<li>The controlling expressions in do , while , if , switch or for statements.</li>
+<li>The other two expressions in a for statement.</li>
+<li>The expression in a return statement.</li>
+</ol>
+<p>编译时可以加上 “ -Wsequence-point “ 让编译器帮我们检查可能的关于检查点的错误。</p>
+<pre><code>$ vim test_sequence_point.c
+＃include &lt;stdio.h&gt;
+int main() {
+    int i = 12 ;
+    i = i-- ;
+    printf( &quot;the i is %d/n&quot; , i ) ;
+    return 0 ;
+}
 
+$ gcc -Wsequence-point test_sequence_point.c
+test_sequence_point.c: In function `main&apos;:
+test_sequence_point.c:10: warning: operation on `i&apos; may be undefined
+</code></pre>
       
     </div>
     
@@ -327,13 +349,13 @@ restore_command=&apos;cp /xlog/%f %p&apos;
   
     
     <div class="copyright">
-        <p><span>本文标题:</span><a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL恢复到任意时间点/">PostgreSQL恢复到任意时间点</a></p>
+        <p><span>本文标题:</span><a href="/2016/06/23/C-2016-06-23-C语言side-effect和sequence-point/">C语言side effect和sequence point</a></p>
         <p><span>文章作者:</span><a href="/" title="回到主页">panwenhang</a></p>
-        <p><span>发布时间:</span>2016-07-05, 00:00:00</p>
-        <p><span>最后更新:</span>2016-11-28, 16:13:35</p>
+        <p><span>发布时间:</span>2016-06-23, 00:00:00</p>
+        <p><span>最后更新:</span>2016-11-28, 16:37:18</p>
         <p>
-            <span>原始链接:</span><a class="post-url" href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL恢复到任意时间点/" title="PostgreSQL恢复到任意时间点">http://panwenhang.github.io/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL恢复到任意时间点/</a>
-            <span class="copy-path" data-clipboard-text="原文: http://panwenhang.github.io/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL恢复到任意时间点/　　作者: panwenhang" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <span>原始链接:</span><a class="post-url" href="/2016/06/23/C-2016-06-23-C语言side-effect和sequence-point/" title="C语言side effect和sequence point">http://panwenhang.github.io/2016/06/23/C-2016-06-23-C语言side-effect和sequence-point/</a>
+            <span class="copy-path" data-clipboard-text="原文: http://panwenhang.github.io/2016/06/23/C-2016-06-23-C语言side-effect和sequence-point/　　作者: panwenhang" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
             <script> var clipboard = new Clipboard('.copy-path'); </script>
         </p>
         <p>
@@ -346,17 +368,11 @@ restore_command=&apos;cp /xlog/%f %p&apos;
     <nav id="article-nav">
         
             <div id="article-nav-newer" class="article-nav-title">
-                <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL日志使用rsyslog/">
-                    PostgreSQL日志使用rsyslog
+                <a href="/2016/06/23/MongoDB-2016-06-23-MongoDB副本集搭建/">
+                    MongoDB副本集搭建
                 </a>
             </div>
         
-        
-            <div id="article-nav-older" class="article-nav-title">
-                <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL多线程备份与恢复/">
-                    PostgreSQL多线程备份与恢复
-                </a>
-            </div>
         
     </nav>
 
@@ -366,7 +382,7 @@ restore_command=&apos;cp /xlog/%f %p&apos;
     <div id="toc" class="toc-article">
         <strong class="toc-title">文章目录</strong>
         
-            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-获取基础备份"><span class="toc-number">1.</span> <span class="toc-text">1. 获取基础备份</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-准备"><span class="toc-number">2.</span> <span class="toc-text">2. 准备</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#recovery-conf"><span class="toc-number">2.1.</span> <span class="toc-text">recovery.conf</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#删除或者重命名-backup-label"><span class="toc-number">2.2.</span> <span class="toc-text">删除或者重命名 backup_label</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#启动-Postgres-实例"><span class="toc-number">2.3.</span> <span class="toc-text">启动 Postgres 实例</span></a></li></ol></li></ol>
+            
         
     </div>
     <style>
@@ -402,7 +418,7 @@ restore_command=&apos;cp /xlog/%f %p&apos;
         </div>
         <script>
             window._bd_share_config={
-                "common":{"bdSnsKey":{},"bdText":"PostgreSQL恢复到任意时间点　| panwenhang　","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+                "common":{"bdSnsKey":{},"bdText":"C语言side effect和sequence point　| panwenhang　","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
         </script>
     
 
@@ -418,7 +434,7 @@ restore_command=&apos;cp /xlog/%f %p&apos;
     
       <div class="duoshuo" id="comments">
     <div id="comment-box" ></div>
-    <div class="ds-thread" id="ds-thread" data-thread-key="2016/07/05/PostgreSQL-2016-07-05-PostgreSQL恢复到任意时间点/" data-title="PostgreSQL恢复到任意时间点" data-url="http://panwenhang.github.io/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL恢复到任意时间点/"></div>
+    <div class="ds-thread" id="ds-thread" data-thread-key="2016/06/23/C-2016-06-23-C语言side-effect和sequence-point/" data-title="C语言side effect和sequence point" data-url="http://panwenhang.github.io/2016/06/23/C-2016-06-23-C语言side-effect和sequence-point/"></div>
     <script>
         var duoshuoQuery = {short_name:"null"};
         var loadComment = function(){
@@ -431,7 +447,7 @@ restore_command=&apos;cp /xlog/%f %p&apos;
         
             // Add comment count
             $(function(){ 
-                var jsonUrl = "http://api.duoshuo.com/threads/counts.jsonp?short_name=null&threads=2016/07/05/PostgreSQL-2016-07-05-PostgreSQL恢复到任意时间点/&callback=?";
+                var jsonUrl = "http://api.duoshuo.com/threads/counts.jsonp?short_name=null&threads=2016/06/23/C-2016-06-23-C语言side-effect和sequence-point/&callback=?";
                 $.getJSON(jsonUrl, function(result){
                     $.each(result.response, function(i, field){
                         var value = field.comments;
@@ -478,7 +494,7 @@ restore_command=&apos;cp /xlog/%f %p&apos;
 
     <div class="scroll" id="post-nav-button">
         
-            <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL日志使用rsyslog/" title="上一篇: PostgreSQL日志使用rsyslog">
+            <a href="/2016/06/23/MongoDB-2016-06-23-MongoDB副本集搭建/" title="上一篇: MongoDB副本集搭建">
                 <i class="fa fa-angle-left"></i>
             </a>
         
@@ -486,9 +502,7 @@ restore_command=&apos;cp /xlog/%f %p&apos;
         <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
 
         
-            <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL多线程备份与恢复/" title="下一篇: PostgreSQL多线程备份与恢复">
-                <i class="fa fa-angle-right"></i>
-            </a>
+            <a href="/" title="回到主页"><i class="fa fa-home"></i></a>
         
     </div>
 
