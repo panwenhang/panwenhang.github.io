@@ -73,12 +73,14 @@
         isCategory: false,
         fancybox_js: "//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.js",
         scrollreveal: "//cdn.bootcss.com/scrollReveal.js/3.1.4/scrollreveal.min.js",
-        search: undefined
+        search: true
     }
 </script>
 
 
-    <script> yiliaConfig.jquery_ui = [false]; </script>
+    <script>
+        yiliaConfig.jquery_ui = [true, "//cdn.bootcss.com/jqueryui/1.10.4/jquery-ui.min.js", "//cdn.bootcss.com/jqueryui/1.10.4/css/jquery-ui.min.css"];
+    </script>
 
 
 
@@ -105,6 +107,13 @@
 
         
 
+        
+            <form id="search-form">
+            <input type="text" id="local-search-input" name="q" placeholder="search..." class="search form-control" autocomplete="off" autocorrect="off" searchonload="false" />
+            <i class="fa fa-times" onclick="resetSearch()"></i>
+            </form>
+            <div id="local-search-result"></div>
+            <p class='no-result'>No results found <i class='fa fa-spinner fa-pulse'></i></p>
         
 
 
@@ -166,8 +175,6 @@
                             
                                 <a class="fa GitHub" href="https://github.com/panwenhang" title="GitHub"></a>
                             
-                                <a class="fa RSS" href="/atom.xml" title="RSS"></a>
-                            
                         </ul>
                     </nav>
                 </section>
@@ -187,6 +194,8 @@
                       <a class="main-nav-link switch-friends-link" href="https://hexo.io">Hexo</a>
                     
                       <a class="main-nav-link switch-friends-link" href="https://pages.github.com/">GitHub</a>
+                    
+                      <a class="main-nav-link switch-friends-link" href="http://moxfive.xyz/">MOxFIVE</a>
                     
                     </div>
                 </section>
@@ -234,8 +243,6 @@
                             
                                 <a class="fa GitHub" target="_blank" href="https://github.com/panwenhang" title="GitHub"></a>
                             
-                                <a class="fa RSS" target="_blank" href="/atom.xml" title="RSS"></a>
-                            
                         </ul>
             </nav>
         </header>                
@@ -244,13 +251,22 @@
 </nav>
       <div class="body-wrap">
   
-    <article id="post-PostgreSQL/2016-07-05-PostgreSQL备份之pg_basebackup" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-PostgreSQL/2016-07-05-PostgreSQL备份之手工备份" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL备份之pg_basebackup/" class="article-date">
+      <a href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL备份之手工备份/" class="article-date">
       <time datetime="2016-07-04T16:00:00.000Z" itemprop="datePublished">2016-07-05</time>
 </a>
 
+ 
+    <a href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL备份之手工备份/#comments" title="查看评论">
+        <i class="fa fa-comments-o" aria-hidden="true"></i>
+        <span class="count-comment"></span>
+        
+            <span class="ds-thread-count"  data-thread-key="2016/07/05/PostgreSQL/2016-07-05-PostgreSQL备份之手工备份/" ></span>
+        
+        
+    </a>
 
     </div>
   
@@ -263,7 +279,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL备份之pg_basebackup/">PostgreSQL备份之pg_basebackup</a>
+      <a class="article-title" href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL备份之手工备份/">PostgreSQL备份之手工备份</a>
     </h1>
   
 
@@ -273,9 +289,8 @@
     <div class="article-entry" itemprop="articleBody">
       
           
-              <h2 id="1-准备"><a href="#1-准备" class="headerlink" title="1.准备"></a>1.准备</h2><p>连接上master节点创建replication用户</p>
-<pre><code># CREATE ROLE replicator with login replication password 123456；
-</code></pre>
+              <h2 id="1-备份"><a href="#1-备份" class="headerlink" title="1. 备份"></a>1. 备份</h2><h3 id="1-需要保证-archive-mode-on-和-archive-command-是有效的"><a href="#1-需要保证-archive-mode-on-和-archive-command-是有效的" class="headerlink" title="(1) 需要保证 archive_mode = on 和 archive_command 是有效的"></a>(1) 需要保证 archive_mode = on 和 archive_command 是有效的</h3><h3 id="2-在-master-节点上连接上数据库并执行"><a href="#2-在-master-节点上连接上数据库并执行" class="headerlink" title="(2) 在 master 节点上连接上数据库并执行"></a>(2) 在 master 节点上连接上数据库并执行</h3><pre><code>SELECT pg_start_backup(&apos;label&apos;, true);
+</code></pre><p>pg_start_backup第二个参数设置为true的好处是备份开始会执行一个检查点,设置为true能尽快的完成检查点,并且能减少备份期间产生的wal文件,但是会对查询有影响,默认设置的checkpoint_completion_target的一半的时间,半夜的备份建议打开</p>
           
       
     </div>
@@ -291,7 +306,7 @@
       
       
         <p class="article-more-link">
-          <a href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL备份之pg_basebackup/#more">阅读全文 >></a>
+          <a href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL备份之手工备份/#more">阅读全文 >></a>
         </p>
       
       <div class="clearfix"></div>
@@ -317,6 +332,15 @@
       <time datetime="2016-07-04T16:00:00.000Z" itemprop="datePublished">2016-07-05</time>
 </a>
 
+ 
+    <a href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL备份之omniPITR/#comments" title="查看评论">
+        <i class="fa fa-comments-o" aria-hidden="true"></i>
+        <span class="count-comment"></span>
+        
+            <span class="ds-thread-count"  data-thread-key="2016/07/05/PostgreSQL/2016-07-05-PostgreSQL备份之omniPITR/" ></span>
+        
+        
+    </a>
 
     </div>
   
@@ -388,6 +412,15 @@ Resolving deltas: 100% (1287/1287), done.
       <time datetime="2016-07-04T16:00:00.000Z" itemprop="datePublished">2016-07-05</time>
 </a>
 
+ 
+    <a href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL同步复制故障测试/#comments" title="查看评论">
+        <i class="fa fa-comments-o" aria-hidden="true"></i>
+        <span class="count-comment"></span>
+        
+            <span class="ds-thread-count"  data-thread-key="2016/07/05/PostgreSQL/2016-07-05-PostgreSQL同步复制故障测试/" ></span>
+        
+        
+    </a>
 
     </div>
   
@@ -462,6 +495,15 @@ ush_location | replay_location | sync_priority | sync_state
       <time datetime="2016-07-04T16:00:00.000Z" itemprop="datePublished">2016-07-05</time>
 </a>
 
+ 
+    <a href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL同步复制搭建/#comments" title="查看评论">
+        <i class="fa fa-comments-o" aria-hidden="true"></i>
+        <span class="count-comment"></span>
+        
+            <span class="ds-thread-count"  data-thread-key="2016/07/05/PostgreSQL/2016-07-05-PostgreSQL同步复制搭建/" ></span>
+        
+        
+    </a>
 
     </div>
   
@@ -520,71 +562,6 @@ ush_location | replay_location | sync_priority | sync_state
 
 
   
-    <article id="post-PostgreSQL/2016-07-05-PostgreSQL事务特性之嵌套事务" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL事务特性之嵌套事务/" class="article-date">
-      <time datetime="2016-07-04T16:00:00.000Z" itemprop="datePublished">2016-07-05</time>
-</a>
-
-
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL事务特性之嵌套事务/">PostgreSQL事务特性之嵌套事务</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-          
-              <p>嵌套事务的实现是基于SAVEPOINT、ROLLBACK TO SAVEPOINT和RELEASE SAVEPOINT的,也就是设置一个保存点,可以回滚到保存点和释放保存点。</p>
-<p>测试表的初始状态如下:</p>
-          
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-    <div class="article-category tagcloud">
-    <a class="article-category-link" href="/categories/PostgreSQL/">PostgreSQL</a>
-    </div>
-
-
-      
-      
-        <p class="article-more-link">
-          <a href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL事务特性之嵌套事务/#more">阅读全文 >></a>
-        </p>
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-
-
-  
     <article id="post-PostgreSQL/2016-07-05-PostgreSQL之网络地址类型" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
@@ -592,6 +569,15 @@ ush_location | replay_location | sync_priority | sync_state
       <time datetime="2016-07-04T16:00:00.000Z" itemprop="datePublished">2016-07-05</time>
 </a>
 
+ 
+    <a href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL之网络地址类型/#comments" title="查看评论">
+        <i class="fa fa-comments-o" aria-hidden="true"></i>
+        <span class="count-comment"></span>
+        
+            <span class="ds-thread-count"  data-thread-key="2016/07/05/PostgreSQL/2016-07-05-PostgreSQL之网络地址类型/" ></span>
+        
+        
+    </a>
 
     </div>
   
@@ -658,146 +644,6 @@ postgres=# \d test
 
 
   
-    <article id="post-PostgreSQL/2016-07-05-Pacemaker+Corosync+2016-07-05-PostgreSQL集群故障测试和解决方案" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2016/07/05/PostgreSQL/2016-07-05-Pacemaker+Corosync+2016-07-05-PostgreSQL集群故障测试和解决方案/" class="article-date">
-      <time datetime="2016-07-04T16:00:00.000Z" itemprop="datePublished">2016-07-05</time>
-</a>
-
-
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2016/07/05/PostgreSQL/2016-07-05-Pacemaker+Corosync+2016-07-05-PostgreSQL集群故障测试和解决方案/">Pacemaker+Corosync+PostgreSQL集群故障测试和解决方案</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-          
-              <h2 id="1-环境"><a href="#1-环境" class="headerlink" title="1.环境"></a>1.环境</h2><pre><code>$ cat /etc/redhat-release
-CentOS Linux release 7.0.1406 (Core)
-$ uname -a
-Linux zhaopin-5-90 3.10.0-123.el7.x86_64 #1 SMP Mon Jun 30 12:09:22 UTC 2014 x86_64 x86_64 x86_64 GNU/Linux
-$ sudo pcs status
-Cluster name: pgcluster
-WARNING: corosync and pacemaker node names do not match (IPs used in setup?)
-Last updated: Tue Oct 20 11:02:08 2015Last change: Tue Oct 20 10:57:37 2015 by root via crm_attribute on zhaopin-5-92
-Stack: corosync
-Current DC: zhaopin-5-92 (version 1.1.13-a14efad) - partition with quorum
-3 nodes and 5 resources configured
-Online: [ zhaopin-5-90 zhaopin-5-91 zhaopin-5-92 ]
-</code></pre>
-          
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-    <div class="article-category tagcloud">
-    <a class="article-category-link" href="/categories/PostgreSQL/">PostgreSQL</a>
-    </div>
-
-
-      
-      
-        <p class="article-more-link">
-          <a href="/2016/07/05/PostgreSQL/2016-07-05-Pacemaker+Corosync+2016-07-05-PostgreSQL集群故障测试和解决方案/#more">阅读全文 >></a>
-        </p>
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-
-
-  
-    <article id="post-PostgreSQL/2016-07-05-PostgreSQL之MVCC" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL之MVCC/" class="article-date">
-      <time datetime="2016-07-04T16:00:00.000Z" itemprop="datePublished">2016-07-05</time>
-</a>
-
-
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL之MVCC/">PostgreSQL之MVCC</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-          
-              <p>  Postgre数据库的很大的卖点之一就是它处理并发的方式。我们的期望很简单:读永远不阻塞写,反之亦然。Postgres通过一个叫做 多版本并发控制(MVCC) 的机制做到了这一点。这个技术并不是Postgres所特有的:还有好几种数据库都实现了不同形式的MVCC,包括 Oracle、Berkeley DB、CouchDB 等等 。当你使用PostgreSQL来设计高并发的应用时,理解它的MVCC是怎么实现的很重要。它事实上是复杂问题的一种非常优雅和简单的解法。</p>
-          
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-    <div class="article-category tagcloud">
-    <a class="article-category-link" href="/categories/PostgreSQL/">PostgreSQL</a>
-    </div>
-
-
-      
-      
-        <p class="article-more-link">
-          <a href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL之MVCC/#more">阅读全文 >></a>
-        </p>
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-
-
-  
     <article id="post-PostgreSQL/2016-07-05-PostgreSQL主键膨胀维护" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
@@ -805,6 +651,15 @@ Online: [ zhaopin-5-90 zhaopin-5-91 zhaopin-5-92 ]
       <time datetime="2016-07-04T16:00:00.000Z" itemprop="datePublished">2016-07-05</time>
 </a>
 
+ 
+    <a href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL主键膨胀维护/#comments" title="查看评论">
+        <i class="fa fa-comments-o" aria-hidden="true"></i>
+        <span class="count-comment"></span>
+        
+            <span class="ds-thread-count"  data-thread-key="2016/07/05/PostgreSQL/2016-07-05-PostgreSQL主键膨胀维护/" ></span>
+        
+        
+    </a>
 
     </div>
   
@@ -874,6 +729,247 @@ Indexes:
 
 
   
+    <article id="post-PostgreSQL/2016-07-05-Pacemaker+Corosync搭建2016-07-05-PostgreSQL集群" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2016/07/05/PostgreSQL/2016-07-05-Pacemaker+Corosync搭建2016-07-05-PostgreSQL集群/" class="article-date">
+      <time datetime="2016-07-04T16:00:00.000Z" itemprop="datePublished">2016-07-05</time>
+</a>
+
+ 
+    <a href="/2016/07/05/PostgreSQL/2016-07-05-Pacemaker+Corosync搭建2016-07-05-PostgreSQL集群/#comments" title="查看评论">
+        <i class="fa fa-comments-o" aria-hidden="true"></i>
+        <span class="count-comment"></span>
+        
+            <span class="ds-thread-count"  data-thread-key="2016/07/05/PostgreSQL/2016-07-05-Pacemaker+Corosync搭建2016-07-05-PostgreSQL集群/" ></span>
+        
+        
+    </a>
+
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/07/05/PostgreSQL/2016-07-05-Pacemaker+Corosync搭建2016-07-05-PostgreSQL集群/">Pacemaker+Corosync搭建PostgreSQL集群</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+              <h2 id="1-环境"><a href="#1-环境" class="headerlink" title="1.环境"></a>1.环境</h2><pre><code>$ cat /etc/redhat-release
+CentOS Linux release 7.0.1406 (Core)
+$ uname -a
+Linux zhaopin-5-90 3.10.0-123.el7.x86_64 #1 SMP Mon Jun 30 12:09:22 UTC 2014 x86_64 x86_64 x86_64 GNU/Linux
+node1: 172.17.5.90
+node2: 172.17.5.91
+node3: 172.17.5.92
+vip-master: 172.17.5.99
+vip-slave:  172.17.5.98
+</code></pre>
+          
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/PostgreSQL/">PostgreSQL</a>
+    </div>
+
+
+      
+      
+        <p class="article-more-link">
+          <a href="/2016/07/05/PostgreSQL/2016-07-05-Pacemaker+Corosync搭建2016-07-05-PostgreSQL集群/#more">阅读全文 >></a>
+        </p>
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+
+  
+    <article id="post-PostgreSQL/2016-07-05-PostgreSQL事务特性之嵌套事务" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL事务特性之嵌套事务/" class="article-date">
+      <time datetime="2016-07-04T16:00:00.000Z" itemprop="datePublished">2016-07-05</time>
+</a>
+
+ 
+    <a href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL事务特性之嵌套事务/#comments" title="查看评论">
+        <i class="fa fa-comments-o" aria-hidden="true"></i>
+        <span class="count-comment"></span>
+        
+            <span class="ds-thread-count"  data-thread-key="2016/07/05/PostgreSQL/2016-07-05-PostgreSQL事务特性之嵌套事务/" ></span>
+        
+        
+    </a>
+
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL事务特性之嵌套事务/">PostgreSQL事务特性之嵌套事务</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+              <p>嵌套事务的实现是基于SAVEPOINT、ROLLBACK TO SAVEPOINT和RELEASE SAVEPOINT的,也就是设置一个保存点,可以回滚到保存点和释放保存点。</p>
+<p>测试表的初始状态如下:</p>
+          
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/PostgreSQL/">PostgreSQL</a>
+    </div>
+
+
+      
+      
+        <p class="article-more-link">
+          <a href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL事务特性之嵌套事务/#more">阅读全文 >></a>
+        </p>
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+
+  
+    <article id="post-PostgreSQL/2016-07-05-Pacemaker+Corosync+2016-07-05-PostgreSQL集群故障测试和解决方案" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2016/07/05/PostgreSQL/2016-07-05-Pacemaker+Corosync+2016-07-05-PostgreSQL集群故障测试和解决方案/" class="article-date">
+      <time datetime="2016-07-04T16:00:00.000Z" itemprop="datePublished">2016-07-05</time>
+</a>
+
+ 
+    <a href="/2016/07/05/PostgreSQL/2016-07-05-Pacemaker+Corosync+2016-07-05-PostgreSQL集群故障测试和解决方案/#comments" title="查看评论">
+        <i class="fa fa-comments-o" aria-hidden="true"></i>
+        <span class="count-comment"></span>
+        
+            <span class="ds-thread-count"  data-thread-key="2016/07/05/PostgreSQL/2016-07-05-Pacemaker+Corosync+2016-07-05-PostgreSQL集群故障测试和解决方案/" ></span>
+        
+        
+    </a>
+
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/07/05/PostgreSQL/2016-07-05-Pacemaker+Corosync+2016-07-05-PostgreSQL集群故障测试和解决方案/">Pacemaker+Corosync+PostgreSQL集群故障测试和解决方案</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+              <h2 id="1-环境"><a href="#1-环境" class="headerlink" title="1.环境"></a>1.环境</h2><pre><code>$ cat /etc/redhat-release
+CentOS Linux release 7.0.1406 (Core)
+$ uname -a
+Linux zhaopin-5-90 3.10.0-123.el7.x86_64 #1 SMP Mon Jun 30 12:09:22 UTC 2014 x86_64 x86_64 x86_64 GNU/Linux
+$ sudo pcs status
+Cluster name: pgcluster
+WARNING: corosync and pacemaker node names do not match (IPs used in setup?)
+Last updated: Tue Oct 20 11:02:08 2015Last change: Tue Oct 20 10:57:37 2015 by root via crm_attribute on zhaopin-5-92
+Stack: corosync
+Current DC: zhaopin-5-92 (version 1.1.13-a14efad) - partition with quorum
+3 nodes and 5 resources configured
+Online: [ zhaopin-5-90 zhaopin-5-91 zhaopin-5-92 ]
+</code></pre>
+          
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/PostgreSQL/">PostgreSQL</a>
+    </div>
+
+
+      
+      
+        <p class="article-more-link">
+          <a href="/2016/07/05/PostgreSQL/2016-07-05-Pacemaker+Corosync+2016-07-05-PostgreSQL集群故障测试和解决方案/#more">阅读全文 >></a>
+        </p>
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+
+  
     <article id="post-PostgreSQL/2016-07-05-PostgreSQL表空间的使用" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
@@ -881,6 +977,15 @@ Indexes:
       <time datetime="2016-07-04T16:00:00.000Z" itemprop="datePublished">2016-07-05</time>
 </a>
 
+ 
+    <a href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL表空间的使用/#comments" title="查看评论">
+        <i class="fa fa-comments-o" aria-hidden="true"></i>
+        <span class="count-comment"></span>
+        
+            <span class="ds-thread-count"  data-thread-key="2016/07/05/PostgreSQL/2016-07-05-PostgreSQL表空间的使用/" ></span>
+        
+        
+    </a>
 
     </div>
   
@@ -990,13 +1095,38 @@ Indexes:
                 $("body").css({"background-color": bgColorList[bgColor], "background-size": "cover"});
             }
             else {
-                var backgroundnum = 5;
+                var backgroundnum = 4;
                 var backgroundimg = "url(/background/bg-x.jpg)".replace(/x/gi, Math.ceil(Math.random() * backgroundnum));
                 $("body").css({"background": backgroundimg, "background-attachment": "fixed", "background-size": "cover"});
             }
         })
     </script>
 
+
+    
+        <script>
+            if ($(".left-col").is(":visible")) {
+                var duoshuoQuery = {short_name:"null"};
+                (function() {
+                    var d = document, s = d.createElement('script');
+                    s.src = 'http://static.duoshuo.com/embed.js';
+                    s.async = true; s.charset = 'UTF-8';
+                    (d.head || d.body).appendChild(s);
+                })();
+
+                $(document).ready(function(){
+                    var $duoshuoCount = $(".ds-thread-count");
+                    $duoshuoCount.bind("DOMNodeInserted", function(e) {
+                        var num = $(this).text().replace(/[^0-9]/ig,"");
+                        $(this).siblings(".count-comment").text(num);
+                        $(this).remove();
+                    })
+                })
+            }
+        </script>
+    
+
+     
 
 
 

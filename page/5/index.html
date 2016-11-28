@@ -73,12 +73,14 @@
         isCategory: false,
         fancybox_js: "//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.js",
         scrollreveal: "//cdn.bootcss.com/scrollReveal.js/3.1.4/scrollreveal.min.js",
-        search: undefined
+        search: true
     }
 </script>
 
 
-    <script> yiliaConfig.jquery_ui = [false]; </script>
+    <script>
+        yiliaConfig.jquery_ui = [true, "//cdn.bootcss.com/jqueryui/1.10.4/jquery-ui.min.js", "//cdn.bootcss.com/jqueryui/1.10.4/css/jquery-ui.min.css"];
+    </script>
 
 
 
@@ -105,6 +107,13 @@
 
         
 
+        
+            <form id="search-form">
+            <input type="text" id="local-search-input" name="q" placeholder="search..." class="search form-control" autocomplete="off" autocorrect="off" searchonload="false" />
+            <i class="fa fa-times" onclick="resetSearch()"></i>
+            </form>
+            <div id="local-search-result"></div>
+            <p class='no-result'>No results found <i class='fa fa-spinner fa-pulse'></i></p>
         
 
 
@@ -166,8 +175,6 @@
                             
                                 <a class="fa GitHub" href="https://github.com/panwenhang" title="GitHub"></a>
                             
-                                <a class="fa RSS" href="/atom.xml" title="RSS"></a>
-                            
                         </ul>
                     </nav>
                 </section>
@@ -187,6 +194,8 @@
                       <a class="main-nav-link switch-friends-link" href="https://hexo.io">Hexo</a>
                     
                       <a class="main-nav-link switch-friends-link" href="https://pages.github.com/">GitHub</a>
+                    
+                      <a class="main-nav-link switch-friends-link" href="http://moxfive.xyz/">MOxFIVE</a>
                     
                     </div>
                 </section>
@@ -234,8 +243,6 @@
                             
                                 <a class="fa GitHub" target="_blank" href="https://github.com/panwenhang" title="GitHub"></a>
                             
-                                <a class="fa RSS" target="_blank" href="/atom.xml" title="RSS"></a>
-                            
                         </ul>
             </nav>
         </header>                
@@ -244,13 +251,22 @@
 </nav>
       <div class="body-wrap">
   
-    <article id="post-C/2016-06-23-C语言side effect和sequence point" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-C/2016-06-23-C语言类型转换" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2016/06/23/C/2016-06-23-C语言side effect和sequence point/" class="article-date">
+      <a href="/2016/06/23/C/2016-06-23-C语言类型转换/" class="article-date">
       <time datetime="2016-06-22T16:00:00.000Z" itemprop="datePublished">2016-06-23</time>
 </a>
 
+ 
+    <a href="/2016/06/23/C/2016-06-23-C语言类型转换/#comments" title="查看评论">
+        <i class="fa fa-comments-o" aria-hidden="true"></i>
+        <span class="count-comment"></span>
+        
+            <span class="ds-thread-count"  data-thread-key="2016/06/23/C/2016-06-23-C语言类型转换/" ></span>
+        
+        
+    </a>
 
     </div>
   
@@ -263,7 +279,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2016/06/23/C/2016-06-23-C语言side effect和sequence point/">C语言side effect和sequence point</a>
+      <a class="article-title" href="/2016/06/23/C/2016-06-23-C语言类型转换/">C语言类型转换</a>
     </h1>
   
 
@@ -273,7 +289,7 @@
     <div class="article-entry" itemprop="articleBody">
       
           
-              <p>  C 语言中副作用 ( side effect ) : 是指对数据对象或者文件的修改。例如,语句 var = 99 ; 的副作用是把 var 的值修改成 99 。对表达式求值也可能产生副作用,例如,对表达式求 se = 100;<br>求值所产生的副作用就是 se 的值被修改成 100。<br>  序列点 ( sequence point ) : 是指程序运行中的一个特殊的时间点,在该点之前的所有副作用已经结束,并且后续的副作用还没发生。C 语句结束标志——分号 ( ; ) 是序列点。标准规定,在两个序列点之间,一个对象所保存的值最多只能被修改一次。</p>
+              <h2 id="1-Integer-Promotion"><a href="#1-Integer-Promotion" class="headerlink" title="1. Integer Promotion"></a>1. Integer Promotion</h2><p>  在一个表达式中,凡是可以使用 int 或 unsigned int 类型做右值的地方也都可以使用有符号或无符号的 char 型、short 型和 Bit-field 。如果原始类型的取值范围都能用 int 型表示,则其值被提升为 int 型,如果表示不了就提升为 unsigned int 型,这称为 Integer Promotion 。做 IntegerPromotion 只影响上述几种类型的值,对其它类型无影响。C99 规定 Integer Promotion 适用于以</p>
           
       
     </div>
@@ -289,7 +305,7 @@
       
       
         <p class="article-more-link">
-          <a href="/2016/06/23/C/2016-06-23-C语言side effect和sequence point/#more">阅读全文 >></a>
+          <a href="/2016/06/23/C/2016-06-23-C语言类型转换/#more">阅读全文 >></a>
         </p>
       
       <div class="clearfix"></div>
@@ -315,6 +331,15 @@
       <time datetime="2016-06-22T16:00:00.000Z" itemprop="datePublished">2016-06-23</time>
 </a>
 
+ 
+    <a href="/2016/06/23/MongoDB/2016-06-23-Linux下2016-06-23-MongoDB安装和配置/#comments" title="查看评论">
+        <i class="fa fa-comments-o" aria-hidden="true"></i>
+        <span class="count-comment"></span>
+        
+            <span class="ds-thread-count"  data-thread-key="2016/06/23/MongoDB/2016-06-23-Linux下2016-06-23-MongoDB安装和配置/" ></span>
+        
+        
+    </a>
 
     </div>
   
@@ -383,6 +408,15 @@ Linux zhaopin-2-201 3.10.0-123.el7.x86_64 #1 SMP Mon Jun 30 12:09:22 UTC 2014 x8
       <time datetime="2016-06-22T16:00:00.000Z" itemprop="datePublished">2016-06-23</time>
 </a>
 
+ 
+    <a href="/2016/06/23/MongoDB/2016-06-23-MongoDB主从集群/#comments" title="查看评论">
+        <i class="fa fa-comments-o" aria-hidden="true"></i>
+        <span class="count-comment"></span>
+        
+            <span class="ds-thread-count"  data-thread-key="2016/06/23/MongoDB/2016-06-23-MongoDB主从集群/" ></span>
+        
+        
+    </a>
 
     </div>
   
@@ -453,6 +487,15 @@ MongoDB shell version: 3.0.6
       <time datetime="2016-06-22T16:00:00.000Z" itemprop="datePublished">2016-06-23</time>
 </a>
 
+ 
+    <a href="/2016/06/23/Python/2016-06-23-flask环境配置/#comments" title="查看评论">
+        <i class="fa fa-comments-o" aria-hidden="true"></i>
+        <span class="count-comment"></span>
+        
+            <span class="ds-thread-count"  data-thread-key="2016/06/23/Python/2016-06-23-flask环境配置/" ></span>
+        
+        
+    </a>
 
     </div>
   
@@ -528,6 +571,15 @@ $ pip list
       <time datetime="2016-06-22T16:00:00.000Z" itemprop="datePublished">2016-06-23</time>
 </a>
 
+ 
+    <a href="/2016/06/23/Python/2016-06-23-多版本python环境/#comments" title="查看评论">
+        <i class="fa fa-comments-o" aria-hidden="true"></i>
+        <span class="count-comment"></span>
+        
+            <span class="ds-thread-count"  data-thread-key="2016/06/23/Python/2016-06-23-多版本python环境/" ></span>
+        
+        
+    </a>
 
     </div>
   
@@ -644,13 +696,38 @@ $ pyenv update
                 $("body").css({"background-color": bgColorList[bgColor], "background-size": "cover"});
             }
             else {
-                var backgroundnum = 5;
+                var backgroundnum = 4;
                 var backgroundimg = "url(/background/bg-x.jpg)".replace(/x/gi, Math.ceil(Math.random() * backgroundnum));
                 $("body").css({"background": backgroundimg, "background-attachment": "fixed", "background-size": "cover"});
             }
         })
     </script>
 
+
+    
+        <script>
+            if ($(".left-col").is(":visible")) {
+                var duoshuoQuery = {short_name:"null"};
+                (function() {
+                    var d = document, s = d.createElement('script');
+                    s.src = 'http://static.duoshuo.com/embed.js';
+                    s.async = true; s.charset = 'UTF-8';
+                    (d.head || d.body).appendChild(s);
+                })();
+
+                $(document).ready(function(){
+                    var $duoshuoCount = $(".ds-thread-count");
+                    $duoshuoCount.bind("DOMNodeInserted", function(e) {
+                        var num = $(this).text().replace(/[^0-9]/ig,"");
+                        $(this).siblings(".count-comment").text(num);
+                        $(this).remove();
+                    })
+                })
+            }
+        </script>
+    
+
+     
 
 
 

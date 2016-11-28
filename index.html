@@ -73,12 +73,14 @@
         isCategory: false,
         fancybox_js: "//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.js",
         scrollreveal: "//cdn.bootcss.com/scrollReveal.js/3.1.4/scrollreveal.min.js",
-        search: undefined
+        search: true
     }
 </script>
 
 
-    <script> yiliaConfig.jquery_ui = [false]; </script>
+    <script>
+        yiliaConfig.jquery_ui = [true, "//cdn.bootcss.com/jqueryui/1.10.4/jquery-ui.min.js", "//cdn.bootcss.com/jqueryui/1.10.4/css/jquery-ui.min.css"];
+    </script>
 
 
 
@@ -105,6 +107,13 @@
 
         
 
+        
+            <form id="search-form">
+            <input type="text" id="local-search-input" name="q" placeholder="search..." class="search form-control" autocomplete="off" autocorrect="off" searchonload="false" />
+            <i class="fa fa-times" onclick="resetSearch()"></i>
+            </form>
+            <div id="local-search-result"></div>
+            <p class='no-result'>No results found <i class='fa fa-spinner fa-pulse'></i></p>
         
 
 
@@ -166,8 +175,6 @@
                             
                                 <a class="fa GitHub" href="https://github.com/panwenhang" title="GitHub"></a>
                             
-                                <a class="fa RSS" href="/atom.xml" title="RSS"></a>
-                            
                         </ul>
                     </nav>
                 </section>
@@ -187,6 +194,8 @@
                       <a class="main-nav-link switch-friends-link" href="https://hexo.io">Hexo</a>
                     
                       <a class="main-nav-link switch-friends-link" href="https://pages.github.com/">GitHub</a>
+                    
+                      <a class="main-nav-link switch-friends-link" href="http://moxfive.xyz/">MOxFIVE</a>
                     
                     </div>
                 </section>
@@ -234,8 +243,6 @@
                             
                                 <a class="fa GitHub" target="_blank" href="https://github.com/panwenhang" title="GitHub"></a>
                             
-                                <a class="fa RSS" target="_blank" href="/atom.xml" title="RSS"></a>
-                            
                         </ul>
             </nav>
         </header>                
@@ -244,13 +251,22 @@
 </nav>
       <div class="body-wrap">
   
-    <article id="post-PostgreSQL/2016-07-05-Pacemaker+Corosync搭建2016-07-05-PostgreSQL集群" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-PostgreSQL/2016-07-05-PostgreSQL之MVCC" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2016/07/05/PostgreSQL/2016-07-05-Pacemaker+Corosync搭建2016-07-05-PostgreSQL集群/" class="article-date">
+      <a href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL之MVCC/" class="article-date">
       <time datetime="2016-07-04T16:00:00.000Z" itemprop="datePublished">2016-07-05</time>
 </a>
 
+ 
+    <a href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL之MVCC/#comments" title="查看评论">
+        <i class="fa fa-comments-o" aria-hidden="true"></i>
+        <span class="count-comment"></span>
+        
+            <span class="ds-thread-count"  data-thread-key="2016/07/05/PostgreSQL/2016-07-05-PostgreSQL之MVCC/" ></span>
+        
+        
+    </a>
 
     </div>
   
@@ -263,7 +279,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2016/07/05/PostgreSQL/2016-07-05-Pacemaker+Corosync搭建2016-07-05-PostgreSQL集群/">Pacemaker+Corosync搭建PostgreSQL集群</a>
+      <a class="article-title" href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL之MVCC/">PostgreSQL之MVCC</a>
     </h1>
   
 
@@ -273,16 +289,7 @@
     <div class="article-entry" itemprop="articleBody">
       
           
-              <h2 id="1-环境"><a href="#1-环境" class="headerlink" title="1.环境"></a>1.环境</h2><pre><code>$ cat /etc/redhat-release
-CentOS Linux release 7.0.1406 (Core)
-$ uname -a
-Linux zhaopin-5-90 3.10.0-123.el7.x86_64 #1 SMP Mon Jun 30 12:09:22 UTC 2014 x86_64 x86_64 x86_64 GNU/Linux
-node1: 172.17.5.90
-node2: 172.17.5.91
-node3: 172.17.5.92
-vip-master: 172.17.5.99
-vip-slave:  172.17.5.98
-</code></pre>
+              <p>  Postgre数据库的很大的卖点之一就是它处理并发的方式。我们的期望很简单:读永远不阻塞写,反之亦然。Postgres通过一个叫做 多版本并发控制(MVCC) 的机制做到了这一点。这个技术并不是Postgres所特有的:还有好几种数据库都实现了不同形式的MVCC,包括 Oracle、Berkeley DB、CouchDB 等等 。当你使用PostgreSQL来设计高并发的应用时,理解它的MVCC是怎么实现的很重要。它事实上是复杂问题的一种非常优雅和简单的解法。</p>
           
       
     </div>
@@ -298,7 +305,7 @@ vip-slave:  172.17.5.98
       
       
         <p class="article-more-link">
-          <a href="/2016/07/05/PostgreSQL/2016-07-05-Pacemaker+Corosync搭建2016-07-05-PostgreSQL集群/#more">阅读全文 >></a>
+          <a href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL之MVCC/#more">阅读全文 >></a>
         </p>
       
       <div class="clearfix"></div>
@@ -324,6 +331,15 @@ vip-slave:  172.17.5.98
       <time datetime="2016-07-04T16:00:00.000Z" itemprop="datePublished">2016-07-05</time>
 </a>
 
+ 
+    <a href="/2016/07/05/PostgreSQL/2016-07-05-BDR0.9.0版本测试/#comments" title="查看评论">
+        <i class="fa fa-comments-o" aria-hidden="true"></i>
+        <span class="count-comment"></span>
+        
+            <span class="ds-thread-count"  data-thread-key="2016/07/05/PostgreSQL/2016-07-05-BDR0.9.0版本测试/" ></span>
+        
+        
+    </a>
 
     </div>
   
@@ -388,6 +404,15 @@ vip-slave:  172.17.5.98
       <time datetime="2016-07-04T16:00:00.000Z" itemprop="datePublished">2016-07-05</time>
 </a>
 
+ 
+    <a href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL查看没有注释的表和字段/#comments" title="查看评论">
+        <i class="fa fa-comments-o" aria-hidden="true"></i>
+        <span class="count-comment"></span>
+        
+            <span class="ds-thread-count"  data-thread-key="2016/07/05/PostgreSQL/2016-07-05-PostgreSQL查看没有注释的表和字段/" ></span>
+        
+        
+    </a>
 
     </div>
   
@@ -465,6 +490,15 @@ ORDER BY 1,2;
       <time datetime="2016-07-04T16:00:00.000Z" itemprop="datePublished">2016-07-05</time>
 </a>
 
+ 
+    <a href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL权限管理之创建可更新表的普通用户/#comments" title="查看评论">
+        <i class="fa fa-comments-o" aria-hidden="true"></i>
+        <span class="count-comment"></span>
+        
+            <span class="ds-thread-count"  data-thread-key="2016/07/05/PostgreSQL/2016-07-05-PostgreSQL权限管理之创建可更新表的普通用户/" ></span>
+        
+        
+    </a>
 
     </div>
   
@@ -533,6 +567,15 @@ postgres=# select version();
       <time datetime="2016-07-04T16:00:00.000Z" itemprop="datePublished">2016-07-05</time>
 </a>
 
+ 
+    <a href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL日志换行处理/#comments" title="查看评论">
+        <i class="fa fa-comments-o" aria-hidden="true"></i>
+        <span class="count-comment"></span>
+        
+            <span class="ds-thread-count"  data-thread-key="2016/07/05/PostgreSQL/2016-07-05-PostgreSQL日志换行处理/" ></span>
+        
+        
+    </a>
 
     </div>
   
@@ -595,6 +638,15 @@ $ cat logfile | perl -e &apos;while(&lt;&gt;){ if($_ !~ /^\t/ig) { chomp; print 
       <time datetime="2016-07-04T16:00:00.000Z" itemprop="datePublished">2016-07-05</time>
 </a>
 
+ 
+    <a href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL日志使用rsyslog/#comments" title="查看评论">
+        <i class="fa fa-comments-o" aria-hidden="true"></i>
+        <span class="count-comment"></span>
+        
+            <span class="ds-thread-count"  data-thread-key="2016/07/05/PostgreSQL/2016-07-05-PostgreSQL日志使用rsyslog/" ></span>
+        
+        
+    </a>
 
     </div>
   
@@ -660,6 +712,15 @@ $ cat logfile | perl -e &apos;while(&lt;&gt;){ if($_ !~ /^\t/ig) { chomp; print 
       <time datetime="2016-07-04T16:00:00.000Z" itemprop="datePublished">2016-07-05</time>
 </a>
 
+ 
+    <a href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL恢复到任意时间点/#comments" title="查看评论">
+        <i class="fa fa-comments-o" aria-hidden="true"></i>
+        <span class="count-comment"></span>
+        
+            <span class="ds-thread-count"  data-thread-key="2016/07/05/PostgreSQL/2016-07-05-PostgreSQL恢复到任意时间点/" ></span>
+        
+        
+    </a>
 
     </div>
   
@@ -725,6 +786,15 @@ $ cat logfile | perl -e &apos;while(&lt;&gt;){ if($_ !~ /^\t/ig) { chomp; print 
       <time datetime="2016-07-04T16:00:00.000Z" itemprop="datePublished">2016-07-05</time>
 </a>
 
+ 
+    <a href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL多线程备份与恢复/#comments" title="查看评论">
+        <i class="fa fa-comments-o" aria-hidden="true"></i>
+        <span class="count-comment"></span>
+        
+            <span class="ds-thread-count"  data-thread-key="2016/07/05/PostgreSQL/2016-07-05-PostgreSQL多线程备份与恢复/" ></span>
+        
+        
+    </a>
 
     </div>
   
@@ -789,71 +859,6 @@ $  cat /proc/cpuinfo  | grep processor | wc -l
 
 
   
-    <article id="post-PostgreSQL/2016-07-05-PostgreSQL备份之手工备份" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL备份之手工备份/" class="article-date">
-      <time datetime="2016-07-04T16:00:00.000Z" itemprop="datePublished">2016-07-05</time>
-</a>
-
-
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL备份之手工备份/">PostgreSQL备份之手工备份</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-          
-              <h2 id="1-备份"><a href="#1-备份" class="headerlink" title="1. 备份"></a>1. 备份</h2><h3 id="1-需要保证-archive-mode-on-和-archive-command-是有效的"><a href="#1-需要保证-archive-mode-on-和-archive-command-是有效的" class="headerlink" title="(1) 需要保证 archive_mode = on 和 archive_command 是有效的"></a>(1) 需要保证 archive_mode = on 和 archive_command 是有效的</h3><h3 id="2-在-master-节点上连接上数据库并执行"><a href="#2-在-master-节点上连接上数据库并执行" class="headerlink" title="(2) 在 master 节点上连接上数据库并执行"></a>(2) 在 master 节点上连接上数据库并执行</h3><pre><code>SELECT pg_start_backup(&apos;label&apos;, true);
-</code></pre><p>pg_start_backup第二个参数设置为true的好处是备份开始会执行一个检查点,设置为true能尽快的完成检查点,并且能减少备份期间产生的wal文件,但是会对查询有影响,默认设置的checkpoint_completion_target的一半的时间,半夜的备份建议打开</p>
-          
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-    <div class="article-category tagcloud">
-    <a class="article-category-link" href="/categories/PostgreSQL/">PostgreSQL</a>
-    </div>
-
-
-      
-      
-        <p class="article-more-link">
-          <a href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL备份之手工备份/#more">阅读全文 >></a>
-        </p>
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-
-
-  
     <article id="post-PostgreSQL/2016-07-05-PostgreSQL备份之pg_rman" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
@@ -861,6 +866,15 @@ $  cat /proc/cpuinfo  | grep processor | wc -l
       <time datetime="2016-07-04T16:00:00.000Z" itemprop="datePublished">2016-07-05</time>
 </a>
 
+ 
+    <a href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL备份之pg_rman/#comments" title="查看评论">
+        <i class="fa fa-comments-o" aria-hidden="true"></i>
+        <span class="count-comment"></span>
+        
+            <span class="ds-thread-count"  data-thread-key="2016/07/05/PostgreSQL/2016-07-05-PostgreSQL备份之pg_rman/" ></span>
+        
+        
+    </a>
 
     </div>
   
@@ -932,6 +946,81 @@ pg_rman 1.3.1
 
 
   
+    <article id="post-PostgreSQL/2016-07-05-PostgreSQL备份之pg_basebackup" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL备份之pg_basebackup/" class="article-date">
+      <time datetime="2016-07-04T16:00:00.000Z" itemprop="datePublished">2016-07-05</time>
+</a>
+
+ 
+    <a href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL备份之pg_basebackup/#comments" title="查看评论">
+        <i class="fa fa-comments-o" aria-hidden="true"></i>
+        <span class="count-comment"></span>
+        
+            <span class="ds-thread-count"  data-thread-key="2016/07/05/PostgreSQL/2016-07-05-PostgreSQL备份之pg_basebackup/" ></span>
+        
+        
+    </a>
+
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL备份之pg_basebackup/">PostgreSQL备份之pg_basebackup</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+              <h2 id="1-准备"><a href="#1-准备" class="headerlink" title="1.准备"></a>1.准备</h2><p>连接上master节点创建replication用户</p>
+<pre><code># CREATE ROLE replicator with login replication password 123456；
+</code></pre>
+          
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/PostgreSQL/">PostgreSQL</a>
+    </div>
+
+
+      
+      
+        <p class="article-more-link">
+          <a href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL备份之pg_basebackup/#more">阅读全文 >></a>
+        </p>
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+
+  
   
     <nav id="page-nav">
       <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><a class="extend next" rel="next" href="/page/2/">Next &raquo;</a>
@@ -983,13 +1072,38 @@ pg_rman 1.3.1
                 $("body").css({"background-color": bgColorList[bgColor], "background-size": "cover"});
             }
             else {
-                var backgroundnum = 5;
+                var backgroundnum = 4;
                 var backgroundimg = "url(/background/bg-x.jpg)".replace(/x/gi, Math.ceil(Math.random() * backgroundnum));
                 $("body").css({"background": backgroundimg, "background-attachment": "fixed", "background-size": "cover"});
             }
         })
     </script>
 
+
+    
+        <script>
+            if ($(".left-col").is(":visible")) {
+                var duoshuoQuery = {short_name:"null"};
+                (function() {
+                    var d = document, s = d.createElement('script');
+                    s.src = 'http://static.duoshuo.com/embed.js';
+                    s.async = true; s.charset = 'UTF-8';
+                    (d.head || d.body).appendChild(s);
+                })();
+
+                $(document).ready(function(){
+                    var $duoshuoCount = $(".ds-thread-count");
+                    $duoshuoCount.bind("DOMNodeInserted", function(e) {
+                        var num = $(this).text().replace(/[^0-9]/ig,"");
+                        $(this).siblings(".count-comment").text(num);
+                        $(this).remove();
+                    })
+                })
+            }
+        </script>
+    
+
+     
 
 
 

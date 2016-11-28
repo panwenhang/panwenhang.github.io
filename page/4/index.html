@@ -73,12 +73,14 @@
         isCategory: false,
         fancybox_js: "//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.js",
         scrollreveal: "//cdn.bootcss.com/scrollReveal.js/3.1.4/scrollreveal.min.js",
-        search: undefined
+        search: true
     }
 </script>
 
 
-    <script> yiliaConfig.jquery_ui = [false]; </script>
+    <script>
+        yiliaConfig.jquery_ui = [true, "//cdn.bootcss.com/jqueryui/1.10.4/jquery-ui.min.js", "//cdn.bootcss.com/jqueryui/1.10.4/css/jquery-ui.min.css"];
+    </script>
 
 
 
@@ -105,6 +107,13 @@
 
         
 
+        
+            <form id="search-form">
+            <input type="text" id="local-search-input" name="q" placeholder="search..." class="search form-control" autocomplete="off" autocorrect="off" searchonload="false" />
+            <i class="fa fa-times" onclick="resetSearch()"></i>
+            </form>
+            <div id="local-search-result"></div>
+            <p class='no-result'>No results found <i class='fa fa-spinner fa-pulse'></i></p>
         
 
 
@@ -166,8 +175,6 @@
                             
                                 <a class="fa GitHub" href="https://github.com/panwenhang" title="GitHub"></a>
                             
-                                <a class="fa RSS" href="/atom.xml" title="RSS"></a>
-                            
                         </ul>
                     </nav>
                 </section>
@@ -187,6 +194,8 @@
                       <a class="main-nav-link switch-friends-link" href="https://hexo.io">Hexo</a>
                     
                       <a class="main-nav-link switch-friends-link" href="https://pages.github.com/">GitHub</a>
+                    
+                      <a class="main-nav-link switch-friends-link" href="http://moxfive.xyz/">MOxFIVE</a>
                     
                     </div>
                 </section>
@@ -234,8 +243,6 @@
                             
                                 <a class="fa GitHub" target="_blank" href="https://github.com/panwenhang" title="GitHub"></a>
                             
-                                <a class="fa RSS" target="_blank" href="/atom.xml" title="RSS"></a>
-                            
                         </ul>
             </nav>
         </header>                
@@ -244,6 +251,154 @@
 </nav>
       <div class="body-wrap">
   
+    <article id="post-Linux/2016-06-30-Linux代理设置" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2016/06/30/Linux/2016-06-30-Linux代理设置/" class="article-date">
+      <time datetime="2016-06-29T16:00:00.000Z" itemprop="datePublished">2016-06-30</time>
+</a>
+
+ 
+    <a href="/2016/06/30/Linux/2016-06-30-Linux代理设置/#comments" title="查看评论">
+        <i class="fa fa-comments-o" aria-hidden="true"></i>
+        <span class="count-comment"></span>
+        
+            <span class="ds-thread-count"  data-thread-key="2016/06/30/Linux/2016-06-30-Linux代理设置/" ></span>
+        
+        
+    </a>
+
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/06/30/Linux/2016-06-30-Linux代理设置/">Linux代理设置</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+              <p>由于公司必须通过代理才能上外网,所以搞了下代理的设置</p>
+<h2 id="1-浏览器设置代理"><a href="#1-浏览器设置代理" class="headerlink" title="1. 浏览器设置代理"></a>1. 浏览器设置代理</h2>
+          
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/Linux/">Linux</a>
+    </div>
+
+
+      
+      
+        <p class="article-more-link">
+          <a href="/2016/06/30/Linux/2016-06-30-Linux代理设置/#more">阅读全文 >></a>
+        </p>
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+
+  
+    <article id="post-Linux/2016-06-30-Linux中时间同步" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2016/06/30/Linux/2016-06-30-Linux中时间同步/" class="article-date">
+      <time datetime="2016-06-29T16:00:00.000Z" itemprop="datePublished">2016-06-30</time>
+</a>
+
+ 
+    <a href="/2016/06/30/Linux/2016-06-30-Linux中时间同步/#comments" title="查看评论">
+        <i class="fa fa-comments-o" aria-hidden="true"></i>
+        <span class="count-comment"></span>
+        
+            <span class="ds-thread-count"  data-thread-key="2016/06/30/Linux/2016-06-30-Linux中时间同步/" ></span>
+        
+        
+    </a>
+
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/06/30/Linux/2016-06-30-Linux中时间同步/">Linux中时间同步</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+              <h2 id="1-安装ntpdate"><a href="#1-安装ntpdate" class="headerlink" title="1. 安装ntpdate"></a>1. 安装ntpdate</h2><pre><code>$ sudo yum install -y ntpdate
+</code></pre>
+          
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/Linux/">Linux</a>
+    </div>
+
+
+      
+      
+        <p class="article-more-link">
+          <a href="/2016/06/30/Linux/2016-06-30-Linux中时间同步/#more">阅读全文 >></a>
+        </p>
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+
+  
     <article id="post-Linux/2016-06-30-Linux之间ssh免密码登录" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
@@ -251,6 +406,15 @@
       <time datetime="2016-06-29T16:00:00.000Z" itemprop="datePublished">2016-06-30</time>
 </a>
 
+ 
+    <a href="/2016/06/30/Linux/2016-06-30-Linux之间ssh免密码登录/#comments" title="查看评论">
+        <i class="fa fa-comments-o" aria-hidden="true"></i>
+        <span class="count-comment"></span>
+        
+            <span class="ds-thread-count"  data-thread-key="2016/06/30/Linux/2016-06-30-Linux之间ssh免密码登录/" ></span>
+        
+        
+    </a>
 
     </div>
   
@@ -313,13 +477,22 @@ Your public key has been saved in /root/.ssh/id_rsa.pub.
 
 
   
-    <article id="post-Linux/2016-06-30-Linux中时间同步" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-Linux/2016-06-30-DELL磁盘阵列控制卡（RAID卡）MegaCli常用管理命令汇总" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2016/06/30/Linux/2016-06-30-Linux中时间同步/" class="article-date">
+      <a href="/2016/06/30/Linux/2016-06-30-DELL磁盘阵列控制卡（RAID卡）MegaCli常用管理命令汇总/" class="article-date">
       <time datetime="2016-06-29T16:00:00.000Z" itemprop="datePublished">2016-06-30</time>
 </a>
 
+ 
+    <a href="/2016/06/30/Linux/2016-06-30-DELL磁盘阵列控制卡（RAID卡）MegaCli常用管理命令汇总/#comments" title="查看评论">
+        <i class="fa fa-comments-o" aria-hidden="true"></i>
+        <span class="count-comment"></span>
+        
+            <span class="ds-thread-count"  data-thread-key="2016/06/30/Linux/2016-06-30-DELL磁盘阵列控制卡（RAID卡）MegaCli常用管理命令汇总/" ></span>
+        
+        
+    </a>
 
     </div>
   
@@ -332,7 +505,7 @@ Your public key has been saved in /root/.ssh/id_rsa.pub.
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2016/06/30/Linux/2016-06-30-Linux中时间同步/">Linux中时间同步</a>
+      <a class="article-title" href="/2016/06/30/Linux/2016-06-30-DELL磁盘阵列控制卡（RAID卡）MegaCli常用管理命令汇总/">DELL磁盘阵列控制卡（RAID卡）MegaCli常用管理命令汇总</a>
     </h1>
   
 
@@ -342,13 +515,17 @@ Your public key has been saved in /root/.ssh/id_rsa.pub.
     <div class="article-entry" itemprop="articleBody">
       
           
-              <h2 id="1-安装ntpdate"><a href="#1-安装ntpdate" class="headerlink" title="1. 安装ntpdate"></a>1. 安装ntpdate</h2><pre><code>$ sudo yum install -y ntpdate
-</code></pre>
+              <h2 id="准备"><a href="#准备" class="headerlink" title="准备"></a>准备</h2><p>  新版本的 MegaCli-1.01.24-0.i386.rpm （下载地址:<a href="http://www.lsi.com/downloads/Public/MegaRAID%20Common%20Files/8.02.16_MegaCLI.zip">http://www.lsi.com/downloads/Public/MegaRAID%20Common%20Files/8.02.16_MegaCLI.zip</a> ）该包会把程序安装在/opt下,当然也可以自定义安装目录,例如:rpm –relocate /opt/=/usr/sbin/ -i MegaCli-1.01.24-0.i386.rpm （即把安装目录 /opt 替换成 /usr/sbin）。</p>
+<p>(linux文件夹下有个MegaCli文件里面有I386 RPM）</p>
           
       
     </div>
     
     <div class="article-info article-info-index">
+      
+        <div class="article-pop-out tagcloud">
+          <a class="">置顶</a>
+        </div>
       
       
     <div class="article-category tagcloud">
@@ -359,146 +536,7 @@ Your public key has been saved in /root/.ssh/id_rsa.pub.
       
       
         <p class="article-more-link">
-          <a href="/2016/06/30/Linux/2016-06-30-Linux中时间同步/#more">阅读全文 >></a>
-        </p>
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-
-
-  
-    <article id="post-Linux/2016-06-30-Linux下打包" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2016/06/30/Linux/2016-06-30-Linux下打包/" class="article-date">
-      <time datetime="2016-06-29T16:00:00.000Z" itemprop="datePublished">2016-06-30</time>
-</a>
-
-
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2016/06/30/Linux/2016-06-30-Linux下打包/">Linux下打包</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-          
-              <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><pre><code>打包是指将源码包编译成rpm包,在centos下通过rpmbuild命令和spec文件来实现。
-相对于源码编译安装的好处是,不需要每次安装都编译一次,那样很慢,对于打好的rpm包,直接试用rpm命令就可以安装。
-相对于一些官方提供的rpm包的优势在于,可以想源码编译一样定制化包的安装,比如修改安装的路径,添加一些自己的配置和文件等。
-</code></pre>
-          
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-    <div class="article-category tagcloud">
-    <a class="article-category-link" href="/categories/Linux/">Linux</a>
-    </div>
-
-
-      
-      
-        <p class="article-more-link">
-          <a href="/2016/06/30/Linux/2016-06-30-Linux下打包/#more">阅读全文 >></a>
-        </p>
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-
-
-  
-    <article id="post-Linux/2016-06-30-HP机器RAID和2016-06-30-LVM创建" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2016/06/30/Linux/2016-06-30-HP机器RAID和2016-06-30-LVM创建/" class="article-date">
-      <time datetime="2016-06-29T16:00:00.000Z" itemprop="datePublished">2016-06-30</time>
-</a>
-
-
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2016/06/30/Linux/2016-06-30-HP机器RAID和2016-06-30-LVM创建/">HP机器RAID和LVM创建</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-          
-              <h2 id="1-环境"><a href="#1-环境" class="headerlink" title="1.环境"></a>1.环境</h2><pre><code>[root@localhost ~]# uname -a
-Linux localhost.localdomain 2.6.32-220.el6.x86_64 #1 SMP Tue Dec 6 19:48:22 GMT 2011 x86_64 x86_64 x86_64 GNU/Linux
-[root@localhost ~]# cat /etc/issue
-CentOS release 6.7 (Final)
-Kernel \r on an \m
-[root@localhost ~]# dmidecode -t bios
-# dmidecode 2.12
-SMBIOS 2.7 present.
-</code></pre>
-          
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-    <div class="article-category tagcloud">
-    <a class="article-category-link" href="/categories/Linux/">Linux</a>
-    </div>
-
-
-      
-      
-        <p class="article-more-link">
-          <a href="/2016/06/30/Linux/2016-06-30-HP机器RAID和2016-06-30-LVM创建/#more">阅读全文 >></a>
+          <a href="/2016/06/30/Linux/2016-06-30-DELL磁盘阵列控制卡（RAID卡）MegaCli常用管理命令汇总/#more">阅读全文 >></a>
         </p>
       
       <div class="clearfix"></div>
@@ -524,6 +562,15 @@ SMBIOS 2.7 present.
       <time datetime="2016-06-29T16:00:00.000Z" itemprop="datePublished">2016-06-30</time>
 </a>
 
+ 
+    <a href="/2016/06/30/Linux/2016-06-30-Shell脚本-良好的习惯/#comments" title="查看评论">
+        <i class="fa fa-comments-o" aria-hidden="true"></i>
+        <span class="count-comment"></span>
+        
+            <span class="ds-thread-count"  data-thread-key="2016/06/30/Linux/2016-06-30-Shell脚本-良好的习惯/" ></span>
+        
+        
+    </a>
 
     </div>
   
@@ -800,6 +847,15 @@ fi
       <time datetime="2016-06-22T16:00:00.000Z" itemprop="datePublished">2016-06-23</time>
 </a>
 
+ 
+    <a href="/2016/06/23/MongoDB/2016-06-23-MongoDB分片搭建/#comments" title="查看评论">
+        <i class="fa fa-comments-o" aria-hidden="true"></i>
+        <span class="count-comment"></span>
+        
+            <span class="ds-thread-count"  data-thread-key="2016/06/23/MongoDB/2016-06-23-MongoDB分片搭建/" ></span>
+        
+        
+    </a>
 
     </div>
   
@@ -868,6 +924,15 @@ Linux zhaopin-2-201 3.10.0-123.el7.x86_64 #1 SMP Mon Jun 30 12:09:22 UTC 2014 x8
       <time datetime="2016-06-22T16:00:00.000Z" itemprop="datePublished">2016-06-23</time>
 </a>
 
+ 
+    <a href="/2016/06/23/MongoDB/2016-06-23-MongoDB分片故障测试和解决方案/#comments" title="查看评论">
+        <i class="fa fa-comments-o" aria-hidden="true"></i>
+        <span class="count-comment"></span>
+        
+            <span class="ds-thread-count"  data-thread-key="2016/06/23/MongoDB/2016-06-23-MongoDB分片故障测试和解决方案/" ></span>
+        
+        
+    </a>
 
     </div>
   
@@ -938,6 +1003,15 @@ MongoDB shell version: 3.0.6
       <time datetime="2016-06-22T16:00:00.000Z" itemprop="datePublished">2016-06-23</time>
 </a>
 
+ 
+    <a href="/2016/06/23/MongoDB/2016-06-23-MongoDB副本集搭建/#comments" title="查看评论">
+        <i class="fa fa-comments-o" aria-hidden="true"></i>
+        <span class="count-comment"></span>
+        
+            <span class="ds-thread-count"  data-thread-key="2016/06/23/MongoDB/2016-06-23-MongoDB副本集搭建/" ></span>
+        
+        
+    </a>
 
     </div>
   
@@ -1001,13 +1075,22 @@ MongoDB shell version: 3.0.6
 
 
   
-    <article id="post-C/2016-06-23-C语言类型转换" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-C/2016-06-23-C语言side effect和sequence point" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2016/06/23/C/2016-06-23-C语言类型转换/" class="article-date">
+      <a href="/2016/06/23/C/2016-06-23-C语言side effect和sequence point/" class="article-date">
       <time datetime="2016-06-22T16:00:00.000Z" itemprop="datePublished">2016-06-23</time>
 </a>
 
+ 
+    <a href="/2016/06/23/C/2016-06-23-C语言side effect和sequence point/#comments" title="查看评论">
+        <i class="fa fa-comments-o" aria-hidden="true"></i>
+        <span class="count-comment"></span>
+        
+            <span class="ds-thread-count"  data-thread-key="2016/06/23/C/2016-06-23-C语言side effect和sequence point/" ></span>
+        
+        
+    </a>
 
     </div>
   
@@ -1020,7 +1103,7 @@ MongoDB shell version: 3.0.6
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2016/06/23/C/2016-06-23-C语言类型转换/">C语言类型转换</a>
+      <a class="article-title" href="/2016/06/23/C/2016-06-23-C语言side effect和sequence point/">C语言side effect和sequence point</a>
     </h1>
   
 
@@ -1030,7 +1113,7 @@ MongoDB shell version: 3.0.6
     <div class="article-entry" itemprop="articleBody">
       
           
-              <h2 id="1-Integer-Promotion"><a href="#1-Integer-Promotion" class="headerlink" title="1. Integer Promotion"></a>1. Integer Promotion</h2><p>  在一个表达式中,凡是可以使用 int 或 unsigned int 类型做右值的地方也都可以使用有符号或无符号的 char 型、short 型和 Bit-field 。如果原始类型的取值范围都能用 int 型表示,则其值被提升为 int 型,如果表示不了就提升为 unsigned int 型,这称为 Integer Promotion 。做 IntegerPromotion 只影响上述几种类型的值,对其它类型无影响。C99 规定 Integer Promotion 适用于以</p>
+              <p>  C 语言中副作用 ( side effect ) : 是指对数据对象或者文件的修改。例如,语句 var = 99 ; 的副作用是把 var 的值修改成 99 。对表达式求值也可能产生副作用,例如,对表达式求 se = 100;<br>求值所产生的副作用就是 se 的值被修改成 100。<br>  序列点 ( sequence point ) : 是指程序运行中的一个特殊的时间点,在该点之前的所有副作用已经结束,并且后续的副作用还没发生。C 语句结束标志——分号 ( ; ) 是序列点。标准规定,在两个序列点之间,一个对象所保存的值最多只能被修改一次。</p>
           
       
     </div>
@@ -1046,7 +1129,7 @@ MongoDB shell version: 3.0.6
       
       
         <p class="article-more-link">
-          <a href="/2016/06/23/C/2016-06-23-C语言类型转换/#more">阅读全文 >></a>
+          <a href="/2016/06/23/C/2016-06-23-C语言side effect和sequence point/#more">阅读全文 >></a>
         </p>
       
       <div class="clearfix"></div>
@@ -1072,6 +1155,15 @@ MongoDB shell version: 3.0.6
       <time datetime="2016-06-22T16:00:00.000Z" itemprop="datePublished">2016-06-23</time>
 </a>
 
+ 
+    <a href="/2016/06/23/MongoDB/2016-06-23-MongoDB副本集故障测试和解决方案/#comments" title="查看评论">
+        <i class="fa fa-comments-o" aria-hidden="true"></i>
+        <span class="count-comment"></span>
+        
+            <span class="ds-thread-count"  data-thread-key="2016/06/23/MongoDB/2016-06-23-MongoDB副本集故障测试和解决方案/" ></span>
+        
+        
+    </a>
 
     </div>
   
@@ -1187,13 +1279,38 @@ connecting to: test
                 $("body").css({"background-color": bgColorList[bgColor], "background-size": "cover"});
             }
             else {
-                var backgroundnum = 5;
+                var backgroundnum = 4;
                 var backgroundimg = "url(/background/bg-x.jpg)".replace(/x/gi, Math.ceil(Math.random() * backgroundnum));
                 $("body").css({"background": backgroundimg, "background-attachment": "fixed", "background-size": "cover"});
             }
         })
     </script>
 
+
+    
+        <script>
+            if ($(".left-col").is(":visible")) {
+                var duoshuoQuery = {short_name:"null"};
+                (function() {
+                    var d = document, s = d.createElement('script');
+                    s.src = 'http://static.duoshuo.com/embed.js';
+                    s.async = true; s.charset = 'UTF-8';
+                    (d.head || d.body).appendChild(s);
+                })();
+
+                $(document).ready(function(){
+                    var $duoshuoCount = $(".ds-thread-count");
+                    $duoshuoCount.bind("DOMNodeInserted", function(e) {
+                        var num = $(this).text().replace(/[^0-9]/ig,"");
+                        $(this).siblings(".count-comment").text(num);
+                        $(this).remove();
+                    })
+                })
+            }
+        </script>
+    
+
+     
 
 
 

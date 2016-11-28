@@ -68,12 +68,14 @@
         isCategory: true,
         fancybox_js: "//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.js",
         scrollreveal: "//cdn.bootcss.com/scrollReveal.js/3.1.4/scrollreveal.min.js",
-        search: undefined
+        search: true
     }
 </script>
 
 
-    <script> yiliaConfig.jquery_ui = [false]; </script>
+    <script>
+        yiliaConfig.jquery_ui = [true, "//cdn.bootcss.com/jqueryui/1.10.4/jquery-ui.min.js", "//cdn.bootcss.com/jqueryui/1.10.4/css/jquery-ui.min.css"];
+    </script>
 
 
 
@@ -100,6 +102,13 @@
 
         
 
+        
+            <form id="search-form">
+            <input type="text" id="local-search-input" name="q" placeholder="search..." class="search form-control" autocomplete="off" autocorrect="off" searchonload="false" />
+            <i class="fa fa-times" onclick="resetSearch()"></i>
+            </form>
+            <div id="local-search-result"></div>
+            <p class='no-result'>No results found <i class='fa fa-spinner fa-pulse'></i></p>
         
 
 
@@ -161,8 +170,6 @@
                             
                                 <a class="fa GitHub" href="https://github.com/panwenhang" title="GitHub"></a>
                             
-                                <a class="fa RSS" href="/atom.xml" title="RSS"></a>
-                            
                         </ul>
                     </nav>
                 </section>
@@ -182,6 +189,8 @@
                       <a class="main-nav-link switch-friends-link" href="https://hexo.io">Hexo</a>
                     
                       <a class="main-nav-link switch-friends-link" href="https://pages.github.com/">GitHub</a>
+                    
+                      <a class="main-nav-link switch-friends-link" href="http://moxfive.xyz/">MOxFIVE</a>
                     
                     </div>
                 </section>
@@ -228,8 +237,6 @@
                                 <a class="fa Email" target="_blank" href="mailto:panwenhang92@gmail.com" title="Email"></a>
                             
                                 <a class="fa GitHub" target="_blank" href="https://github.com/panwenhang" title="GitHub"></a>
-                            
-                                <a class="fa RSS" target="_blank" href="/atom.xml" title="RSS"></a>
                             
                         </ul>
             </nav>
@@ -287,39 +294,6 @@
   <div class="archive-article-inner">
     <header class="archive-article-header">
           <div class="article-meta">
-              <a href="/2016/06/30/Linux/2016-06-30-DELL磁盘阵列控制卡（RAID卡）MegaCli常用管理命令汇总/" class="archive-article-date">
-      <time datetime="2016-06-29T16:00:00.000Z" itemprop="datePublished">06-30</time>
-</a>
-
-
-        </div>
-         
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2016/06/30/Linux/2016-06-30-DELL磁盘阵列控制卡（RAID卡）MegaCli常用管理命令汇总/">DELL磁盘阵列控制卡（RAID卡）MegaCli常用管理命令汇总</a>
-    </h1>
-  
-
-        <div class="article-info info-on-archive">
-          
-    <div class="article-category tagcloud">
-    <a class="article-category-link" href="/categories/Linux/">Linux</a>
-    </div>
-
-
-          
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-          <div class="article-meta">
               <a href="/2016/06/30/Linux/2016-06-30-Linux下打包/" class="archive-article-date">
       <time datetime="2016-06-29T16:00:00.000Z" itemprop="datePublished">06-30</time>
 </a>
@@ -330,39 +304,6 @@
   
     <h1 itemprop="name">
       <a class="archive-article-title" href="/2016/06/30/Linux/2016-06-30-Linux下打包/">Linux下打包</a>
-    </h1>
-  
-
-        <div class="article-info info-on-archive">
-          
-    <div class="article-category tagcloud">
-    <a class="article-category-link" href="/categories/Linux/">Linux</a>
-    </div>
-
-
-          
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-          <div class="article-meta">
-              <a href="/2016/06/30/Linux/2016-06-30-Linux中时间同步/" class="archive-article-date">
-      <time datetime="2016-06-29T16:00:00.000Z" itemprop="datePublished">06-30</time>
-</a>
-
-
-        </div>
-         
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2016/06/30/Linux/2016-06-30-Linux中时间同步/">Linux中时间同步</a>
     </h1>
   
 
@@ -419,6 +360,39 @@
   <div class="archive-article-inner">
     <header class="archive-article-header">
           <div class="article-meta">
+              <a href="/2016/06/30/Linux/2016-06-30-Linux中时间同步/" class="archive-article-date">
+      <time datetime="2016-06-29T16:00:00.000Z" itemprop="datePublished">06-30</time>
+</a>
+
+
+        </div>
+         
+  
+    <h1 itemprop="name">
+      <a class="archive-article-title" href="/2016/06/30/Linux/2016-06-30-Linux中时间同步/">Linux中时间同步</a>
+    </h1>
+  
+
+        <div class="article-info info-on-archive">
+          
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/Linux/">Linux</a>
+    </div>
+
+
+          
+        </div>
+        <div class="clearfix"></div>
+    </header>
+  </div>
+</article>
+  
+    
+    
+    <article class="archive-article archive-type-post">
+  <div class="archive-article-inner">
+    <header class="archive-article-header">
+          <div class="article-meta">
               <a href="/2016/06/30/Linux/2016-06-30-Linux代理设置/" class="archive-article-date">
       <time datetime="2016-06-29T16:00:00.000Z" itemprop="datePublished">06-30</time>
 </a>
@@ -429,6 +403,39 @@
   
     <h1 itemprop="name">
       <a class="archive-article-title" href="/2016/06/30/Linux/2016-06-30-Linux代理设置/">Linux代理设置</a>
+    </h1>
+  
+
+        <div class="article-info info-on-archive">
+          
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/Linux/">Linux</a>
+    </div>
+
+
+          
+        </div>
+        <div class="clearfix"></div>
+    </header>
+  </div>
+</article>
+  
+    
+    
+    <article class="archive-article archive-type-post">
+  <div class="archive-article-inner">
+    <header class="archive-article-header">
+          <div class="article-meta">
+              <a href="/2016/06/30/Linux/2016-06-30-HP机器RAID和2016-06-30-LVM创建/" class="archive-article-date">
+      <time datetime="2016-06-29T16:00:00.000Z" itemprop="datePublished">06-30</time>
+</a>
+
+
+        </div>
+         
+  
+    <h1 itemprop="name">
+      <a class="archive-article-title" href="/2016/06/30/Linux/2016-06-30-HP机器RAID和2016-06-30-LVM创建/">HP机器RAID和LVM创建</a>
     </h1>
   
 
@@ -485,7 +492,7 @@
   <div class="archive-article-inner">
     <header class="archive-article-header">
           <div class="article-meta">
-              <a href="/2016/06/30/Linux/2016-06-30-HP机器RAID和2016-06-30-LVM创建/" class="archive-article-date">
+              <a href="/2016/06/30/Linux/2016-06-30-DELL磁盘阵列控制卡（RAID卡）MegaCli常用管理命令汇总/" class="archive-article-date">
       <time datetime="2016-06-29T16:00:00.000Z" itemprop="datePublished">06-30</time>
 </a>
 
@@ -494,7 +501,7 @@
          
   
     <h1 itemprop="name">
-      <a class="archive-article-title" href="/2016/06/30/Linux/2016-06-30-HP机器RAID和2016-06-30-LVM创建/">HP机器RAID和LVM创建</a>
+      <a class="archive-article-title" href="/2016/06/30/Linux/2016-06-30-DELL磁盘阵列控制卡（RAID卡）MegaCli常用管理命令汇总/">DELL磁盘阵列控制卡（RAID卡）MegaCli常用管理命令汇总</a>
     </h1>
   
 
@@ -634,7 +641,7 @@
                 $("body").css({"background-color": bgColorList[bgColor], "background-size": "cover"});
             }
             else {
-                var backgroundnum = 5;
+                var backgroundnum = 4;
                 var backgroundimg = "url(/background/bg-x.jpg)".replace(/x/gi, Math.ceil(Math.random() * backgroundnum));
                 $("body").css({"background": backgroundimg, "background-attachment": "fixed", "background-size": "cover"});
             }

@@ -73,12 +73,14 @@
         isCategory: false,
         fancybox_js: "//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.js",
         scrollreveal: "//cdn.bootcss.com/scrollReveal.js/3.1.4/scrollreveal.min.js",
-        search: undefined
+        search: true
     }
 </script>
 
 
-    <script> yiliaConfig.jquery_ui = [false]; </script>
+    <script>
+        yiliaConfig.jquery_ui = [true, "//cdn.bootcss.com/jqueryui/1.10.4/jquery-ui.min.js", "//cdn.bootcss.com/jqueryui/1.10.4/css/jquery-ui.min.css"];
+    </script>
 
 
 
@@ -105,6 +107,13 @@
 
         
 
+        
+            <form id="search-form">
+            <input type="text" id="local-search-input" name="q" placeholder="search..." class="search form-control" autocomplete="off" autocorrect="off" searchonload="false" />
+            <i class="fa fa-times" onclick="resetSearch()"></i>
+            </form>
+            <div id="local-search-result"></div>
+            <p class='no-result'>No results found <i class='fa fa-spinner fa-pulse'></i></p>
         
 
 
@@ -166,8 +175,6 @@
                             
                                 <a class="fa GitHub" href="https://github.com/panwenhang" title="GitHub"></a>
                             
-                                <a class="fa RSS" href="/atom.xml" title="RSS"></a>
-                            
                         </ul>
                     </nav>
                 </section>
@@ -187,6 +194,8 @@
                       <a class="main-nav-link switch-friends-link" href="https://hexo.io">Hexo</a>
                     
                       <a class="main-nav-link switch-friends-link" href="https://pages.github.com/">GitHub</a>
+                    
+                      <a class="main-nav-link switch-friends-link" href="http://moxfive.xyz/">MOxFIVE</a>
                     
                     </div>
                 </section>
@@ -234,8 +243,6 @@
                             
                                 <a class="fa GitHub" target="_blank" href="https://github.com/panwenhang" title="GitHub"></a>
                             
-                                <a class="fa RSS" target="_blank" href="/atom.xml" title="RSS"></a>
-                            
                         </ul>
             </nav>
         </header>                
@@ -244,13 +251,22 @@
 </nav>
       <div class="body-wrap">
   
-    <article id="post-Linux/2016-06-30-DELL磁盘阵列控制卡（RAID卡）MegaCli常用管理命令汇总" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-Linux/2016-06-30-Linux下打包" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2016/06/30/Linux/2016-06-30-DELL磁盘阵列控制卡（RAID卡）MegaCli常用管理命令汇总/" class="article-date">
+      <a href="/2016/06/30/Linux/2016-06-30-Linux下打包/" class="article-date">
       <time datetime="2016-06-29T16:00:00.000Z" itemprop="datePublished">2016-06-30</time>
 </a>
 
+ 
+    <a href="/2016/06/30/Linux/2016-06-30-Linux下打包/#comments" title="查看评论">
+        <i class="fa fa-comments-o" aria-hidden="true"></i>
+        <span class="count-comment"></span>
+        
+            <span class="ds-thread-count"  data-thread-key="2016/06/30/Linux/2016-06-30-Linux下打包/" ></span>
+        
+        
+    </a>
 
     </div>
   
@@ -263,7 +279,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2016/06/30/Linux/2016-06-30-DELL磁盘阵列控制卡（RAID卡）MegaCli常用管理命令汇总/">DELL磁盘阵列控制卡（RAID卡）MegaCli常用管理命令汇总</a>
+      <a class="article-title" href="/2016/06/30/Linux/2016-06-30-Linux下打包/">Linux下打包</a>
     </h1>
   
 
@@ -273,17 +289,15 @@
     <div class="article-entry" itemprop="articleBody">
       
           
-              <h2 id="准备"><a href="#准备" class="headerlink" title="准备"></a>准备</h2><p>  新版本的 MegaCli-1.01.24-0.i386.rpm （下载地址:<a href="http://www.lsi.com/downloads/Public/MegaRAID%20Common%20Files/8.02.16_MegaCLI.zip">http://www.lsi.com/downloads/Public/MegaRAID%20Common%20Files/8.02.16_MegaCLI.zip</a> ）该包会把程序安装在/opt下,当然也可以自定义安装目录,例如:rpm –relocate /opt/=/usr/sbin/ -i MegaCli-1.01.24-0.i386.rpm （即把安装目录 /opt 替换成 /usr/sbin）。</p>
-<p>(linux文件夹下有个MegaCli文件里面有I386 RPM）</p>
+              <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><pre><code>打包是指将源码包编译成rpm包,在centos下通过rpmbuild命令和spec文件来实现。
+相对于源码编译安装的好处是,不需要每次安装都编译一次,那样很慢,对于打好的rpm包,直接试用rpm命令就可以安装。
+相对于一些官方提供的rpm包的优势在于,可以想源码编译一样定制化包的安装,比如修改安装的路径,添加一些自己的配置和文件等。
+</code></pre>
           
       
     </div>
     
     <div class="article-info article-info-index">
-      
-        <div class="article-pop-out tagcloud">
-          <a class="">置顶</a>
-        </div>
       
       
     <div class="article-category tagcloud">
@@ -294,7 +308,7 @@
       
       
         <p class="article-more-link">
-          <a href="/2016/06/30/Linux/2016-06-30-DELL磁盘阵列控制卡（RAID卡）MegaCli常用管理命令汇总/#more">阅读全文 >></a>
+          <a href="/2016/06/30/Linux/2016-06-30-Linux下打包/#more">阅读全文 >></a>
         </p>
       
       <div class="clearfix"></div>
@@ -320,6 +334,15 @@
       <time datetime="2016-06-29T16:00:00.000Z" itemprop="datePublished">2016-06-30</time>
 </a>
 
+ 
+    <a href="/2016/06/30/Linux/2016-06-30-设置虚ip/#comments" title="查看评论">
+        <i class="fa fa-comments-o" aria-hidden="true"></i>
+        <span class="count-comment"></span>
+        
+            <span class="ds-thread-count"  data-thread-key="2016/06/30/Linux/2016-06-30-设置虚ip/" ></span>
+        
+        
+    </a>
 
     </div>
   
@@ -385,6 +408,15 @@
       <time datetime="2016-06-29T16:00:00.000Z" itemprop="datePublished">2016-06-30</time>
 </a>
 
+ 
+    <a href="/2016/06/30/Linux/2016-06-30-格式化大盘/#comments" title="查看评论">
+        <i class="fa fa-comments-o" aria-hidden="true"></i>
+        <span class="count-comment"></span>
+        
+            <span class="ds-thread-count"  data-thread-key="2016/06/30/Linux/2016-06-30-格式化大盘/" ></span>
+        
+        
+    </a>
 
     </div>
   
@@ -442,72 +474,6 @@
 
 
   
-    <article id="post-Linux/2016-06-30-在CenOS6.4下安装Docker" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2016/06/30/Linux/2016-06-30-在CenOS6.4下安装Docker/" class="article-date">
-      <time datetime="2016-06-29T16:00:00.000Z" itemprop="datePublished">2016-06-30</time>
-</a>
-
-
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2016/06/30/Linux/2016-06-30-在CenOS6.4下安装Docker/">在CenOS6.4下安装Docker</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-          
-              <h2 id="1-升级内核版本"><a href="#1-升级内核版本" class="headerlink" title="1.升级内核版本"></a>1.升级内核版本</h2><p>因为CentOS6.4自带内核版本是2.6.32-358.23.2.el6.x86_64,而Docker要求内核版本大于3.0,推荐3.8以上的内核:</p>
-<pre><code>$ sudo rpm -ivh http://elrepo.org/linux/kernel/el6/x86_64/RPMS/kernel-lt-3.10.101-1.el6.elrepo.x86_64.rpm
-</code></pre>
-          
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-    <div class="article-category tagcloud">
-    <a class="article-category-link" href="/categories/Linux/">Linux</a>
-    </div>
-
-
-      
-      
-        <p class="article-more-link">
-          <a href="/2016/06/30/Linux/2016-06-30-在CenOS6.4下安装Docker/#more">阅读全文 >></a>
-        </p>
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-
-
-  
     <article id="post-Linux/2016-06-30-在Slackware64中安装rtx" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
@@ -515,6 +481,15 @@
       <time datetime="2016-06-29T16:00:00.000Z" itemprop="datePublished">2016-06-30</time>
 </a>
 
+ 
+    <a href="/2016/06/30/Linux/2016-06-30-在Slackware64中安装rtx/#comments" title="查看评论">
+        <i class="fa fa-comments-o" aria-hidden="true"></i>
+        <span class="count-comment"></span>
+        
+            <span class="ds-thread-count"  data-thread-key="2016/06/30/Linux/2016-06-30-在Slackware64中安装rtx/" ></span>
+        
+        
+    </a>
 
     </div>
   
@@ -578,6 +553,81 @@ $ sudo upgradepkg --install-new slackware64-compat32/*-compat32/*.t?z
 
 
   
+    <article id="post-Linux/2016-06-30-在CenOS6.4下安装Docker" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2016/06/30/Linux/2016-06-30-在CenOS6.4下安装Docker/" class="article-date">
+      <time datetime="2016-06-29T16:00:00.000Z" itemprop="datePublished">2016-06-30</time>
+</a>
+
+ 
+    <a href="/2016/06/30/Linux/2016-06-30-在CenOS6.4下安装Docker/#comments" title="查看评论">
+        <i class="fa fa-comments-o" aria-hidden="true"></i>
+        <span class="count-comment"></span>
+        
+            <span class="ds-thread-count"  data-thread-key="2016/06/30/Linux/2016-06-30-在CenOS6.4下安装Docker/" ></span>
+        
+        
+    </a>
+
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/06/30/Linux/2016-06-30-在CenOS6.4下安装Docker/">在CenOS6.4下安装Docker</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+              <h2 id="1-升级内核版本"><a href="#1-升级内核版本" class="headerlink" title="1.升级内核版本"></a>1.升级内核版本</h2><p>因为CentOS6.4自带内核版本是2.6.32-358.23.2.el6.x86_64,而Docker要求内核版本大于3.0,推荐3.8以上的内核:</p>
+<pre><code>$ sudo rpm -ivh http://elrepo.org/linux/kernel/el6/x86_64/RPMS/kernel-lt-3.10.101-1.el6.elrepo.x86_64.rpm
+</code></pre>
+          
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/Linux/">Linux</a>
+    </div>
+
+
+      
+      
+        <p class="article-more-link">
+          <a href="/2016/06/30/Linux/2016-06-30-在CenOS6.4下安装Docker/#more">阅读全文 >></a>
+        </p>
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+
+  
     <article id="post-Linux/2016-06-30-ssd优化" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
@@ -585,6 +635,15 @@ $ sudo upgradepkg --install-new slackware64-compat32/*-compat32/*.t?z
       <time datetime="2016-06-29T16:00:00.000Z" itemprop="datePublished">2016-06-30</time>
 </a>
 
+ 
+    <a href="/2016/06/30/Linux/2016-06-30-ssd优化/#comments" title="查看评论">
+        <i class="fa fa-comments-o" aria-hidden="true"></i>
+        <span class="count-comment"></span>
+        
+            <span class="ds-thread-count"  data-thread-key="2016/06/30/Linux/2016-06-30-ssd优化/" ></span>
+        
+        
+    </a>
 
     </div>
   
@@ -649,6 +708,15 @@ $ sudo upgradepkg --install-new slackware64-compat32/*-compat32/*.t?z
       <time datetime="2016-06-29T16:00:00.000Z" itemprop="datePublished">2016-06-30</time>
 </a>
 
+ 
+    <a href="/2016/06/30/Linux/2016-06-30-crontab中PATH的坑/#comments" title="查看评论">
+        <i class="fa fa-comments-o" aria-hidden="true"></i>
+        <span class="count-comment"></span>
+        
+            <span class="ds-thread-count"  data-thread-key="2016/06/30/Linux/2016-06-30-crontab中PATH的坑/" ></span>
+        
+        
+    </a>
 
     </div>
   
@@ -715,6 +783,15 @@ $ sudo upgradepkg --install-new slackware64-compat32/*-compat32/*.t?z
       <time datetime="2016-06-29T16:00:00.000Z" itemprop="datePublished">2016-06-30</time>
 </a>
 
+ 
+    <a href="/2016/06/30/Linux/2016-06-30-部署Docker下打包环境/#comments" title="查看评论">
+        <i class="fa fa-comments-o" aria-hidden="true"></i>
+        <span class="count-comment"></span>
+        
+            <span class="ds-thread-count"  data-thread-key="2016/06/30/Linux/2016-06-30-部署Docker下打包环境/" ></span>
+        
+        
+    </a>
 
     </div>
   
@@ -782,6 +859,15 @@ MAINTAINER panwenhang &quot;panwenhang92@gmail.com&quot;
       <time datetime="2016-06-29T16:00:00.000Z" itemprop="datePublished">2016-06-30</time>
 </a>
 
+ 
+    <a href="/2016/06/30/Linux/2016-06-30-Linux查看硬件信息/#comments" title="查看评论">
+        <i class="fa fa-comments-o" aria-hidden="true"></i>
+        <span class="count-comment"></span>
+        
+            <span class="ds-thread-count"  data-thread-key="2016/06/30/Linux/2016-06-30-Linux查看硬件信息/" ></span>
+        
+        
+    </a>
 
     </div>
   
@@ -839,13 +925,22 @@ MAINTAINER panwenhang &quot;panwenhang92@gmail.com&quot;
 
 
   
-    <article id="post-Linux/2016-06-30-Linux代理设置" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-Linux/2016-06-30-HP机器RAID和2016-06-30-LVM创建" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2016/06/30/Linux/2016-06-30-Linux代理设置/" class="article-date">
+      <a href="/2016/06/30/Linux/2016-06-30-HP机器RAID和2016-06-30-LVM创建/" class="article-date">
       <time datetime="2016-06-29T16:00:00.000Z" itemprop="datePublished">2016-06-30</time>
 </a>
 
+ 
+    <a href="/2016/06/30/Linux/2016-06-30-HP机器RAID和2016-06-30-LVM创建/#comments" title="查看评论">
+        <i class="fa fa-comments-o" aria-hidden="true"></i>
+        <span class="count-comment"></span>
+        
+            <span class="ds-thread-count"  data-thread-key="2016/06/30/Linux/2016-06-30-HP机器RAID和2016-06-30-LVM创建/" ></span>
+        
+        
+    </a>
 
     </div>
   
@@ -858,7 +953,7 @@ MAINTAINER panwenhang &quot;panwenhang92@gmail.com&quot;
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2016/06/30/Linux/2016-06-30-Linux代理设置/">Linux代理设置</a>
+      <a class="article-title" href="/2016/06/30/Linux/2016-06-30-HP机器RAID和2016-06-30-LVM创建/">HP机器RAID和LVM创建</a>
     </h1>
   
 
@@ -868,8 +963,15 @@ MAINTAINER panwenhang &quot;panwenhang92@gmail.com&quot;
     <div class="article-entry" itemprop="articleBody">
       
           
-              <p>由于公司必须通过代理才能上外网,所以搞了下代理的设置</p>
-<h2 id="1-浏览器设置代理"><a href="#1-浏览器设置代理" class="headerlink" title="1. 浏览器设置代理"></a>1. 浏览器设置代理</h2>
+              <h2 id="1-环境"><a href="#1-环境" class="headerlink" title="1.环境"></a>1.环境</h2><pre><code>[root@localhost ~]# uname -a
+Linux localhost.localdomain 2.6.32-220.el6.x86_64 #1 SMP Tue Dec 6 19:48:22 GMT 2011 x86_64 x86_64 x86_64 GNU/Linux
+[root@localhost ~]# cat /etc/issue
+CentOS release 6.7 (Final)
+Kernel \r on an \m
+[root@localhost ~]# dmidecode -t bios
+# dmidecode 2.12
+SMBIOS 2.7 present.
+</code></pre>
           
       
     </div>
@@ -885,7 +987,7 @@ MAINTAINER panwenhang &quot;panwenhang92@gmail.com&quot;
       
       
         <p class="article-more-link">
-          <a href="/2016/06/30/Linux/2016-06-30-Linux代理设置/#more">阅读全文 >></a>
+          <a href="/2016/06/30/Linux/2016-06-30-HP机器RAID和2016-06-30-LVM创建/#more">阅读全文 >></a>
         </p>
       
       <div class="clearfix"></div>
@@ -955,13 +1057,38 @@ MAINTAINER panwenhang &quot;panwenhang92@gmail.com&quot;
                 $("body").css({"background-color": bgColorList[bgColor], "background-size": "cover"});
             }
             else {
-                var backgroundnum = 5;
+                var backgroundnum = 4;
                 var backgroundimg = "url(/background/bg-x.jpg)".replace(/x/gi, Math.ceil(Math.random() * backgroundnum));
                 $("body").css({"background": backgroundimg, "background-attachment": "fixed", "background-size": "cover"});
             }
         })
     </script>
 
+
+    
+        <script>
+            if ($(".left-col").is(":visible")) {
+                var duoshuoQuery = {short_name:"null"};
+                (function() {
+                    var d = document, s = d.createElement('script');
+                    s.src = 'http://static.duoshuo.com/embed.js';
+                    s.async = true; s.charset = 'UTF-8';
+                    (d.head || d.body).appendChild(s);
+                })();
+
+                $(document).ready(function(){
+                    var $duoshuoCount = $(".ds-thread-count");
+                    $duoshuoCount.bind("DOMNodeInserted", function(e) {
+                        var num = $(this).text().replace(/[^0-9]/ig,"");
+                        $(this).siblings(".count-comment").text(num);
+                        $(this).remove();
+                    })
+                })
+            }
+        </script>
+    
+
+     
 
 
 

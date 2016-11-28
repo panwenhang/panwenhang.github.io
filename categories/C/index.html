@@ -68,12 +68,14 @@
         isCategory: true,
         fancybox_js: "//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.js",
         scrollreveal: "//cdn.bootcss.com/scrollReveal.js/3.1.4/scrollreveal.min.js",
-        search: undefined
+        search: true
     }
 </script>
 
 
-    <script> yiliaConfig.jquery_ui = [false]; </script>
+    <script>
+        yiliaConfig.jquery_ui = [true, "//cdn.bootcss.com/jqueryui/1.10.4/jquery-ui.min.js", "//cdn.bootcss.com/jqueryui/1.10.4/css/jquery-ui.min.css"];
+    </script>
 
 
 
@@ -100,6 +102,13 @@
 
         
 
+        
+            <form id="search-form">
+            <input type="text" id="local-search-input" name="q" placeholder="search..." class="search form-control" autocomplete="off" autocorrect="off" searchonload="false" />
+            <i class="fa fa-times" onclick="resetSearch()"></i>
+            </form>
+            <div id="local-search-result"></div>
+            <p class='no-result'>No results found <i class='fa fa-spinner fa-pulse'></i></p>
         
 
 
@@ -161,8 +170,6 @@
                             
                                 <a class="fa GitHub" href="https://github.com/panwenhang" title="GitHub"></a>
                             
-                                <a class="fa RSS" href="/atom.xml" title="RSS"></a>
-                            
                         </ul>
                     </nav>
                 </section>
@@ -182,6 +189,8 @@
                       <a class="main-nav-link switch-friends-link" href="https://hexo.io">Hexo</a>
                     
                       <a class="main-nav-link switch-friends-link" href="https://pages.github.com/">GitHub</a>
+                    
+                      <a class="main-nav-link switch-friends-link" href="http://moxfive.xyz/">MOxFIVE</a>
                     
                     </div>
                 </section>
@@ -229,8 +238,6 @@
                             
                                 <a class="fa GitHub" target="_blank" href="https://github.com/panwenhang" title="GitHub"></a>
                             
-                                <a class="fa RSS" target="_blank" href="/atom.xml" title="RSS"></a>
-                            
                         </ul>
             </nav>
         </header>                
@@ -254,7 +261,7 @@
   <div class="archive-article-inner">
     <header class="archive-article-header">
           <div class="article-meta">
-              <a href="/2016/06/23/C/2016-06-23-C语言side effect和sequence point/" class="archive-article-date">
+              <a href="/2016/06/23/C/2016-06-23-C语言类型转换/" class="archive-article-date">
       <time datetime="2016-06-22T16:00:00.000Z" itemprop="datePublished">06-23</time>
 </a>
 
@@ -263,7 +270,7 @@
          
   
     <h1 itemprop="name">
-      <a class="archive-article-title" href="/2016/06/23/C/2016-06-23-C语言side effect和sequence point/">C语言side effect和sequence point</a>
+      <a class="archive-article-title" href="/2016/06/23/C/2016-06-23-C语言类型转换/">C语言类型转换</a>
     </h1>
   
 
@@ -287,7 +294,7 @@
   <div class="archive-article-inner">
     <header class="archive-article-header">
           <div class="article-meta">
-              <a href="/2016/06/23/C/2016-06-23-C语言类型转换/" class="archive-article-date">
+              <a href="/2016/06/23/C/2016-06-23-C语言side effect和sequence point/" class="archive-article-date">
       <time datetime="2016-06-22T16:00:00.000Z" itemprop="datePublished">06-23</time>
 </a>
 
@@ -296,7 +303,7 @@
          
   
     <h1 itemprop="name">
-      <a class="archive-article-title" href="/2016/06/23/C/2016-06-23-C语言类型转换/">C语言类型转换</a>
+      <a class="archive-article-title" href="/2016/06/23/C/2016-06-23-C语言side effect和sequence point/">C语言side effect和sequence point</a>
     </h1>
   
 
@@ -366,7 +373,7 @@
                 $("body").css({"background-color": bgColorList[bgColor], "background-size": "cover"});
             }
             else {
-                var backgroundnum = 5;
+                var backgroundnum = 4;
                 var backgroundimg = "url(/background/bg-x.jpg)".replace(/x/gi, Math.ceil(Math.random() * backgroundnum));
                 $("body").css({"background": backgroundimg, "background-attachment": "fixed", "background-size": "cover"});
             }

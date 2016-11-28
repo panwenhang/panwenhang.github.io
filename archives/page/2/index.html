@@ -68,12 +68,14 @@
         isCategory: false,
         fancybox_js: "//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.js",
         scrollreveal: "//cdn.bootcss.com/scrollReveal.js/3.1.4/scrollreveal.min.js",
-        search: undefined
+        search: true
     }
 </script>
 
 
-    <script> yiliaConfig.jquery_ui = [false]; </script>
+    <script>
+        yiliaConfig.jquery_ui = [true, "//cdn.bootcss.com/jqueryui/1.10.4/jquery-ui.min.js", "//cdn.bootcss.com/jqueryui/1.10.4/css/jquery-ui.min.css"];
+    </script>
 
 
 
@@ -100,6 +102,13 @@
 
         
 
+        
+            <form id="search-form">
+            <input type="text" id="local-search-input" name="q" placeholder="search..." class="search form-control" autocomplete="off" autocorrect="off" searchonload="false" />
+            <i class="fa fa-times" onclick="resetSearch()"></i>
+            </form>
+            <div id="local-search-result"></div>
+            <p class='no-result'>No results found <i class='fa fa-spinner fa-pulse'></i></p>
         
 
 
@@ -161,8 +170,6 @@
                             
                                 <a class="fa GitHub" href="https://github.com/panwenhang" title="GitHub"></a>
                             
-                                <a class="fa RSS" href="/atom.xml" title="RSS"></a>
-                            
                         </ul>
                     </nav>
                 </section>
@@ -182,6 +189,8 @@
                       <a class="main-nav-link switch-friends-link" href="https://hexo.io">Hexo</a>
                     
                       <a class="main-nav-link switch-friends-link" href="https://pages.github.com/">GitHub</a>
+                    
+                      <a class="main-nav-link switch-friends-link" href="http://moxfive.xyz/">MOxFIVE</a>
                     
                     </div>
                 </section>
@@ -229,8 +238,6 @@
                             
                                 <a class="fa GitHub" target="_blank" href="https://github.com/panwenhang" title="GitHub"></a>
                             
-                                <a class="fa RSS" target="_blank" href="/atom.xml" title="RSS"></a>
-                            
                         </ul>
             </nav>
         </header>                
@@ -254,7 +261,7 @@
   <div class="archive-article-inner">
     <header class="archive-article-header">
           <div class="article-meta">
-              <a href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL备份之pg_basebackup/" class="archive-article-date">
+              <a href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL备份之手工备份/" class="archive-article-date">
       <time datetime="2016-07-04T16:00:00.000Z" itemprop="datePublished">07-05</time>
 </a>
 
@@ -263,7 +270,7 @@
          
   
     <h1 itemprop="name">
-      <a class="archive-article-title" href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL备份之pg_basebackup/">PostgreSQL备份之pg_basebackup</a>
+      <a class="archive-article-title" href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL备份之手工备份/">PostgreSQL备份之手工备份</a>
     </h1>
   
 
@@ -386,39 +393,6 @@
   <div class="archive-article-inner">
     <header class="archive-article-header">
           <div class="article-meta">
-              <a href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL事务特性之嵌套事务/" class="archive-article-date">
-      <time datetime="2016-07-04T16:00:00.000Z" itemprop="datePublished">07-05</time>
-</a>
-
-
-        </div>
-         
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL事务特性之嵌套事务/">PostgreSQL事务特性之嵌套事务</a>
-    </h1>
-  
-
-        <div class="article-info info-on-archive">
-          
-    <div class="article-category tagcloud">
-    <a class="article-category-link" href="/categories/PostgreSQL/">PostgreSQL</a>
-    </div>
-
-
-          
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-          <div class="article-meta">
               <a href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL之网络地址类型/" class="archive-article-date">
       <time datetime="2016-07-04T16:00:00.000Z" itemprop="datePublished">07-05</time>
 </a>
@@ -452,72 +426,6 @@
   <div class="archive-article-inner">
     <header class="archive-article-header">
           <div class="article-meta">
-              <a href="/2016/07/05/PostgreSQL/2016-07-05-Pacemaker+Corosync+2016-07-05-PostgreSQL集群故障测试和解决方案/" class="archive-article-date">
-      <time datetime="2016-07-04T16:00:00.000Z" itemprop="datePublished">07-05</time>
-</a>
-
-
-        </div>
-         
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2016/07/05/PostgreSQL/2016-07-05-Pacemaker+Corosync+2016-07-05-PostgreSQL集群故障测试和解决方案/">Pacemaker+Corosync+PostgreSQL集群故障测试和解决方案</a>
-    </h1>
-  
-
-        <div class="article-info info-on-archive">
-          
-    <div class="article-category tagcloud">
-    <a class="article-category-link" href="/categories/PostgreSQL/">PostgreSQL</a>
-    </div>
-
-
-          
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-          <div class="article-meta">
-              <a href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL之MVCC/" class="archive-article-date">
-      <time datetime="2016-07-04T16:00:00.000Z" itemprop="datePublished">07-05</time>
-</a>
-
-
-        </div>
-         
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL之MVCC/">PostgreSQL之MVCC</a>
-    </h1>
-  
-
-        <div class="article-info info-on-archive">
-          
-    <div class="article-category tagcloud">
-    <a class="article-category-link" href="/categories/PostgreSQL/">PostgreSQL</a>
-    </div>
-
-
-          
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-          <div class="article-meta">
               <a href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL主键膨胀维护/" class="archive-article-date">
       <time datetime="2016-07-04T16:00:00.000Z" itemprop="datePublished">07-05</time>
 </a>
@@ -528,6 +436,105 @@
   
     <h1 itemprop="name">
       <a class="archive-article-title" href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL主键膨胀维护/">PostgreSQL主键膨胀维护</a>
+    </h1>
+  
+
+        <div class="article-info info-on-archive">
+          
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/PostgreSQL/">PostgreSQL</a>
+    </div>
+
+
+          
+        </div>
+        <div class="clearfix"></div>
+    </header>
+  </div>
+</article>
+  
+    
+    
+    <article class="archive-article archive-type-post">
+  <div class="archive-article-inner">
+    <header class="archive-article-header">
+          <div class="article-meta">
+              <a href="/2016/07/05/PostgreSQL/2016-07-05-Pacemaker+Corosync搭建2016-07-05-PostgreSQL集群/" class="archive-article-date">
+      <time datetime="2016-07-04T16:00:00.000Z" itemprop="datePublished">07-05</time>
+</a>
+
+
+        </div>
+         
+  
+    <h1 itemprop="name">
+      <a class="archive-article-title" href="/2016/07/05/PostgreSQL/2016-07-05-Pacemaker+Corosync搭建2016-07-05-PostgreSQL集群/">Pacemaker+Corosync搭建PostgreSQL集群</a>
+    </h1>
+  
+
+        <div class="article-info info-on-archive">
+          
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/PostgreSQL/">PostgreSQL</a>
+    </div>
+
+
+          
+        </div>
+        <div class="clearfix"></div>
+    </header>
+  </div>
+</article>
+  
+    
+    
+    <article class="archive-article archive-type-post">
+  <div class="archive-article-inner">
+    <header class="archive-article-header">
+          <div class="article-meta">
+              <a href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL事务特性之嵌套事务/" class="archive-article-date">
+      <time datetime="2016-07-04T16:00:00.000Z" itemprop="datePublished">07-05</time>
+</a>
+
+
+        </div>
+         
+  
+    <h1 itemprop="name">
+      <a class="archive-article-title" href="/2016/07/05/PostgreSQL/2016-07-05-PostgreSQL事务特性之嵌套事务/">PostgreSQL事务特性之嵌套事务</a>
+    </h1>
+  
+
+        <div class="article-info info-on-archive">
+          
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/PostgreSQL/">PostgreSQL</a>
+    </div>
+
+
+          
+        </div>
+        <div class="clearfix"></div>
+    </header>
+  </div>
+</article>
+  
+    
+    
+    <article class="archive-article archive-type-post">
+  <div class="archive-article-inner">
+    <header class="archive-article-header">
+          <div class="article-meta">
+              <a href="/2016/07/05/PostgreSQL/2016-07-05-Pacemaker+Corosync+2016-07-05-PostgreSQL集群故障测试和解决方案/" class="archive-article-date">
+      <time datetime="2016-07-04T16:00:00.000Z" itemprop="datePublished">07-05</time>
+</a>
+
+
+        </div>
+         
+  
+    <h1 itemprop="name">
+      <a class="archive-article-title" href="/2016/07/05/PostgreSQL/2016-07-05-Pacemaker+Corosync+2016-07-05-PostgreSQL集群故障测试和解决方案/">Pacemaker+Corosync+PostgreSQL集群故障测试和解决方案</a>
     </h1>
   
 
@@ -634,7 +641,7 @@
                 $("body").css({"background-color": bgColorList[bgColor], "background-size": "cover"});
             }
             else {
-                var backgroundnum = 5;
+                var backgroundnum = 4;
                 var backgroundimg = "url(/background/bg-x.jpg)".replace(/x/gi, Math.ceil(Math.random() * backgroundnum));
                 $("body").css({"background": backgroundimg, "background-attachment": "fixed", "background-size": "cover"});
             }
