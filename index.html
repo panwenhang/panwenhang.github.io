@@ -255,10 +255,10 @@
 </nav>
       <div class="body-wrap">
   
-    <article id="post-PostgreSQL-2016-07-05-BDR0-9-0版本测试" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-PostgreSQL-2016-07-05-PostgreSQL之MVCC" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2016/07/05/PostgreSQL-2016-07-05-BDR0-9-0版本测试/" class="article-date">
+      <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL之MVCC/" class="article-date">
       <time datetime="2016-07-04T16:00:00.000Z" itemprop="datePublished">2016-07-05</time>
 </a>
 
@@ -274,7 +274,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2016/07/05/PostgreSQL-2016-07-05-BDR0-9-0版本测试/">BDR0.9.0版本测试</a>
+      <a class="article-title" href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL之MVCC/">PostgreSQL之MVCC</a>
     </h1>
   
 
@@ -284,7 +284,7 @@
     <div class="article-entry" itemprop="articleBody">
       
           
-              <h2 id="1-安装"><a href="#1-安装" class="headerlink" title="1. 安装"></a>1. 安装</h2><p>参考bdr官方文档<a href="bdr-project.org/docs/stable/installation.html">Chapter 3. Installation</a></p>
+              <p>  Postgre数据库的很大的卖点之一就是它处理并发的方式。我们的期望很简单:读永远不阻塞写,反之亦然。Postgres通过一个叫做 多版本并发控制(MVCC) 的机制做到了这一点。这个技术并不是Postgres所特有的:还有好几种数据库都实现了不同形式的MVCC,包括 Oracle、Berkeley DB、CouchDB 等等 。当你使用PostgreSQL来设计高并发的应用时,理解它的MVCC是怎么实现的很重要。它事实上是复杂问题的一种非常优雅和简单的解法。</p>
           
       
     </div>
@@ -299,12 +299,12 @@
 
       
     <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/BDR/">BDR</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PostgreSQL/">PostgreSQL</a></li></ul>
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/MVCC/">MVCC</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PostgreSQL/">PostgreSQL</a></li></ul>
     </div>
 
       
         <p class="article-more-link">
-          <a href="/2016/07/05/PostgreSQL-2016-07-05-BDR0-9-0版本测试/#more">阅读全文 >></a>
+          <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL之MVCC/#more">阅读全文 >></a>
         </p>
       
       <div class="clearfix"></div>
@@ -702,72 +702,6 @@ postgres=# select version();
 
 
   
-    <article id="post-PostgreSQL-2016-07-05-PostgreSQL日志换行处理" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL日志换行处理/" class="article-date">
-      <time datetime="2016-07-04T16:00:00.000Z" itemprop="datePublished">2016-07-05</time>
-</a>
-
-
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL日志换行处理/">PostgreSQL日志换行处理</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-          
-        <a id="more"></a>
-<h2 id="PostgreSQL日志Line-Break处理"><a href="#PostgreSQL日志Line-Break处理" class="headerlink" title="PostgreSQL日志Line Break处理"></a>PostgreSQL日志Line Break处理</h2><pre><code>$ cat logfile | awk &apos;{if ($0 !~  &quot;^[\t]&quot;) printf(&quot;\n%s&quot; ,$0); else printf $0}&apos;
-$ cat logfile | perl -e &apos;while(&lt;&gt;){ if($_ !~ /^\t/ig) { chomp; print &quot;\n&quot;,$_;} else {chomp; print;}}&apos;
-</code></pre>
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-    <div class="article-category tagcloud">
-    <a class="article-category-link" href="/categories/PostgreSQL/">PostgreSQL</a>
-    </div>
-
-
-      
-    <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PostgreSQL/">PostgreSQL</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/日志/">日志</a></li></ul>
-    </div>
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-
-
-  
     <article id="post-PostgreSQL-2016-07-05-PostgreSQL日志使用rsyslog" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
@@ -820,6 +754,72 @@ $ cat logfile | perl -e &apos;while(&lt;&gt;){ if($_ !~ /^\t/ig) { chomp; print 
         <p class="article-more-link">
           <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL日志使用rsyslog/#more">阅读全文 >></a>
         </p>
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+
+  
+    <article id="post-PostgreSQL-2016-07-05-PostgreSQL日志换行处理" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL日志换行处理/" class="article-date">
+      <time datetime="2016-07-04T16:00:00.000Z" itemprop="datePublished">2016-07-05</time>
+</a>
+
+
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL日志换行处理/">PostgreSQL日志换行处理</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        <a id="more"></a>
+<h2 id="PostgreSQL日志Line-Break处理"><a href="#PostgreSQL日志Line-Break处理" class="headerlink" title="PostgreSQL日志Line Break处理"></a>PostgreSQL日志Line Break处理</h2><pre><code>$ cat logfile | awk &apos;{if ($0 !~  &quot;^[\t]&quot;) printf(&quot;\n%s&quot; ,$0); else printf $0}&apos;
+$ cat logfile | perl -e &apos;while(&lt;&gt;){ if($_ !~ /^\t/ig) { chomp; print &quot;\n&quot;,$_;} else {chomp; print;}}&apos;
+</code></pre>
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/PostgreSQL/">PostgreSQL</a>
+    </div>
+
+
+      
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PostgreSQL/">PostgreSQL</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/日志/">日志</a></li></ul>
+    </div>
+
       
       <div class="clearfix"></div>
     </div>
