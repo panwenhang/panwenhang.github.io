@@ -15,16 +15,46 @@
 
 
 
-<meta name="description" content="PostgreSQL DBA">
+<meta name="description" content="strong a {
+        color: #747474;
+    }
+    .player {
+        text-align: center;
+        margin: .5em auto 0;
+        width: 100%;
+        max-width: 22em;
+    }
+    .player br {
+        displa">
 <meta property="og:type" content="website">
 <meta property="og:title" content="留言板">
 <meta property="og:url" content="http://panwenhang.github.io/about/index.html">
 <meta property="og:site_name" content="panwenhang">
-<meta property="og:description" content="PostgreSQL DBA">
-<meta property="og:updated_time" content="2017-05-26T09:20:29.000Z">
+<meta property="og:description" content="strong a {
+        color: #747474;
+    }
+    .player {
+        text-align: center;
+        margin: .5em auto 0;
+        width: 100%;
+        max-width: 22em;
+    }
+    .player br {
+        displa">
+<meta property="og:updated_time" content="2017-05-26T09:22:34.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="留言板">
-<meta name="twitter:description" content="PostgreSQL DBA">
+<meta name="twitter:description" content="strong a {
+        color: #747474;
+    }
+    .player {
+        text-align: center;
+        margin: .5em auto 0;
+        width: 100%;
+        max-width: 22em;
+    }
+    .player br {
+        displa">
 
 <link rel="apple-touch-icon" href= "/apple-touch-icon.png">
 
@@ -307,7 +337,48 @@
 
 
           
-        <p>PostgreSQL DBA</p>
+        <style type="text/css">
+    strong a {
+        color: #747474;
+    }
+    .player {
+        text-align: center;
+        margin: .5em auto 0;
+        width: 100%;
+        max-width: 22em;
+    }
+    .player br {
+        display: none;
+    }
+    .sign {
+        text-align: right;
+        font-style: italic;
+    }
+    #ds-recent-visitors {
+        margin: 0;
+        padding: 0;
+    }
+    #ds-recent-visitors div img {
+        display: inline-block !important;
+        width: 56px !important;
+        height: 56px !important;
+        border-radius: 50%;
+        border: 1px solid #ddd;
+        padding: 2px;
+        box-shadow: 1px 1px 1px rgba(0,0,0, .15);
+    }
+    .article-entry img:first-child {
+        display: block;
+    }
+    .article-entry span {
+        font-family: Arial;
+    }
+    #ds-hot-posts {
+        display: none;
+    }
+</style>
+
+<hr>
 <div class="player"><br><iframe scrolling="auto" frameborder="no" border="0" marginwidth="0" marginheight="0" width="100%" height="330" src="http://music.163.com/outchain/player?type=0&id=740359681&auto=0&height=430"></iframe><br></div>
 
 <ul class="ds-recent-visitors" data-num-items="30" data-avatar-size="56"></ul>
@@ -353,13 +424,33 @@
 
 
     
-        <section class="youyan" id="comments">
+      <div class="duoshuo" id="comments">
+    <div id="comment-box" ></div>
+    <div class="ds-thread" id="ds-thread" data-thread-key="about/index.html" data-title="留言板" data-url="http://panwenhang.github.io/about/index.html"></div>
     <script>
+        var duoshuoQuery = {short_name:"null"};
         var loadComment = function(){
             var d = document, s = d.createElement('script');
-            s.src = 'http://v2.uyan.cc/code/uyan.js?uid=2134782';
+            s.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+            s.async = true; s.charset = 'UTF-8';
             (d.head || d.body).appendChild(s);
         }
+
+        
+            // Add comment count
+            $(function(){ 
+                var jsonUrl = "http://api.duoshuo.com/threads/counts.jsonp?short_name=null&threads=about/index.html&callback=?";
+                $.getJSON(jsonUrl, function(result){
+                    $.each(result.response, function(i, field){
+                        var value = field.comments;
+                        if (value > 0) {
+                            $(".count-comment").text(value);
+                            return;
+                        }
+                    })
+                })
+            })
+        
     </script>
     
     <aside class="comment-bar">
@@ -387,8 +478,7 @@
         }
     </script>
 
-    <div id="uyan_frame"></div>
-</section>
+</div>
     
 
 
