@@ -535,10 +535,10 @@ fi
 
 
   
-    <article id="post-Linux-2016-06-30-DELL磁盘阵列控制卡（RAID卡）MegaCli常用管理命令汇总" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-Linux-2016-06-30-ssd优化" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2016/06/30/Linux-2016-06-30-DELL磁盘阵列控制卡（RAID卡）MegaCli常用管理命令汇总/" class="article-date">
+      <a href="/2016/06/30/Linux-2016-06-30-ssd优化/" class="article-date">
       <time datetime="2016-06-29T16:00:00.000Z" itemprop="datePublished">2016-06-30</time>
 </a>
 
@@ -554,7 +554,7 @@ fi
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2016/06/30/Linux-2016-06-30-DELL磁盘阵列控制卡（RAID卡）MegaCli常用管理命令汇总/">DELL磁盘阵列控制卡（RAID卡）MegaCli常用管理命令汇总</a>
+      <a class="article-title" href="/2016/06/30/Linux-2016-06-30-ssd优化/">ssd优化</a>
     </h1>
   
 
@@ -564,8 +564,7 @@ fi
     <div class="article-entry" itemprop="articleBody">
       
           
-              <h2 id="准备"><a href="#准备" class="headerlink" title="准备"></a>准备</h2><p>  新版本的 MegaCli-1.01.24-0.i386.rpm （下载地址:<a href="http://www.lsi.com/downloads/Public/MegaRAID%20Common%20Files/8.02.16_MegaCLI.zip">http://www.lsi.com/downloads/Public/MegaRAID%20Common%20Files/8.02.16_MegaCLI.zip</a> ）该包会把程序安装在/opt下,当然也可以自定义安装目录,例如:rpm –relocate /opt/=/usr/sbin/ -i MegaCli-1.01.24-0.i386.rpm （即把安装目录 /opt 替换成 /usr/sbin）。</p>
-<p>(linux文件夹下有个MegaCli文件里面有I386 RPM）</p>
+              <h2 id="1-Linux"><a href="#1-Linux" class="headerlink" title="1. Linux"></a>1. Linux</h2><p>参考: <a href="wiki.archlinux.org/index.php/Fstab#tmpfs">archlinux fstab</a>和<a href="wiki.archlinux.org/index.php/Solid_State_Drives#SSD_Memory_Cell_Clearing">Solid State Drives</a></p>
           
       
     </div>
@@ -580,12 +579,81 @@ fi
 
       
     <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/DELL/">DELL</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/RAID/">RAID</a></li></ul>
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ssd/">ssd</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/优化/">优化</a></li></ul>
     </div>
 
       
         <p class="article-more-link">
-          <a href="/2016/06/30/Linux-2016-06-30-DELL磁盘阵列控制卡（RAID卡）MegaCli常用管理命令汇总/#more">阅读全文 >></a>
+          <a href="/2016/06/30/Linux-2016-06-30-ssd优化/#more">阅读全文 >></a>
+        </p>
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+
+  
+    <article id="post-Linux-2016-06-30-设置虚ip" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2016/06/30/Linux-2016-06-30-设置虚ip/" class="article-date">
+      <time datetime="2016-06-29T16:00:00.000Z" itemprop="datePublished">2016-06-30</time>
+</a>
+
+
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/06/30/Linux-2016-06-30-设置虚ip/">设置虚ip</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+              <h2 id="查看网卡设备"><a href="#查看网卡设备" class="headerlink" title="查看网卡设备"></a>查看网卡设备</h2><pre><code>$ ip a show up
+</code></pre>
+          
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/Linux/">Linux</a>
+    </div>
+
+
+      
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/虚ip/">虚ip</a></li></ul>
+    </div>
+
+      
+        <p class="article-more-link">
+          <a href="/2016/06/30/Linux-2016-06-30-设置虚ip/#more">阅读全文 >></a>
         </p>
       
       <div class="clearfix"></div>
@@ -794,74 +862,6 @@ $ sudo upgradepkg --install-new slackware64-compat32/*-compat32/*.t?z
       
         <p class="article-more-link">
           <a href="/2016/06/30/Linux-2016-06-30-在CenOS6-4下安装Docker/#more">阅读全文 >></a>
-        </p>
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-
-
-  
-    <article id="post-Linux-2016-06-30-ssd优化" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2016/06/30/Linux-2016-06-30-ssd优化/" class="article-date">
-      <time datetime="2016-06-29T16:00:00.000Z" itemprop="datePublished">2016-06-30</time>
-</a>
-
-
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2016/06/30/Linux-2016-06-30-ssd优化/">ssd优化</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-          
-              <h2 id="1-Linux"><a href="#1-Linux" class="headerlink" title="1. Linux"></a>1. Linux</h2><p>参考: <a href="wiki.archlinux.org/index.php/Fstab#tmpfs">archlinux fstab</a>和<a href="wiki.archlinux.org/index.php/Solid_State_Drives#SSD_Memory_Cell_Clearing">Solid State Drives</a></p>
-          
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-    <div class="article-category tagcloud">
-    <a class="article-category-link" href="/categories/Linux/">Linux</a>
-    </div>
-
-
-      
-    <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ssd/">ssd</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/优化/">优化</a></li></ul>
-    </div>
-
-      
-        <p class="article-more-link">
-          <a href="/2016/06/30/Linux-2016-06-30-ssd优化/#more">阅读全文 >></a>
         </p>
       
       <div class="clearfix"></div>
