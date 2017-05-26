@@ -323,10 +323,10 @@
 
 
   
-    <article id="post-PostgreSQL-2016-07-05-BDR0-9-0版本测试" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-PostgreSQL-2016-07-05-PostgreSQL集群故障测试和解决方案之Pacemaker" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2016/07/05/PostgreSQL-2016-07-05-BDR0-9-0版本测试/" class="article-date">
+      <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL集群故障测试和解决方案之Pacemaker/" class="article-date">
       <time datetime="2016-07-04T16:00:00.000Z" itemprop="datePublished">2016-07-05</time>
 </a>
 
@@ -342,7 +342,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2016/07/05/PostgreSQL-2016-07-05-BDR0-9-0版本测试/">BDR0.9.0版本测试</a>
+      <a class="article-title" href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL集群故障测试和解决方案之Pacemaker/">PostgreSQL集群故障测试和解决方案之Pacemaker</a>
     </h1>
   
 
@@ -352,7 +352,19 @@
     <div class="article-entry" itemprop="articleBody">
       
           
-              <h2 id="1-安装"><a href="#1-安装" class="headerlink" title="1. 安装"></a>1. 安装</h2><p>参考bdr官方文档<a href="bdr-project.org/docs/stable/installation.html">Chapter 3. Installation</a></p>
+              <h2 id="1-环境"><a href="#1-环境" class="headerlink" title="1.环境"></a>1.环境</h2><pre><code>$ cat /etc/redhat-release
+CentOS Linux release 7.0.1406 (Core)
+$ uname -a
+Linux zhaopin-5-90 3.10.0-123.el7.x86_64 #1 SMP Mon Jun 30 12:09:22 UTC 2014 x86_64 x86_64 x86_64 GNU/Linux
+$ sudo pcs status
+Cluster name: pgcluster
+WARNING: corosync and pacemaker node names do not match (IPs used in setup?)
+Last updated: Tue Oct 20 11:02:08 2015Last change: Tue Oct 20 10:57:37 2015 by root via crm_attribute on zhaopin-5-92
+Stack: corosync
+Current DC: zhaopin-5-92 (version 1.1.13-a14efad) - partition with quorum
+3 nodes and 5 resources configured
+Online: [ zhaopin-5-90 zhaopin-5-91 zhaopin-5-92 ]
+</code></pre>
           
       
     </div>
@@ -367,12 +379,12 @@
 
       
     <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/BDR/">BDR</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PostgreSQL/">PostgreSQL</a></li></ul>
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Pacemaker/">Pacemaker</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PostgreSQL/">PostgreSQL</a></li></ul>
     </div>
 
       
         <p class="article-more-link">
-          <a href="/2016/07/05/PostgreSQL-2016-07-05-BDR0-9-0版本测试/#more">阅读全文 >></a>
+          <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL集群故障测试和解决方案之Pacemaker/#more">阅读全文 >></a>
         </p>
       
       <div class="clearfix"></div>
