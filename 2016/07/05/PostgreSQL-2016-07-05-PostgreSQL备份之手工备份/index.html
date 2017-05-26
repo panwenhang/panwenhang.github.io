@@ -262,6 +262,15 @@ pg_start_backup第二个参数设置为true的好处是备份开始会执行一�
       <time datetime="2016-07-04T16:00:00.000Z" itemprop="datePublished">2016-07-05</time>
 </a>
 
+ 
+    <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL备份之手工备份/#comments" title="查看评论">
+        <i class="fa fa-comments-o" aria-hidden="true"></i>
+        <span class="count-comment"></span>
+        
+        
+            <span class="disqus-comment-count" data-disqus-identifier="2016/07/05/PostgreSQL-2016-07-05-PostgreSQL备份之手工备份/"></span>
+        
+    </a>
 
     </div>
   
@@ -343,15 +352,15 @@ restore_command=&apos;cp /data/xlog/%f %p&apos;        #wal文件归档的位置
     <nav id="article-nav">
         
             <div id="article-nav-newer" class="article-nav-title">
-                <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL多线程备份与恢复/">
-                    PostgreSQL多线程备份与恢复
+                <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL备份之pg-rman/">
+                    PostgreSQL备份之pg_rman
                 </a>
             </div>
         
         
             <div id="article-nav-older" class="article-nav-title">
-                <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL备份之pg-rman/">
-                    PostgreSQL备份之pg_rman
+                <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL多线程备份与恢复/">
+                    PostgreSQL多线程备份与恢复
                 </a>
             </div>
         
@@ -413,9 +422,21 @@ restore_command=&apos;cp /data/xlog/%f %p&apos;        #wal文件归档的位置
 
 
     
-        <section class="youyan" id="comments">
-    <div id="uyan_frame"></div>
-    <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2134782"></script>
+        <section id="comments">
+    <style> aside.comment-bar { margin: auto 30px; }</style>
+    <div id="disqus_thread"></div>
+    <script>
+        var disqus_config = function(){
+            this.page.url = 'http://panwenhang.github.io/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL备份之手工备份/';
+            this.page.identifier = '2016/07/05/PostgreSQL-2016-07-05-PostgreSQL备份之手工备份/';
+        };
+        var loadComment = function(){
+            var d = document, s = d.createElement('script');
+            s.src = '//null.disqus.com/embed.js';
+            s.setAttribute('data-timestamp', +new Date());
+            (d.head || d.body).appendChild(s);
+        }
+    </script>
     
     <aside class="comment-bar">
         <a href="javascript:void(0);">
@@ -444,6 +465,22 @@ restore_command=&apos;cp /data/xlog/%f %p&apos;        #wal文件归档的位置
 
 </section>
 
+
+    // Add comment count
+    <script id="dsq-count-scr" src="//null.disqus.com/count.js" async></script>
+    <span class="disqus-comment-count" data-disqus-identifier="2016/07/05/PostgreSQL-2016-07-05-PostgreSQL备份之手工备份/"></span>
+    <span class="disqus-comment-count" data-disqus-url="http://panwenhang.github.io/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL备份之手工备份/"></span>
+    <script>
+        $(".disqus-comment-count").hide();
+        var $disqusCount = $(".disqus-comment-count");
+        $disqusCount.bind("DOMNodeInserted", function(e) {
+            $(".count-comment").text(
+                $(this).text().replace(/[^0-9]/ig,"")
+            )
+            DISQUSWIDGETS.getCount({reset: true});
+        })
+    </script>
+
     
 
 
@@ -451,7 +488,7 @@ restore_command=&apos;cp /data/xlog/%f %p&apos;        #wal文件归档的位置
 
     <div class="scroll" id="post-nav-button">
         
-            <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL多线程备份与恢复/" title="上一篇: PostgreSQL多线程备份与恢复">
+            <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL备份之pg-rman/" title="上一篇: PostgreSQL备份之pg_rman">
                 <i class="fa fa-angle-left"></i>
             </a>
         
@@ -459,13 +496,13 @@ restore_command=&apos;cp /data/xlog/%f %p&apos;        #wal文件归档的位置
         <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
 
         
-            <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL备份之pg-rman/" title="下一篇: PostgreSQL备份之pg_rman">
+            <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL多线程备份与恢复/" title="下一篇: PostgreSQL多线程备份与恢复">
                 <i class="fa fa-angle-right"></i>
             </a>
         
     </div>
 
-    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL之MVCC/">PostgreSQL之MVCC</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL集群故障测试和解决方案之Pacemaker/">PostgreSQL集群故障测试和解决方案之Pacemaker</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL集群搭建之Pacemaker/">PostgreSQL集群搭建之Pacemaker</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL表空间的使用/">PostgreSQL表空间的使用</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL查看没有注释的表和字段/">PostgreSQL查看没有注释的表和字段</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL权限管理之创建可更新表的普通用户/">PostgreSQL权限管理之创建可更新表的普通用户</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL日志使用rsyslog/">PostgreSQL日志使用rsyslog</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL日志换行处理/">PostgreSQL日志换行处理</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL恢复到任意时间点/">PostgreSQL恢复到任意时间点</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL多线程备份与恢复/">PostgreSQL多线程备份与恢复</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL备份之手工备份/">PostgreSQL备份之手工备份</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL备份之pg-rman/">PostgreSQL备份之pg_rman</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL备份之pg-basebackup/">PostgreSQL备份之pg_basebackup</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL备份之omniPITR/">PostgreSQL备份之omniPITR</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL同步复制搭建/">PostgreSQL同步复制搭建</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL同步复制故障测试/">PostgreSQL同步复制故障测试</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL-2016-07-05-BDR0-9-0版本测试/">BDR0.9.0版本测试</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL主键膨胀维护/">PostgreSQL主键膨胀维护</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL事务特性之嵌套事务/">PostgreSQL事务特性之嵌套事务</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL之网络地址类型/">PostgreSQL之网络地址类型</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/30/Linux-2016-06-30-Shell脚本-良好的习惯/">Shell脚本-良好的习惯</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/30/Linux-2016-06-30-DELL磁盘阵列控制卡（RAID卡）MegaCli常用管理命令汇总/">DELL磁盘阵列控制卡（RAID卡）MegaCli常用管理命令汇总</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/30/Linux-2016-06-30-设置虚ip/">设置虚ip</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/30/Linux-2016-06-30-格式化大盘/">格式化大盘</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/30/Linux-2016-06-30-在Slackware64中安装rtx/">在Slackware64中安装rtx</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/30/Linux-2016-06-30-在CenOS6-4下安装Docker/">在CenOS6.4下安装Docker</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/30/Linux-2016-06-30-ssd优化/">ssd优化</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/30/Linux-2016-06-30-crontab中PATH的坑/">crontab中PATH的坑</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/30/Linux-2016-06-30-部署Docker下打包环境/">部署Docker下打包环境</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/30/Linux-2016-06-30-Linux查看硬件信息/">Linux查看硬件信息</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/30/Linux-2016-06-30-Linux代理设置/">Linux代理设置</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/30/Linux-2016-06-30-Linux之间ssh免密码登录/">Linux之间ssh免密码登录</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/30/Linux-2016-06-30-Linux中时间同步/">Linux中时间同步</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/30/Linux-2016-06-30-Linux下打包/">Linux下打包</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/30/Linux-2016-06-30-HP机器RAID和LVM创建/">HP机器RAID和LVM创建</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/23/MongoDB-2016-06-23-MongoDB副本集故障测试和解决方案/">MongoDB副本集故障测试和解决方案</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/23/C-2016-06-23-C语言side-effect和sequence-point/">C语言side effect和sequence point</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/23/C-2016-06-23-C语言类型转换/">C语言类型转换</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/23/MongoDB-2016-06-23-Linux下MongoDB安装和配置/">Linux下MongoDB安装和配置</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/23/MongoDB-2016-06-23-MongoDB主从集群/">MongoDB主从集群</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/23/MongoDB-2016-06-23-MongoDB分片搭建/">MongoDB分片搭建</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/23/MongoDB-2016-06-23-MongoDB分片故障测试和解决方案/">MongoDB分片故障测试和解决方案</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/23/Python-2016-06-23-flask环境配置/">flask环境配置</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/23/MongoDB-2016-06-23-MongoDB副本集搭建/">MongoDB副本集搭建</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/23/Python-2016-06-23-多版本python环境/">多版本python环境</a></li></ul>
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL查看没有注释的表和字段/">PostgreSQL查看没有注释的表和字段</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL集群故障测试和解决方案之Pacemaker/">PostgreSQL集群故障测试和解决方案之Pacemaker</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL-2016-07-05-BDR0-9-0版本测试/">BDR0.9.0版本测试</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL之MVCC/">PostgreSQL之MVCC</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL之网络地址类型/">PostgreSQL之网络地址类型</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL事务特性之嵌套事务/">PostgreSQL事务特性之嵌套事务</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL同步复制搭建/">PostgreSQL同步复制搭建</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL备份之omniPITR/">PostgreSQL备份之omniPITR</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL同步复制故障测试/">PostgreSQL同步复制故障测试</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL备份之pg-basebackup/">PostgreSQL备份之pg_basebackup</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL备份之pg-rman/">PostgreSQL备份之pg_rman</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL备份之手工备份/">PostgreSQL备份之手工备份</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL多线程备份与恢复/">PostgreSQL多线程备份与恢复</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL恢复到任意时间点/">PostgreSQL恢复到任意时间点</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL日志使用rsyslog/">PostgreSQL日志使用rsyslog</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL日志换行处理/">PostgreSQL日志换行处理</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL权限管理之创建可更新表的普通用户/">PostgreSQL权限管理之创建可更新表的普通用户</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL主键膨胀维护/">PostgreSQL主键膨胀维护</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL表空间的使用/">PostgreSQL表空间的使用</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL集群搭建之Pacemaker/">PostgreSQL集群搭建之Pacemaker</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/30/Linux-2016-06-30-Shell脚本-良好的习惯/">Shell脚本-良好的习惯</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/30/Linux-2016-06-30-DELL磁盘阵列控制卡（RAID卡）MegaCli常用管理命令汇总/">DELL磁盘阵列控制卡（RAID卡）MegaCli常用管理命令汇总</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/30/Linux-2016-06-30-Linux中时间同步/">Linux中时间同步</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/30/Linux-2016-06-30-Linux下打包/">Linux下打包</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/30/Linux-2016-06-30-Linux之间ssh免密码登录/">Linux之间ssh免密码登录</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/30/Linux-2016-06-30-Linux代理设置/">Linux代理设置</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/30/Linux-2016-06-30-Linux查看硬件信息/">Linux查看硬件信息</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/30/Linux-2016-06-30-HP机器RAID和LVM创建/">HP机器RAID和LVM创建</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/30/Linux-2016-06-30-crontab中PATH的坑/">crontab中PATH的坑</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/30/Linux-2016-06-30-ssd优化/">ssd优化</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/30/Linux-2016-06-30-在CenOS6-4下安装Docker/">在CenOS6.4下安装Docker</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/30/Linux-2016-06-30-在Slackware64中安装rtx/">在Slackware64中安装rtx</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/30/Linux-2016-06-30-部署Docker下打包环境/">部署Docker下打包环境</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/30/Linux-2016-06-30-设置虚ip/">设置虚ip</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/30/Linux-2016-06-30-格式化大盘/">格式化大盘</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/23/C-2016-06-23-C语言类型转换/">C语言类型转换</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/23/Python-2016-06-23-flask环境配置/">flask环境配置</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/23/C-2016-06-23-C语言side-effect和sequence-point/">C语言side effect和sequence point</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/23/Python-2016-06-23-多版本python环境/">多版本python环境</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/23/MongoDB-2016-06-23-Linux下MongoDB安装和配置/">Linux下MongoDB安装和配置</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/23/MongoDB-2016-06-23-MongoDB主从集群/">MongoDB主从集群</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/23/MongoDB-2016-06-23-MongoDB分片搭建/">MongoDB分片搭建</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/23/MongoDB-2016-06-23-MongoDB分片故障测试和解决方案/">MongoDB分片故障测试和解决方案</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/23/MongoDB-2016-06-23-MongoDB副本集搭建/">MongoDB副本集搭建</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/23/MongoDB-2016-06-23-MongoDB副本集故障测试和解决方案/">MongoDB副本集故障测试和解决方案</a></li></ul>
 
 
 

@@ -255,75 +255,6 @@
 </nav>
       <div class="body-wrap">
   
-    <article id="post-PostgreSQL-2016-07-05-PostgreSQL备份之手工备份" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL备份之手工备份/" class="article-date">
-      <time datetime="2016-07-04T16:00:00.000Z" itemprop="datePublished">2016-07-05</time>
-</a>
-
-
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL备份之手工备份/">PostgreSQL备份之手工备份</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-          
-              <h2 id="1-备份"><a href="#1-备份" class="headerlink" title="1. 备份"></a>1. 备份</h2><h3 id="1-需要保证-archive-mode-on-和-archive-command-是有效的"><a href="#1-需要保证-archive-mode-on-和-archive-command-是有效的" class="headerlink" title="(1) 需要保证 archive_mode = on 和 archive_command 是有效的"></a>(1) 需要保证 archive_mode = on 和 archive_command 是有效的</h3><h3 id="2-在-master-节点上连接上数据库并执行"><a href="#2-在-master-节点上连接上数据库并执行" class="headerlink" title="(2) 在 master 节点上连接上数据库并执行"></a>(2) 在 master 节点上连接上数据库并执行</h3><pre><code>SELECT pg_start_backup(&apos;label&apos;, true);
-</code></pre><p>pg_start_backup第二个参数设置为true的好处是备份开始会执行一个检查点,设置为true能尽快的完成检查点,并且能减少备份期间产生的wal文件,但是会对查询有影响,默认设置的checkpoint_completion_target的一半的时间,半夜的备份建议打开</p>
-          
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-    <div class="article-category tagcloud">
-    <a class="article-category-link" href="/categories/PostgreSQL/">PostgreSQL</a>
-    </div>
-
-
-      
-    <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PostgreSQL/">PostgreSQL</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/backup/">backup</a></li></ul>
-    </div>
-
-      
-        <p class="article-more-link">
-          <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL备份之手工备份/#more">阅读全文 >></a>
-        </p>
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-
-
-  
     <article id="post-PostgreSQL-2016-07-05-PostgreSQL备份之pg-rman" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
@@ -331,6 +262,15 @@
       <time datetime="2016-07-04T16:00:00.000Z" itemprop="datePublished">2016-07-05</time>
 </a>
 
+ 
+    <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL备份之pg-rman/#comments" title="查看评论">
+        <i class="fa fa-comments-o" aria-hidden="true"></i>
+        <span class="count-comment"></span>
+        
+        
+            <span class="disqus-comment-count" data-disqus-identifier="2016/07/05/PostgreSQL-2016-07-05-PostgreSQL备份之pg-rman/"></span>
+        
+    </a>
 
     </div>
   
@@ -406,13 +346,22 @@ pg_rman 1.3.1
 
 
   
-    <article id="post-PostgreSQL-2016-07-05-PostgreSQL备份之pg-basebackup" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-PostgreSQL-2016-07-05-PostgreSQL备份之手工备份" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL备份之pg-basebackup/" class="article-date">
+      <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL备份之手工备份/" class="article-date">
       <time datetime="2016-07-04T16:00:00.000Z" itemprop="datePublished">2016-07-05</time>
 </a>
 
+ 
+    <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL备份之手工备份/#comments" title="查看评论">
+        <i class="fa fa-comments-o" aria-hidden="true"></i>
+        <span class="count-comment"></span>
+        
+        
+            <span class="disqus-comment-count" data-disqus-identifier="2016/07/05/PostgreSQL-2016-07-05-PostgreSQL备份之手工备份/"></span>
+        
+    </a>
 
     </div>
   
@@ -425,7 +374,7 @@ pg_rman 1.3.1
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL备份之pg-basebackup/">PostgreSQL备份之pg_basebackup</a>
+      <a class="article-title" href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL备份之手工备份/">PostgreSQL备份之手工备份</a>
     </h1>
   
 
@@ -435,9 +384,8 @@ pg_rman 1.3.1
     <div class="article-entry" itemprop="articleBody">
       
           
-              <h2 id="1-准备"><a href="#1-准备" class="headerlink" title="1.准备"></a>1.准备</h2><p>连接上master节点创建replication用户</p>
-<pre><code># CREATE ROLE replicator with login replication password 123456；
-</code></pre>
+              <h2 id="1-备份"><a href="#1-备份" class="headerlink" title="1. 备份"></a>1. 备份</h2><h3 id="1-需要保证-archive-mode-on-和-archive-command-是有效的"><a href="#1-需要保证-archive-mode-on-和-archive-command-是有效的" class="headerlink" title="(1) 需要保证 archive_mode = on 和 archive_command 是有效的"></a>(1) 需要保证 archive_mode = on 和 archive_command 是有效的</h3><h3 id="2-在-master-节点上连接上数据库并执行"><a href="#2-在-master-节点上连接上数据库并执行" class="headerlink" title="(2) 在 master 节点上连接上数据库并执行"></a>(2) 在 master 节点上连接上数据库并执行</h3><pre><code>SELECT pg_start_backup(&apos;label&apos;, true);
+</code></pre><p>pg_start_backup第二个参数设置为true的好处是备份开始会执行一个检查点,设置为true能尽快的完成检查点,并且能减少备份期间产生的wal文件,但是会对查询有影响,默认设置的checkpoint_completion_target的一半的时间,半夜的备份建议打开</p>
           
       
     </div>
@@ -446,14 +394,18 @@ pg_rman 1.3.1
       
       
     <div class="article-category tagcloud">
-    <a class="article-category-link" href="/categories/PostgreSQL/">PostgreSQL</a><a class="article-category-link" href="/categories/PostgreSQL/backup/">backup</a>
+    <a class="article-category-link" href="/categories/PostgreSQL/">PostgreSQL</a>
     </div>
 
 
       
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PostgreSQL/">PostgreSQL</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/backup/">backup</a></li></ul>
+    </div>
+
       
         <p class="article-more-link">
-          <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL备份之pg-basebackup/#more">阅读全文 >></a>
+          <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL备份之手工备份/#more">阅读全文 >></a>
         </p>
       
       <div class="clearfix"></div>
@@ -472,13 +424,22 @@ pg_rman 1.3.1
 
 
   
-    <article id="post-PostgreSQL-2016-07-05-PostgreSQL备份之omniPITR" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-PostgreSQL-2016-07-05-PostgreSQL多线程备份与恢复" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL备份之omniPITR/" class="article-date">
+      <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL多线程备份与恢复/" class="article-date">
       <time datetime="2016-07-04T16:00:00.000Z" itemprop="datePublished">2016-07-05</time>
 </a>
 
+ 
+    <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL多线程备份与恢复/#comments" title="查看评论">
+        <i class="fa fa-comments-o" aria-hidden="true"></i>
+        <span class="count-comment"></span>
+        
+        
+            <span class="disqus-comment-count" data-disqus-identifier="2016/07/05/PostgreSQL-2016-07-05-PostgreSQL多线程备份与恢复/"></span>
+        
+    </a>
 
     </div>
   
@@ -491,7 +452,7 @@ pg_rman 1.3.1
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL备份之omniPITR/">PostgreSQL备份之omniPITR</a>
+      <a class="article-title" href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL多线程备份与恢复/">PostgreSQL多线程备份与恢复</a>
     </h1>
   
 
@@ -501,78 +462,13 @@ pg_rman 1.3.1
     <div class="article-entry" itemprop="articleBody">
       
           
-              <h2 id="1-准备"><a href="#1-准备" class="headerlink" title="1.准备"></a>1.准备</h2><h3 id="1-安装"><a href="#1-安装" class="headerlink" title="(1) 安装"></a>(1) 安装</h3><p>omnipitr是用perl写的,直接下载下来就可以用了</p>
-<pre><code># git clone https://github.com/omniti-labs/omnipitr.git /opt/omnipitr/
-Initialized empty Git repository in /opt/omnipitr/.git/
-remote: Counting objects: 2627, done.
-remote: Total 2627 (delta 0), reused 0 (delta 0), pack-reused 2627
-Receiving objects: 100% (2627/2627), 742.71 KiB | 28 KiB/s, done.
-Resolving deltas: 100% (1287/1287), done.
-</code></pre>
-          
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-    <div class="article-category tagcloud">
-    <a class="article-category-link" href="/categories/PostgreSQL/">PostgreSQL</a><a class="article-category-link" href="/categories/PostgreSQL/backup/">backup</a>
-    </div>
-
-
-      
-      
-        <p class="article-more-link">
-          <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL备份之omniPITR/#more">阅读全文 >></a>
-        </p>
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-
-
-  
-    <article id="post-PostgreSQL-2016-07-05-PostgreSQL同步复制搭建" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL同步复制搭建/" class="article-date">
-      <time datetime="2016-07-04T16:00:00.000Z" itemprop="datePublished">2016-07-05</time>
-</a>
-
-
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL同步复制搭建/">PostgreSQL同步复制搭建</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-          
-              <h2 id="1-初始化master节点"><a href="#1-初始化master节点" class="headerlink" title="1.初始化master节点"></a>1.初始化master节点</h2><h3 id="1-安装PostgreSQL"><a href="#1-安装PostgreSQL" class="headerlink" title="(1) 安装PostgreSQL"></a>(1) 安装PostgreSQL</h3><h3 id="2-初始化db"><a href="#2-初始化db" class="headerlink" title="(2) 初始化db"></a>(2) 初始化db</h3><pre><code>initdb -D /data/pg940_data
+              <h2 id="1-环境"><a href="#1-环境" class="headerlink" title="1.环境"></a>1.环境</h2><p>CentOS7下8核的cpu,数据库的配置是initdb后默认的:</p>
+<pre><code>$ cat /etc/redhat-release
+CentOS Linux release 7.0.1406 (Core)
+$ uname -a
+Linux zhaopin-2-203 3.10.0-123.el7.x86_64 #1 SMP Mon Jun 30 12:09:22 UTC 2014 x86_64 x86_64 x86_64 GNU/Linux
+$  cat /proc/cpuinfo  | grep processor | wc -l
+8
 </code></pre>
           
       
@@ -588,12 +484,12 @@ Resolving deltas: 100% (1287/1287), done.
 
       
     <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PostgreSQL/">PostgreSQL</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/replication/">replication</a></li></ul>
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PostgreSQL/">PostgreSQL</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/backup/">backup</a></li></ul>
     </div>
 
       
         <p class="article-more-link">
-          <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL同步复制搭建/#more">阅读全文 >></a>
+          <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL多线程备份与恢复/#more">阅读全文 >></a>
         </p>
       
       <div class="clearfix"></div>
@@ -612,13 +508,22 @@ Resolving deltas: 100% (1287/1287), done.
 
 
   
-    <article id="post-PostgreSQL-2016-07-05-PostgreSQL同步复制故障测试" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-PostgreSQL-2016-07-05-PostgreSQL恢复到任意时间点" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL同步复制故障测试/" class="article-date">
+      <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL恢复到任意时间点/" class="article-date">
       <time datetime="2016-07-04T16:00:00.000Z" itemprop="datePublished">2016-07-05</time>
 </a>
 
+ 
+    <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL恢复到任意时间点/#comments" title="查看评论">
+        <i class="fa fa-comments-o" aria-hidden="true"></i>
+        <span class="count-comment"></span>
+        
+        
+            <span class="disqus-comment-count" data-disqus-identifier="2016/07/05/PostgreSQL-2016-07-05-PostgreSQL恢复到任意时间点/"></span>
+        
+    </a>
 
     </div>
   
@@ -631,7 +536,7 @@ Resolving deltas: 100% (1287/1287), done.
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL同步复制故障测试/">PostgreSQL同步复制故障测试</a>
+      <a class="article-title" href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL恢复到任意时间点/">PostgreSQL恢复到任意时间点</a>
     </h1>
   
 
@@ -641,16 +546,85 @@ Resolving deltas: 100% (1287/1287), done.
     <div class="article-entry" itemprop="articleBody">
       
           
-              <h2 id="1-备用同步复制节点down了"><a href="#1-备用同步复制节点down了" class="headerlink" title="1.备用同步复制节点down了"></a>1.备用同步复制节点down了</h2><pre><code>postgres=# select * from pg_stat_replication ;
-  pid  | usesysid | usename  | application_name | client_addr | client_hostname | client_port |         backend_start         | backend_xmin |   state   | sent_location | write_location | fl
-ush_location | replay_location | sync_priority | sync_state
--------+----------+----------+------------------+-------------+-----------------+-------------+-------------------------------+--------------+-----------+---------------+----------------+---
--------------+-----------------+---------------+------------
- 12262 |       10 | postgres | node3            | 172.17.5.47 |                 |       48691 | 2015-09-06 14:44:52.674976+08 |       400592 | streaming | 1/740002E8    | 1/740002E8     | 1/
-740002E8     | 1/740002E8      |             2 | potential
- 12263 |       10 | postgres | node2            | 172.17.5.46 |                 |       35271 | 2015-09-06 14:44:52.677004+08 |       400592 | streaming | 1/740002E8    | 1/740002E8     | 1/
-740002E8     | 1/740002E8      |             1 | sync
-(2 rows)
+              <p>参考: <a href="http://www.postgresql.org/docs/9.4/static/recovery-config.html">Recovery Configuration</a></p>
+<h2 id="1-获取基础备份"><a href="#1-获取基础备份" class="headerlink" title="1. 获取基础备份"></a>1. 获取基础备份</h2><p>  你可以使用 pg_basebackup 或者其他工具获取Postgres的基础备份, 还要有基础备份到恢复时间点之前的 xlog 文件</p>
+          
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/PostgreSQL/">PostgreSQL</a>
+    </div>
+
+
+      
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PostgreSQL/">PostgreSQL</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/recovery/">recovery</a></li></ul>
+    </div>
+
+      
+        <p class="article-more-link">
+          <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL恢复到任意时间点/#more">阅读全文 >></a>
+        </p>
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+
+  
+    <article id="post-PostgreSQL-2016-07-05-PostgreSQL日志使用rsyslog" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL日志使用rsyslog/" class="article-date">
+      <time datetime="2016-07-04T16:00:00.000Z" itemprop="datePublished">2016-07-05</time>
+</a>
+
+ 
+    <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL日志使用rsyslog/#comments" title="查看评论">
+        <i class="fa fa-comments-o" aria-hidden="true"></i>
+        <span class="count-comment"></span>
+        
+        
+            <span class="disqus-comment-count" data-disqus-identifier="2016/07/05/PostgreSQL-2016-07-05-PostgreSQL日志使用rsyslog/"></span>
+        
+    </a>
+
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL日志使用rsyslog/">PostgreSQL日志使用rsyslog</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+              <h2 id="1-服务端"><a href="#1-服务端" class="headerlink" title="1. 服务端"></a>1. 服务端</h2><h3 id="1-安装syslog包"><a href="#1-安装syslog包" class="headerlink" title="(1) 安装syslog包"></a>(1) 安装syslog包</h3><pre><code>$ sudo yum install -y rsyslog
 </code></pre>
           
       
@@ -666,12 +640,12 @@ ush_location | replay_location | sync_priority | sync_state
 
       
     <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PostgreSQL/">PostgreSQL</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/replication/">replication</a></li></ul>
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PostgreSQL/">PostgreSQL</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/syslog/">syslog</a></li></ul>
     </div>
 
       
         <p class="article-more-link">
-          <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL同步复制故障测试/#more">阅读全文 >></a>
+          <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL日志使用rsyslog/#more">阅读全文 >></a>
         </p>
       
       <div class="clearfix"></div>
@@ -690,13 +664,22 @@ ush_location | replay_location | sync_priority | sync_state
 
 
   
-    <article id="post-PostgreSQL-2016-07-05-BDR0-9-0版本测试" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-PostgreSQL-2016-07-05-PostgreSQL日志换行处理" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2016/07/05/PostgreSQL-2016-07-05-BDR0-9-0版本测试/" class="article-date">
+      <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL日志换行处理/" class="article-date">
       <time datetime="2016-07-04T16:00:00.000Z" itemprop="datePublished">2016-07-05</time>
 </a>
 
+ 
+    <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL日志换行处理/#comments" title="查看评论">
+        <i class="fa fa-comments-o" aria-hidden="true"></i>
+        <span class="count-comment"></span>
+        
+        
+            <span class="disqus-comment-count" data-disqus-identifier="2016/07/05/PostgreSQL-2016-07-05-PostgreSQL日志换行处理/"></span>
+        
+    </a>
 
     </div>
   
@@ -709,7 +692,7 @@ ush_location | replay_location | sync_priority | sync_state
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2016/07/05/PostgreSQL-2016-07-05-BDR0-9-0版本测试/">BDR0.9.0版本测试</a>
+      <a class="article-title" href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL日志换行处理/">PostgreSQL日志换行处理</a>
     </h1>
   
 
@@ -719,7 +702,86 @@ ush_location | replay_location | sync_priority | sync_state
     <div class="article-entry" itemprop="articleBody">
       
           
-              <h2 id="1-安装"><a href="#1-安装" class="headerlink" title="1. 安装"></a>1. 安装</h2><p>参考bdr官方文档<a href="bdr-project.org/docs/stable/installation.html">Chapter 3. Installation</a></p>
+        <a id="more"></a>
+<h2 id="PostgreSQL日志Line-Break处理"><a href="#PostgreSQL日志Line-Break处理" class="headerlink" title="PostgreSQL日志Line Break处理"></a>PostgreSQL日志Line Break处理</h2><pre><code>$ cat logfile | awk &apos;{if ($0 !~  &quot;^[\t]&quot;) printf(&quot;\n%s&quot; ,$0); else printf $0}&apos;
+$ cat logfile | perl -e &apos;while(&lt;&gt;){ if($_ !~ /^\t/ig) { chomp; print &quot;\n&quot;,$_;} else {chomp; print;}}&apos;
+</code></pre>
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/PostgreSQL/">PostgreSQL</a>
+    </div>
+
+
+      
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PostgreSQL/">PostgreSQL</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/日志/">日志</a></li></ul>
+    </div>
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+
+  
+    <article id="post-PostgreSQL-2016-07-05-PostgreSQL权限管理之创建可更新表的普通用户" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL权限管理之创建可更新表的普通用户/" class="article-date">
+      <time datetime="2016-07-04T16:00:00.000Z" itemprop="datePublished">2016-07-05</time>
+</a>
+
+ 
+    <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL权限管理之创建可更新表的普通用户/#comments" title="查看评论">
+        <i class="fa fa-comments-o" aria-hidden="true"></i>
+        <span class="count-comment"></span>
+        
+        
+            <span class="disqus-comment-count" data-disqus-identifier="2016/07/05/PostgreSQL-2016-07-05-PostgreSQL权限管理之创建可更新表的普通用户/"></span>
+        
+    </a>
+
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL权限管理之创建可更新表的普通用户/">PostgreSQL权限管理之创建可更新表的普通用户</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+              <h2 id="1-环境"><a href="#1-环境" class="headerlink" title="1.环境"></a>1.环境</h2><pre><code>$ psql -U postgres
+psql (9.4.4)
+Type &quot;help&quot; for help.
+postgres=# select version();
+</code></pre>
           
       
     </div>
@@ -734,12 +796,12 @@ ush_location | replay_location | sync_priority | sync_state
 
       
     <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/BDR/">BDR</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PostgreSQL/">PostgreSQL</a></li></ul>
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PostgreSQL/">PostgreSQL</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/创建用户/">创建用户</a></li></ul>
     </div>
 
       
         <p class="article-more-link">
-          <a href="/2016/07/05/PostgreSQL-2016-07-05-BDR0-9-0版本测试/#more">阅读全文 >></a>
+          <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL权限管理之创建可更新表的普通用户/#more">阅读全文 >></a>
         </p>
       
       <div class="clearfix"></div>
@@ -765,6 +827,15 @@ ush_location | replay_location | sync_priority | sync_state
       <time datetime="2016-07-04T16:00:00.000Z" itemprop="datePublished">2016-07-05</time>
 </a>
 
+ 
+    <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL主键膨胀维护/#comments" title="查看评论">
+        <i class="fa fa-comments-o" aria-hidden="true"></i>
+        <span class="count-comment"></span>
+        
+        
+            <span class="disqus-comment-count" data-disqus-identifier="2016/07/05/PostgreSQL-2016-07-05-PostgreSQL主键膨胀维护/"></span>
+        
+    </a>
 
     </div>
   
@@ -838,13 +909,22 @@ Indexes:
 
 
   
-    <article id="post-PostgreSQL-2016-07-05-PostgreSQL事务特性之嵌套事务" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-PostgreSQL-2016-07-05-PostgreSQL表空间的使用" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL事务特性之嵌套事务/" class="article-date">
+      <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL表空间的使用/" class="article-date">
       <time datetime="2016-07-04T16:00:00.000Z" itemprop="datePublished">2016-07-05</time>
 </a>
 
+ 
+    <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL表空间的使用/#comments" title="查看评论">
+        <i class="fa fa-comments-o" aria-hidden="true"></i>
+        <span class="count-comment"></span>
+        
+        
+            <span class="disqus-comment-count" data-disqus-identifier="2016/07/05/PostgreSQL-2016-07-05-PostgreSQL表空间的使用/"></span>
+        
+    </a>
 
     </div>
   
@@ -857,7 +937,7 @@ Indexes:
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL事务特性之嵌套事务/">PostgreSQL事务特性之嵌套事务</a>
+      <a class="article-title" href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL表空间的使用/">PostgreSQL表空间的使用</a>
     </h1>
   
 
@@ -867,8 +947,8 @@ Indexes:
     <div class="article-entry" itemprop="articleBody">
       
           
-              <p>嵌套事务的实现是基于SAVEPOINT、ROLLBACK TO SAVEPOINT和RELEASE SAVEPOINT的,也就是设置一个保存点,可以回滚到保存点和释放保存点。</p>
-<p>测试表的初始状态如下:</p>
+              <h2 id="1-介绍"><a href="#1-介绍" class="headerlink" title="1. 介绍"></a>1. 介绍</h2><p>表空间的作用就是允许数据库管理员定义一个其他非数据目录的位置存储数据库对象。</p>
+<p>使用场景之一是,如果机器新加了ssd,但是又不够整个实例使用,可以将一些重要和使用频率高的表和索引放到ssd上,提高查询效率</p>
           
       
     </div>
@@ -883,12 +963,12 @@ Indexes:
 
       
     <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PostgreSQL/">PostgreSQL</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/事务/">事务</a></li></ul>
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PostgreSQL/">PostgreSQL</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/tablespace/">tablespace</a></li></ul>
     </div>
 
       
         <p class="article-more-link">
-          <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL事务特性之嵌套事务/#more">阅读全文 >></a>
+          <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL表空间的使用/#more">阅读全文 >></a>
         </p>
       
       <div class="clearfix"></div>
@@ -907,13 +987,22 @@ Indexes:
 
 
   
-    <article id="post-PostgreSQL-2016-07-05-PostgreSQL之网络地址类型" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-PostgreSQL-2016-07-05-PostgreSQL集群搭建之Pacemaker" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL之网络地址类型/" class="article-date">
+      <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL集群搭建之Pacemaker/" class="article-date">
       <time datetime="2016-07-04T16:00:00.000Z" itemprop="datePublished">2016-07-05</time>
 </a>
 
+ 
+    <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL集群搭建之Pacemaker/#comments" title="查看评论">
+        <i class="fa fa-comments-o" aria-hidden="true"></i>
+        <span class="count-comment"></span>
+        
+        
+            <span class="disqus-comment-count" data-disqus-identifier="2016/07/05/PostgreSQL-2016-07-05-PostgreSQL集群搭建之Pacemaker/"></span>
+        
+    </a>
 
     </div>
   
@@ -926,7 +1015,7 @@ Indexes:
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL之网络地址类型/">PostgreSQL之网络地址类型</a>
+      <a class="article-title" href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL集群搭建之Pacemaker/">PostgreSQL集群搭建之Pacemaker</a>
     </h1>
   
 
@@ -936,15 +1025,15 @@ Indexes:
     <div class="article-entry" itemprop="articleBody">
       
           
-              <p>官方文档:<a href="http://www.postgresql.org/docs/9.4/interactive/datatype-net-types.html">http://www.postgresql.org/docs/9.4/interactive/datatype-net-types.html</a></p>
-<h2 id="1-cidr"><a href="#1-cidr" class="headerlink" title="1. cidr"></a>1. cidr</h2><pre><code>postgres=# create table test (id int, name text);
-CREATE TABLE
-postgres=# \d test
-     Table &quot;public.test&quot;
- Column |  Type   | Modifiers
---------+---------+-----------
- id     | integer |
- name   | text    |
+              <h2 id="1-环境"><a href="#1-环境" class="headerlink" title="1.环境"></a>1.环境</h2><pre><code>$ cat /etc/redhat-release
+CentOS Linux release 7.0.1406 (Core)
+$ uname -a
+Linux zhaopin-5-90 3.10.0-123.el7.x86_64 #1 SMP Mon Jun 30 12:09:22 UTC 2014 x86_64 x86_64 x86_64 GNU/Linux
+node1: 172.17.5.90
+node2: 172.17.5.91
+node3: 172.17.5.92
+vip-master: 172.17.5.99
+vip-slave:  172.17.5.98
 </code></pre>
           
       
@@ -960,12 +1049,12 @@ postgres=# \d test
 
       
     <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PostgreSQL/">PostgreSQL</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/地址类型/">地址类型</a></li></ul>
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Pacemaker/">Pacemaker</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PostgreSQL/">PostgreSQL</a></li></ul>
     </div>
 
       
         <p class="article-more-link">
-          <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL之网络地址类型/#more">阅读全文 >></a>
+          <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL集群搭建之Pacemaker/#more">阅读全文 >></a>
         </p>
       
       <div class="clearfix"></div>
@@ -1045,6 +1134,22 @@ postgres=# \d test
 
     
 
+    
+        <script id="dsq-count-scr" src="//null.disqus.com/count.js" async></script>
+        <script>
+            if ($(".left-col").is(":visible")) {
+                var $disqusCount = $(".disqus-comment-count");
+                $disqusCount.bind("DOMNodeInserted", function(e) {
+                    var num = $(this).text().replace(/[^0-9]/ig,"");
+                    if (num > 0) {
+                        $(this).siblings(".count-comment").text(num);
+                    }
+                    $(this).remove();
+                })
+            } else {
+                $(".disqus-comment-count").remove();
+            }
+        </script>
      
 
 

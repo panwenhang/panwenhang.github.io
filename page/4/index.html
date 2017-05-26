@@ -255,13 +255,22 @@
 </nav>
       <div class="body-wrap">
   
-    <article id="post-Linux-2016-06-30-Linux代理设置" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-Linux-2016-06-30-在CenOS6-4下安装Docker" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2016/06/30/Linux-2016-06-30-Linux代理设置/" class="article-date">
+      <a href="/2016/06/30/Linux-2016-06-30-在CenOS6-4下安装Docker/" class="article-date">
       <time datetime="2016-06-29T16:00:00.000Z" itemprop="datePublished">2016-06-30</time>
 </a>
 
+ 
+    <a href="/2016/06/30/Linux-2016-06-30-在CenOS6-4下安装Docker/#comments" title="查看评论">
+        <i class="fa fa-comments-o" aria-hidden="true"></i>
+        <span class="count-comment"></span>
+        
+        
+            <span class="disqus-comment-count" data-disqus-identifier="2016/06/30/Linux-2016-06-30-在CenOS6-4下安装Docker/"></span>
+        
+    </a>
 
     </div>
   
@@ -274,7 +283,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2016/06/30/Linux-2016-06-30-Linux代理设置/">Linux代理设置</a>
+      <a class="article-title" href="/2016/06/30/Linux-2016-06-30-在CenOS6-4下安装Docker/">在CenOS6.4下安装Docker</a>
     </h1>
   
 
@@ -284,80 +293,8 @@
     <div class="article-entry" itemprop="articleBody">
       
           
-              <p>由于公司必须通过代理才能上外网,所以搞了下代理的设置</p>
-<h2 id="1-浏览器设置代理"><a href="#1-浏览器设置代理" class="headerlink" title="1. 浏览器设置代理"></a>1. 浏览器设置代理</h2>
-          
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-    <div class="article-category tagcloud">
-    <a class="article-category-link" href="/categories/Linux/">Linux</a>
-    </div>
-
-
-      
-    <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/proxy/">proxy</a></li></ul>
-    </div>
-
-      
-        <p class="article-more-link">
-          <a href="/2016/06/30/Linux-2016-06-30-Linux代理设置/#more">阅读全文 >></a>
-        </p>
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-
-
-  
-    <article id="post-Linux-2016-06-30-Linux之间ssh免密码登录" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2016/06/30/Linux-2016-06-30-Linux之间ssh免密码登录/" class="article-date">
-      <time datetime="2016-06-29T16:00:00.000Z" itemprop="datePublished">2016-06-30</time>
-</a>
-
-
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2016/06/30/Linux-2016-06-30-Linux之间ssh免密码登录/">Linux之间ssh免密码登录</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-          
-              <h2 id="1-生成公私钥对"><a href="#1-生成公私钥对" class="headerlink" title="1.生成公私钥对"></a>1.生成公私钥对</h2><pre><code>$ ssh-keygen -t rsa -P &apos;&apos;
-Generating public/private rsa key pair.
-Enter file in which to save the key (/root/.ssh/id_rsa):
-Your identification has been saved in /root/.ssh/id_rsa.
-Your public key has been saved in /root/.ssh/id_rsa.pub.
+              <h2 id="1-升级内核版本"><a href="#1-升级内核版本" class="headerlink" title="1.升级内核版本"></a>1.升级内核版本</h2><p>因为CentOS6.4自带内核版本是2.6.32-358.23.2.el6.x86_64,而Docker要求内核版本大于3.0,推荐3.8以上的内核:</p>
+<pre><code>$ sudo rpm -ivh http://elrepo.org/linux/kernel/el6/x86_64/RPMS/kernel-lt-3.10.101-1.el6.elrepo.x86_64.rpm
 </code></pre>
           
       
@@ -373,12 +310,12 @@ Your public key has been saved in /root/.ssh/id_rsa.pub.
 
       
     <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Linux/">Linux</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ssh/">ssh</a></li></ul>
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Docker/">Docker</a></li></ul>
     </div>
 
       
         <p class="article-more-link">
-          <a href="/2016/06/30/Linux-2016-06-30-Linux之间ssh免密码登录/#more">阅读全文 >></a>
+          <a href="/2016/06/30/Linux-2016-06-30-在CenOS6-4下安装Docker/#more">阅读全文 >></a>
         </p>
       
       <div class="clearfix"></div>
@@ -397,13 +334,22 @@ Your public key has been saved in /root/.ssh/id_rsa.pub.
 
 
   
-    <article id="post-Linux-2016-06-30-Linux中时间同步" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-Linux-2016-06-30-在Slackware64中安装rtx" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2016/06/30/Linux-2016-06-30-Linux中时间同步/" class="article-date">
+      <a href="/2016/06/30/Linux-2016-06-30-在Slackware64中安装rtx/" class="article-date">
       <time datetime="2016-06-29T16:00:00.000Z" itemprop="datePublished">2016-06-30</time>
 </a>
 
+ 
+    <a href="/2016/06/30/Linux-2016-06-30-在Slackware64中安装rtx/#comments" title="查看评论">
+        <i class="fa fa-comments-o" aria-hidden="true"></i>
+        <span class="count-comment"></span>
+        
+        
+            <span class="disqus-comment-count" data-disqus-identifier="2016/06/30/Linux-2016-06-30-在Slackware64中安装rtx/"></span>
+        
+    </a>
 
     </div>
   
@@ -416,7 +362,7 @@ Your public key has been saved in /root/.ssh/id_rsa.pub.
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2016/06/30/Linux-2016-06-30-Linux中时间同步/">Linux中时间同步</a>
+      <a class="article-title" href="/2016/06/30/Linux-2016-06-30-在Slackware64中安装rtx/">在Slackware64中安装rtx</a>
     </h1>
   
 
@@ -426,7 +372,88 @@ Your public key has been saved in /root/.ssh/id_rsa.pub.
     <div class="article-entry" itemprop="articleBody">
       
           
-              <h2 id="1-安装ntpdate"><a href="#1-安装ntpdate" class="headerlink" title="1. 安装ntpdate"></a>1. 安装ntpdate</h2><pre><code>$ sudo yum install -y ntpdate
+              <h2 id="1-安装Multilib-of-Alien"><a href="#1-安装Multilib-of-Alien" class="headerlink" title="1. 安装Multilib of Alien"></a>1. 安装Multilib of Alien</h2><p>在slackware64下执行如下命令,下载和安装32位库,安装完后需要重启才能生效,因为修改了lib库:</p>
+<pre><code>$ mkdir multlib
+$ lftp -c &apos;open http://slackware.com/~alien/multilib/; mirror 14.1&apos;
+$ cd 14.1
+$ sudo upgradepkg --reinstall --install-new *.t?z
+$ sudo upgradepkg --install-new slackware64-compat32/*-compat32/*.t?z
+</code></pre>
+          
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/Linux/">Linux</a>
+    </div>
+
+
+      
+      
+        <p class="article-more-link">
+          <a href="/2016/06/30/Linux-2016-06-30-在Slackware64中安装rtx/#more">阅读全文 >></a>
+        </p>
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+
+  
+    <article id="post-Linux-2016-06-30-部署Docker下打包环境" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2016/06/30/Linux-2016-06-30-部署Docker下打包环境/" class="article-date">
+      <time datetime="2016-06-29T16:00:00.000Z" itemprop="datePublished">2016-06-30</time>
+</a>
+
+ 
+    <a href="/2016/06/30/Linux-2016-06-30-部署Docker下打包环境/#comments" title="查看评论">
+        <i class="fa fa-comments-o" aria-hidden="true"></i>
+        <span class="count-comment"></span>
+        
+        
+            <span class="disqus-comment-count" data-disqus-identifier="2016/06/30/Linux-2016-06-30-部署Docker下打包环境/"></span>
+        
+    </a>
+
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/06/30/Linux-2016-06-30-部署Docker下打包环境/">部署Docker下打包环境</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+              <h2 id="1-镜像"><a href="#1-镜像" class="headerlink" title="1. 镜像"></a>1. 镜像</h2><h3 id="1-Dockerfile"><a href="#1-Dockerfile" class="headerlink" title="(1) Dockerfile"></a>(1) Dockerfile</h3><p>由于Docker Client会默认发送Dockerfile同级目录下的所有文件到Dockerdaemon中,所以建议把Dockerfile放在一个空文件夹或者比较小的文件夹中。</p>
+<pre><code>FROM centos:6
+MAINTAINER panwenhang &quot;panwenhang92@gmail.com&quot;
 </code></pre>
           
       
@@ -442,12 +469,12 @@ Your public key has been saved in /root/.ssh/id_rsa.pub.
 
       
     <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ntpdate/">ntpdate</a></li></ul>
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Docker/">Docker</a></li></ul>
     </div>
 
       
         <p class="article-more-link">
-          <a href="/2016/06/30/Linux-2016-06-30-Linux中时间同步/#more">阅读全文 >></a>
+          <a href="/2016/06/30/Linux-2016-06-30-部署Docker下打包环境/#more">阅读全文 >></a>
         </p>
       
       <div class="clearfix"></div>
@@ -466,13 +493,22 @@ Your public key has been saved in /root/.ssh/id_rsa.pub.
 
 
   
-    <article id="post-Linux-2016-06-30-Linux下打包" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-Linux-2016-06-30-设置虚ip" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2016/06/30/Linux-2016-06-30-Linux下打包/" class="article-date">
+      <a href="/2016/06/30/Linux-2016-06-30-设置虚ip/" class="article-date">
       <time datetime="2016-06-29T16:00:00.000Z" itemprop="datePublished">2016-06-30</time>
 </a>
 
+ 
+    <a href="/2016/06/30/Linux-2016-06-30-设置虚ip/#comments" title="查看评论">
+        <i class="fa fa-comments-o" aria-hidden="true"></i>
+        <span class="count-comment"></span>
+        
+        
+            <span class="disqus-comment-count" data-disqus-identifier="2016/06/30/Linux-2016-06-30-设置虚ip/"></span>
+        
+    </a>
 
     </div>
   
@@ -485,7 +521,7 @@ Your public key has been saved in /root/.ssh/id_rsa.pub.
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2016/06/30/Linux-2016-06-30-Linux下打包/">Linux下打包</a>
+      <a class="article-title" href="/2016/06/30/Linux-2016-06-30-设置虚ip/">设置虚ip</a>
     </h1>
   
 
@@ -495,9 +531,7 @@ Your public key has been saved in /root/.ssh/id_rsa.pub.
     <div class="article-entry" itemprop="articleBody">
       
           
-              <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><pre><code>打包是指将源码包编译成rpm包,在centos下通过rpmbuild命令和spec文件来实现。
-相对于源码编译安装的好处是,不需要每次安装都编译一次,那样很慢,对于打好的rpm包,直接试用rpm命令就可以安装。
-相对于一些官方提供的rpm包的优势在于,可以想源码编译一样定制化包的安装,比如修改安装的路径,添加一些自己的配置和文件等。
+              <h2 id="查看网卡设备"><a href="#查看网卡设备" class="headerlink" title="查看网卡设备"></a>查看网卡设备</h2><pre><code>$ ip a show up
 </code></pre>
           
       
@@ -513,12 +547,12 @@ Your public key has been saved in /root/.ssh/id_rsa.pub.
 
       
     <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/rpmbuild/">rpmbuild</a></li></ul>
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/虚ip/">虚ip</a></li></ul>
     </div>
 
       
         <p class="article-more-link">
-          <a href="/2016/06/30/Linux-2016-06-30-Linux下打包/#more">阅读全文 >></a>
+          <a href="/2016/06/30/Linux-2016-06-30-设置虚ip/#more">阅读全文 >></a>
         </p>
       
       <div class="clearfix"></div>
@@ -537,13 +571,22 @@ Your public key has been saved in /root/.ssh/id_rsa.pub.
 
 
   
-    <article id="post-Linux-2016-06-30-HP机器RAID和LVM创建" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-Linux-2016-06-30-格式化大盘" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2016/06/30/Linux-2016-06-30-HP机器RAID和LVM创建/" class="article-date">
+      <a href="/2016/06/30/Linux-2016-06-30-格式化大盘/" class="article-date">
       <time datetime="2016-06-29T16:00:00.000Z" itemprop="datePublished">2016-06-30</time>
 </a>
 
+ 
+    <a href="/2016/06/30/Linux-2016-06-30-格式化大盘/#comments" title="查看评论">
+        <i class="fa fa-comments-o" aria-hidden="true"></i>
+        <span class="count-comment"></span>
+        
+        
+            <span class="disqus-comment-count" data-disqus-identifier="2016/06/30/Linux-2016-06-30-格式化大盘/"></span>
+        
+    </a>
 
     </div>
   
@@ -556,7 +599,7 @@ Your public key has been saved in /root/.ssh/id_rsa.pub.
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2016/06/30/Linux-2016-06-30-HP机器RAID和LVM创建/">HP机器RAID和LVM创建</a>
+      <a class="article-title" href="/2016/06/30/Linux-2016-06-30-格式化大盘/">格式化大盘</a>
     </h1>
   
 
@@ -566,15 +609,7 @@ Your public key has been saved in /root/.ssh/id_rsa.pub.
     <div class="article-entry" itemprop="articleBody">
       
           
-              <h2 id="1-环境"><a href="#1-环境" class="headerlink" title="1.环境"></a>1.环境</h2><pre><code>[root@localhost ~]# uname -a
-Linux localhost.localdomain 2.6.32-220.el6.x86_64 #1 SMP Tue Dec 6 19:48:22 GMT 2011 x86_64 x86_64 x86_64 GNU/Linux
-[root@localhost ~]# cat /etc/issue
-CentOS release 6.7 (Final)
-Kernel \r on an \m
-[root@localhost ~]# dmidecode -t bios
-# dmidecode 2.12
-SMBIOS 2.7 present.
-</code></pre>
+              <h2 id="设置分区为-GPT"><a href="#设置分区为-GPT" class="headerlink" title="设置分区为 GPT"></a>设置分区为 <a href="https://en.wikipedia.org/wiki/GUID_Partition_Table">GPT</a></h2><p>因为<a href="https://en.wikipedia.org/wiki/Master_boot_record">MBR</a>限制单盘的最大地址存储空间为2TB</p>
           
       
     </div>
@@ -589,155 +624,12 @@ SMBIOS 2.7 present.
 
       
     <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/HP/">HP</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/LVM/">LVM</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/RAID/">RAID</a></li></ul>
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/gpt/">gpt</a></li></ul>
     </div>
 
       
         <p class="article-more-link">
-          <a href="/2016/06/30/Linux-2016-06-30-HP机器RAID和LVM创建/#more">阅读全文 >></a>
-        </p>
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-
-
-  
-    <article id="post-MongoDB-2016-06-23-MongoDB副本集故障测试和解决方案" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2016/06/23/MongoDB-2016-06-23-MongoDB副本集故障测试和解决方案/" class="article-date">
-      <time datetime="2016-06-22T16:00:00.000Z" itemprop="datePublished">2016-06-23</time>
-</a>
-
-
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2016/06/23/MongoDB-2016-06-23-MongoDB副本集故障测试和解决方案/">MongoDB副本集故障测试和解决方案</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-          
-              <h2 id="1-环境"><a href="#1-环境" class="headerlink" title="1. 环境"></a>1. 环境</h2><pre><code>$ cat /etc/redhat-release
-CentOS Linux release 7.0.1406 (Core)
-$ uname -a
-Linux zhaopin-2-201 3.10.0-123.el7.x86_64 #1 SMP Mon Jun 30 12:09:22 UTC 2014 x86_64 x86_64 x86_64 GNU/Linux
-$ mongo
-MongoDB shell version: 3.0.6
-connecting to: test
-</code></pre>
-          
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-    <div class="article-category tagcloud">
-    <a class="article-category-link" href="/categories/MongoDB/">MongoDB</a>
-    </div>
-
-
-      
-    <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/MongoDB/">MongoDB</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/副本集/">副本集</a></li></ul>
-    </div>
-
-      
-        <p class="article-more-link">
-          <a href="/2016/06/23/MongoDB-2016-06-23-MongoDB副本集故障测试和解决方案/#more">阅读全文 >></a>
-        </p>
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-
-
-  
-    <article id="post-C-2016-06-23-C语言side-effect和sequence-point" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2016/06/23/C-2016-06-23-C语言side-effect和sequence-point/" class="article-date">
-      <time datetime="2016-06-22T16:00:00.000Z" itemprop="datePublished">2016-06-23</time>
-</a>
-
-
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2016/06/23/C-2016-06-23-C语言side-effect和sequence-point/">C语言side effect和sequence point</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-          
-              <p>  C 语言中副作用 ( side effect ) : 是指对数据对象或者文件的修改。例如,语句 var = 99 ; 的副作用是把 var 的值修改成 99 。对表达式求值也可能产生副作用,例如,对表达式求 se = 100;<br>求值所产生的副作用就是 se 的值被修改成 100。<br>  序列点 ( sequence point ) : 是指程序运行中的一个特殊的时间点,在该点之前的所有副作用已经结束,并且后续的副作用还没发生。C 语句结束标志——分号 ( ; ) 是序列点。标准规定,在两个序列点之间,一个对象所保存的值最多只能被修改一次。</p>
-          
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-    <div class="article-category tagcloud">
-    <a class="article-category-link" href="/categories/C/">C</a>
-    </div>
-
-
-      
-    <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/side-effect/">side effect</a></li></ul>
-    </div>
-
-      
-        <p class="article-more-link">
-          <a href="/2016/06/23/C-2016-06-23-C语言side-effect和sequence-point/#more">阅读全文 >></a>
+          <a href="/2016/06/30/Linux-2016-06-30-格式化大盘/#more">阅读全文 >></a>
         </p>
       
       <div class="clearfix"></div>
@@ -763,6 +655,15 @@ connecting to: test
       <time datetime="2016-06-22T16:00:00.000Z" itemprop="datePublished">2016-06-23</time>
 </a>
 
+ 
+    <a href="/2016/06/23/C-2016-06-23-C语言类型转换/#comments" title="查看评论">
+        <i class="fa fa-comments-o" aria-hidden="true"></i>
+        <span class="count-comment"></span>
+        
+        
+            <span class="disqus-comment-count" data-disqus-identifier="2016/06/23/C-2016-06-23-C语言类型转换/"></span>
+        
+    </a>
 
     </div>
   
@@ -824,6 +725,256 @@ connecting to: test
 
 
   
+    <article id="post-Python-2016-06-23-flask环境配置" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2016/06/23/Python-2016-06-23-flask环境配置/" class="article-date">
+      <time datetime="2016-06-22T16:00:00.000Z" itemprop="datePublished">2016-06-23</time>
+</a>
+
+ 
+    <a href="/2016/06/23/Python-2016-06-23-flask环境配置/#comments" title="查看评论">
+        <i class="fa fa-comments-o" aria-hidden="true"></i>
+        <span class="count-comment"></span>
+        
+        
+            <span class="disqus-comment-count" data-disqus-identifier="2016/06/23/Python-2016-06-23-flask环境配置/"></span>
+        
+    </a>
+
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/06/23/Python-2016-06-23-flask环境配置/">flask环境配置</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+              <h2 id="1-安装-Flask"><a href="#1-安装-Flask" class="headerlink" title="1. 安装 Flask"></a>1. 安装 Flask</h2><p>参考: <a href="http://flask.pocoo.org/docs/0.10/installation/">Flask Installation</a></p>
+<pre><code>$ git clone http://github.com/mitsuhiko/flask.git
+$ cd flask
+$ python setup.py develop
+$ pip list
+    click (4.0)
+    Flask (0.11.dev0, /home/xxx/flask)
+    itsdangerous (0.24)
+    pip (7.1.0)
+    setuptools (18.0.1)
+    wheel (0.24.0)
+</code></pre>
+          
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/Python/">Python</a>
+    </div>
+
+
+      
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/flask/">flask</a></li></ul>
+    </div>
+
+      
+        <p class="article-more-link">
+          <a href="/2016/06/23/Python-2016-06-23-flask环境配置/#more">阅读全文 >></a>
+        </p>
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+
+  
+    <article id="post-C-2016-06-23-C语言side-effect和sequence-point" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2016/06/23/C-2016-06-23-C语言side-effect和sequence-point/" class="article-date">
+      <time datetime="2016-06-22T16:00:00.000Z" itemprop="datePublished">2016-06-23</time>
+</a>
+
+ 
+    <a href="/2016/06/23/C-2016-06-23-C语言side-effect和sequence-point/#comments" title="查看评论">
+        <i class="fa fa-comments-o" aria-hidden="true"></i>
+        <span class="count-comment"></span>
+        
+        
+            <span class="disqus-comment-count" data-disqus-identifier="2016/06/23/C-2016-06-23-C语言side-effect和sequence-point/"></span>
+        
+    </a>
+
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/06/23/C-2016-06-23-C语言side-effect和sequence-point/">C语言side effect和sequence point</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+              <p>  C 语言中副作用 ( side effect ) : 是指对数据对象或者文件的修改。例如,语句 var = 99 ; 的副作用是把 var 的值修改成 99 。对表达式求值也可能产生副作用,例如,对表达式求 se = 100;<br>求值所产生的副作用就是 se 的值被修改成 100。<br>  序列点 ( sequence point ) : 是指程序运行中的一个特殊的时间点,在该点之前的所有副作用已经结束,并且后续的副作用还没发生。C 语句结束标志——分号 ( ; ) 是序列点。标准规定,在两个序列点之间,一个对象所保存的值最多只能被修改一次。</p>
+          
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/C/">C</a>
+    </div>
+
+
+      
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/side-effect/">side effect</a></li></ul>
+    </div>
+
+      
+        <p class="article-more-link">
+          <a href="/2016/06/23/C-2016-06-23-C语言side-effect和sequence-point/#more">阅读全文 >></a>
+        </p>
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+
+  
+    <article id="post-Python-2016-06-23-多版本python环境" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2016/06/23/Python-2016-06-23-多版本python环境/" class="article-date">
+      <time datetime="2016-06-22T16:00:00.000Z" itemprop="datePublished">2016-06-23</time>
+</a>
+
+ 
+    <a href="/2016/06/23/Python-2016-06-23-多版本python环境/#comments" title="查看评论">
+        <i class="fa fa-comments-o" aria-hidden="true"></i>
+        <span class="count-comment"></span>
+        
+        
+            <span class="disqus-comment-count" data-disqus-identifier="2016/06/23/Python-2016-06-23-多版本python环境/"></span>
+        
+    </a>
+
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/06/23/Python-2016-06-23-多版本python环境/">多版本python环境</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+              <h2 id="1-安装-pyenv"><a href="#1-安装-pyenv" class="headerlink" title="1. 安装 pyenv"></a>1. 安装 pyenv</h2><p>参考:<a href="https://github.com/yyuu/pyenv-installer">https://github.com/yyuu/pyenv-installer</a></p>
+<pre><code>$ curl -L https://raw.githubusercontent.com/yyuu/pyenv-installer/master/bin/pyenv-installer | bash
+$ vim .bash_profile
+    export PATH=&quot;$HOME/.pyenv/bin:$PATH&quot;
+    eval &quot;$(pyenv init -)&quot;
+    eval &quot;$(pyenv virtualenv-init -)&quot;
+$ source .bash_profile
+$ pyenv update
+</code></pre>
+          
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/Python/">Python</a>
+    </div>
+
+
+      
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/pyenv/">pyenv</a></li></ul>
+    </div>
+
+      
+        <p class="article-more-link">
+          <a href="/2016/06/23/Python-2016-06-23-多版本python环境/#more">阅读全文 >></a>
+        </p>
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+
+  
     <article id="post-MongoDB-2016-06-23-Linux下MongoDB安装和配置" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
@@ -831,6 +982,15 @@ connecting to: test
       <time datetime="2016-06-22T16:00:00.000Z" itemprop="datePublished">2016-06-23</time>
 </a>
 
+ 
+    <a href="/2016/06/23/MongoDB-2016-06-23-Linux下MongoDB安装和配置/#comments" title="查看评论">
+        <i class="fa fa-comments-o" aria-hidden="true"></i>
+        <span class="count-comment"></span>
+        
+        
+            <span class="disqus-comment-count" data-disqus-identifier="2016/06/23/MongoDB-2016-06-23-Linux下MongoDB安装和配置/"></span>
+        
+    </a>
 
     </div>
   
@@ -878,80 +1038,6 @@ Linux zhaopin-2-201 3.10.0-123.el7.x86_64 #1 SMP Mon Jun 30 12:09:22 UTC 2014 x8
       
         <p class="article-more-link">
           <a href="/2016/06/23/MongoDB-2016-06-23-Linux下MongoDB安装和配置/#more">阅读全文 >></a>
-        </p>
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-
-
-  
-    <article id="post-MongoDB-2016-06-23-MongoDB主从集群" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2016/06/23/MongoDB-2016-06-23-MongoDB主从集群/" class="article-date">
-      <time datetime="2016-06-22T16:00:00.000Z" itemprop="datePublished">2016-06-23</time>
-</a>
-
-
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2016/06/23/MongoDB-2016-06-23-MongoDB主从集群/">MongoDB主从集群</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-          
-              <h2 id="1-环境"><a href="#1-环境" class="headerlink" title="1. 环境"></a>1. 环境</h2><pre><code>$ cat /etc/redhat-release
-CentOS Linux release 7.0.1406 (Core)
-$ uname -a
-Linux zhaopin-2-201 3.10.0-123.el7.x86_64 #1 SMP Mon Jun 30 12:09:22 UTC 2014 x86_64 x86_64 x86_64 GNU/Linux
-$ mongo --version
-MongoDB shell version: 3.0.6
-</code></pre>
-          
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-    <div class="article-category tagcloud">
-    <a class="article-category-link" href="/categories/MongoDB/">MongoDB</a>
-    </div>
-
-
-      
-    <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Cluster/">Cluster</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/MongoDB/">MongoDB</a></li></ul>
-    </div>
-
-      
-        <p class="article-more-link">
-          <a href="/2016/06/23/MongoDB-2016-06-23-MongoDB主从集群/#more">阅读全文 >></a>
         </p>
       
       <div class="clearfix"></div>
@@ -1031,6 +1117,22 @@ MongoDB shell version: 3.0.6
 
     
 
+    
+        <script id="dsq-count-scr" src="//null.disqus.com/count.js" async></script>
+        <script>
+            if ($(".left-col").is(":visible")) {
+                var $disqusCount = $(".disqus-comment-count");
+                $disqusCount.bind("DOMNodeInserted", function(e) {
+                    var num = $(this).text().replace(/[^0-9]/ig,"");
+                    if (num > 0) {
+                        $(this).siblings(".count-comment").text(num);
+                    }
+                    $(this).remove();
+                })
+            } else {
+                $(".disqus-comment-count").remove();
+            }
+        </script>
      
 
 

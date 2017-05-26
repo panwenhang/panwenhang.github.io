@@ -255,6 +255,89 @@
 </nav>
       <div class="body-wrap">
   
+    <article id="post-MongoDB-2016-06-23-MongoDB主从集群" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2016/06/23/MongoDB-2016-06-23-MongoDB主从集群/" class="article-date">
+      <time datetime="2016-06-22T16:00:00.000Z" itemprop="datePublished">2016-06-23</time>
+</a>
+
+ 
+    <a href="/2016/06/23/MongoDB-2016-06-23-MongoDB主从集群/#comments" title="查看评论">
+        <i class="fa fa-comments-o" aria-hidden="true"></i>
+        <span class="count-comment"></span>
+        
+        
+            <span class="disqus-comment-count" data-disqus-identifier="2016/06/23/MongoDB-2016-06-23-MongoDB主从集群/"></span>
+        
+    </a>
+
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/06/23/MongoDB-2016-06-23-MongoDB主从集群/">MongoDB主从集群</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+              <h2 id="1-环境"><a href="#1-环境" class="headerlink" title="1. 环境"></a>1. 环境</h2><pre><code>$ cat /etc/redhat-release
+CentOS Linux release 7.0.1406 (Core)
+$ uname -a
+Linux zhaopin-2-201 3.10.0-123.el7.x86_64 #1 SMP Mon Jun 30 12:09:22 UTC 2014 x86_64 x86_64 x86_64 GNU/Linux
+$ mongo --version
+MongoDB shell version: 3.0.6
+</code></pre>
+          
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/MongoDB/">MongoDB</a>
+    </div>
+
+
+      
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Cluster/">Cluster</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/MongoDB/">MongoDB</a></li></ul>
+    </div>
+
+      
+        <p class="article-more-link">
+          <a href="/2016/06/23/MongoDB-2016-06-23-MongoDB主从集群/#more">阅读全文 >></a>
+        </p>
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+
+  
     <article id="post-MongoDB-2016-06-23-MongoDB分片搭建" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
@@ -262,6 +345,15 @@
       <time datetime="2016-06-22T16:00:00.000Z" itemprop="datePublished">2016-06-23</time>
 </a>
 
+ 
+    <a href="/2016/06/23/MongoDB-2016-06-23-MongoDB分片搭建/#comments" title="查看评论">
+        <i class="fa fa-comments-o" aria-hidden="true"></i>
+        <span class="count-comment"></span>
+        
+        
+            <span class="disqus-comment-count" data-disqus-identifier="2016/06/23/MongoDB-2016-06-23-MongoDB分片搭建/"></span>
+        
+    </a>
 
     </div>
   
@@ -334,6 +426,15 @@ Linux zhaopin-2-201 3.10.0-123.el7.x86_64 #1 SMP Mon Jun 30 12:09:22 UTC 2014 x8
       <time datetime="2016-06-22T16:00:00.000Z" itemprop="datePublished">2016-06-23</time>
 </a>
 
+ 
+    <a href="/2016/06/23/MongoDB-2016-06-23-MongoDB分片故障测试和解决方案/#comments" title="查看评论">
+        <i class="fa fa-comments-o" aria-hidden="true"></i>
+        <span class="count-comment"></span>
+        
+        
+            <span class="disqus-comment-count" data-disqus-identifier="2016/06/23/MongoDB-2016-06-23-MongoDB分片故障测试和解决方案/"></span>
+        
+    </a>
 
     </div>
   
@@ -401,85 +502,6 @@ MongoDB shell version: 3.0.6
 
 
   
-    <article id="post-Python-2016-06-23-flask环境配置" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2016/06/23/Python-2016-06-23-flask环境配置/" class="article-date">
-      <time datetime="2016-06-22T16:00:00.000Z" itemprop="datePublished">2016-06-23</time>
-</a>
-
-
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2016/06/23/Python-2016-06-23-flask环境配置/">flask环境配置</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-          
-              <h2 id="1-安装-Flask"><a href="#1-安装-Flask" class="headerlink" title="1. 安装 Flask"></a>1. 安装 Flask</h2><p>参考: <a href="http://flask.pocoo.org/docs/0.10/installation/">Flask Installation</a></p>
-<pre><code>$ git clone http://github.com/mitsuhiko/flask.git
-$ cd flask
-$ python setup.py develop
-$ pip list
-    click (4.0)
-    Flask (0.11.dev0, /home/xxx/flask)
-    itsdangerous (0.24)
-    pip (7.1.0)
-    setuptools (18.0.1)
-    wheel (0.24.0)
-</code></pre>
-          
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-    <div class="article-category tagcloud">
-    <a class="article-category-link" href="/categories/Python/">Python</a>
-    </div>
-
-
-      
-    <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/flask/">flask</a></li></ul>
-    </div>
-
-      
-        <p class="article-more-link">
-          <a href="/2016/06/23/Python-2016-06-23-flask环境配置/#more">阅读全文 >></a>
-        </p>
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-
-
-  
     <article id="post-MongoDB-2016-06-23-MongoDB副本集搭建" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
@@ -487,6 +509,15 @@ $ pip list
       <time datetime="2016-06-22T16:00:00.000Z" itemprop="datePublished">2016-06-23</time>
 </a>
 
+ 
+    <a href="/2016/06/23/MongoDB-2016-06-23-MongoDB副本集搭建/#comments" title="查看评论">
+        <i class="fa fa-comments-o" aria-hidden="true"></i>
+        <span class="count-comment"></span>
+        
+        
+            <span class="disqus-comment-count" data-disqus-identifier="2016/06/23/MongoDB-2016-06-23-MongoDB副本集搭建/"></span>
+        
+    </a>
 
     </div>
   
@@ -554,13 +585,22 @@ MongoDB shell version: 3.0.6
 
 
   
-    <article id="post-Python-2016-06-23-多版本python环境" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-MongoDB-2016-06-23-MongoDB副本集故障测试和解决方案" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2016/06/23/Python-2016-06-23-多版本python环境/" class="article-date">
+      <a href="/2016/06/23/MongoDB-2016-06-23-MongoDB副本集故障测试和解决方案/" class="article-date">
       <time datetime="2016-06-22T16:00:00.000Z" itemprop="datePublished">2016-06-23</time>
 </a>
 
+ 
+    <a href="/2016/06/23/MongoDB-2016-06-23-MongoDB副本集故障测试和解决方案/#comments" title="查看评论">
+        <i class="fa fa-comments-o" aria-hidden="true"></i>
+        <span class="count-comment"></span>
+        
+        
+            <span class="disqus-comment-count" data-disqus-identifier="2016/06/23/MongoDB-2016-06-23-MongoDB副本集故障测试和解决方案/"></span>
+        
+    </a>
 
     </div>
   
@@ -573,7 +613,7 @@ MongoDB shell version: 3.0.6
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2016/06/23/Python-2016-06-23-多版本python环境/">多版本python环境</a>
+      <a class="article-title" href="/2016/06/23/MongoDB-2016-06-23-MongoDB副本集故障测试和解决方案/">MongoDB副本集故障测试和解决方案</a>
     </h1>
   
 
@@ -583,14 +623,13 @@ MongoDB shell version: 3.0.6
     <div class="article-entry" itemprop="articleBody">
       
           
-              <h2 id="1-安装-pyenv"><a href="#1-安装-pyenv" class="headerlink" title="1. 安装 pyenv"></a>1. 安装 pyenv</h2><p>参考:<a href="https://github.com/yyuu/pyenv-installer">https://github.com/yyuu/pyenv-installer</a></p>
-<pre><code>$ curl -L https://raw.githubusercontent.com/yyuu/pyenv-installer/master/bin/pyenv-installer | bash
-$ vim .bash_profile
-    export PATH=&quot;$HOME/.pyenv/bin:$PATH&quot;
-    eval &quot;$(pyenv init -)&quot;
-    eval &quot;$(pyenv virtualenv-init -)&quot;
-$ source .bash_profile
-$ pyenv update
+              <h2 id="1-环境"><a href="#1-环境" class="headerlink" title="1. 环境"></a>1. 环境</h2><pre><code>$ cat /etc/redhat-release
+CentOS Linux release 7.0.1406 (Core)
+$ uname -a
+Linux zhaopin-2-201 3.10.0-123.el7.x86_64 #1 SMP Mon Jun 30 12:09:22 UTC 2014 x86_64 x86_64 x86_64 GNU/Linux
+$ mongo
+MongoDB shell version: 3.0.6
+connecting to: test
 </code></pre>
           
       
@@ -600,18 +639,18 @@ $ pyenv update
       
       
     <div class="article-category tagcloud">
-    <a class="article-category-link" href="/categories/Python/">Python</a>
+    <a class="article-category-link" href="/categories/MongoDB/">MongoDB</a>
     </div>
 
 
       
     <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/pyenv/">pyenv</a></li></ul>
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/MongoDB/">MongoDB</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/副本集/">副本集</a></li></ul>
     </div>
 
       
         <p class="article-more-link">
-          <a href="/2016/06/23/Python-2016-06-23-多版本python环境/#more">阅读全文 >></a>
+          <a href="/2016/06/23/MongoDB-2016-06-23-MongoDB副本集故障测试和解决方案/#more">阅读全文 >></a>
         </p>
       
       <div class="clearfix"></div>
@@ -691,6 +730,22 @@ $ pyenv update
 
     
 
+    
+        <script id="dsq-count-scr" src="//null.disqus.com/count.js" async></script>
+        <script>
+            if ($(".left-col").is(":visible")) {
+                var $disqusCount = $(".disqus-comment-count");
+                $disqusCount.bind("DOMNodeInserted", function(e) {
+                    var num = $(this).text().replace(/[^0-9]/ig,"");
+                    if (num > 0) {
+                        $(this).siblings(".count-comment").text(num);
+                    }
+                    $(this).remove();
+                })
+            } else {
+                $(".disqus-comment-count").remove();
+            }
+        </script>
      
 
 
