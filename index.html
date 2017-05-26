@@ -267,8 +267,8 @@
         <i class="fa fa-comments-o" aria-hidden="true"></i>
         <span class="count-comment"></span>
         
-            <span class="ds-thread-count"  data-thread-key="2016/07/05/PostgreSQL-2016-07-05-PostgreSQL之MVCC/" ></span>
         
+            <span class="disqus-comment-count" data-disqus-identifier="2016/07/05/PostgreSQL-2016-07-05-PostgreSQL之MVCC/"></span>
         
     </a>
 
@@ -344,8 +344,8 @@
         <i class="fa fa-comments-o" aria-hidden="true"></i>
         <span class="count-comment"></span>
         
-            <span class="ds-thread-count"  data-thread-key="2016/07/05/PostgreSQL-2016-07-05-PostgreSQL集群故障测试和解决方案之Pacemaker/" ></span>
         
+            <span class="disqus-comment-count" data-disqus-identifier="2016/07/05/PostgreSQL-2016-07-05-PostgreSQL集群故障测试和解决方案之Pacemaker/"></span>
         
     </a>
 
@@ -421,20 +421,20 @@ Online: [ zhaopin-5-90 zhaopin-5-91 zhaopin-5-92 ]
 
 
   
-    <article id="post-PostgreSQL-2016-07-05-PostgreSQL表空间的使用" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-PostgreSQL-2016-07-05-PostgreSQL集群搭建之Pacemaker" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL表空间的使用/" class="article-date">
+      <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL集群搭建之Pacemaker/" class="article-date">
       <time datetime="2016-07-04T16:00:00.000Z" itemprop="datePublished">2016-07-05</time>
 </a>
 
  
-    <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL表空间的使用/#comments" title="查看评论">
+    <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL集群搭建之Pacemaker/#comments" title="查看评论">
         <i class="fa fa-comments-o" aria-hidden="true"></i>
         <span class="count-comment"></span>
         
-            <span class="ds-thread-count"  data-thread-key="2016/07/05/PostgreSQL-2016-07-05-PostgreSQL表空间的使用/" ></span>
         
+            <span class="disqus-comment-count" data-disqus-identifier="2016/07/05/PostgreSQL-2016-07-05-PostgreSQL集群搭建之Pacemaker/"></span>
         
     </a>
 
@@ -449,7 +449,7 @@ Online: [ zhaopin-5-90 zhaopin-5-91 zhaopin-5-92 ]
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL表空间的使用/">PostgreSQL表空间的使用</a>
+      <a class="article-title" href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL集群搭建之Pacemaker/">PostgreSQL集群搭建之Pacemaker</a>
     </h1>
   
 
@@ -459,8 +459,16 @@ Online: [ zhaopin-5-90 zhaopin-5-91 zhaopin-5-92 ]
     <div class="article-entry" itemprop="articleBody">
       
           
-              <h2 id="1-介绍"><a href="#1-介绍" class="headerlink" title="1. 介绍"></a>1. 介绍</h2><p>表空间的作用就是允许数据库管理员定义一个其他非数据目录的位置存储数据库对象。</p>
-<p>使用场景之一是,如果机器新加了ssd,但是又不够整个实例使用,可以将一些重要和使用频率高的表和索引放到ssd上,提高查询效率</p>
+              <h2 id="1-环境"><a href="#1-环境" class="headerlink" title="1.环境"></a>1.环境</h2><pre><code>$ cat /etc/redhat-release
+CentOS Linux release 7.0.1406 (Core)
+$ uname -a
+Linux zhaopin-5-90 3.10.0-123.el7.x86_64 #1 SMP Mon Jun 30 12:09:22 UTC 2014 x86_64 x86_64 x86_64 GNU/Linux
+node1: 172.17.5.90
+node2: 172.17.5.91
+node3: 172.17.5.92
+vip-master: 172.17.5.99
+vip-slave:  172.17.5.98
+</code></pre>
           
       
     </div>
@@ -475,12 +483,12 @@ Online: [ zhaopin-5-90 zhaopin-5-91 zhaopin-5-92 ]
 
       
     <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PostgreSQL/">PostgreSQL</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/tablespace/">tablespace</a></li></ul>
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Pacemaker/">Pacemaker</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PostgreSQL/">PostgreSQL</a></li></ul>
     </div>
 
       
         <p class="article-more-link">
-          <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL表空间的使用/#more">阅读全文 >></a>
+          <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL集群搭建之Pacemaker/#more">阅读全文 >></a>
         </p>
       
       <div class="clearfix"></div>
@@ -511,8 +519,8 @@ Online: [ zhaopin-5-90 zhaopin-5-91 zhaopin-5-92 ]
         <i class="fa fa-comments-o" aria-hidden="true"></i>
         <span class="count-comment"></span>
         
-            <span class="ds-thread-count"  data-thread-key="2016/07/05/PostgreSQL-2016-07-05-PostgreSQL查看没有注释的表和字段/" ></span>
         
+            <span class="disqus-comment-count" data-disqus-identifier="2016/07/05/PostgreSQL-2016-07-05-PostgreSQL查看没有注释的表和字段/"></span>
         
     </a>
 
@@ -589,6 +597,84 @@ ORDER BY 1,2;
 
 
   
+    <article id="post-PostgreSQL-2016-07-05-PostgreSQL表空间的使用" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL表空间的使用/" class="article-date">
+      <time datetime="2016-07-04T16:00:00.000Z" itemprop="datePublished">2016-07-05</time>
+</a>
+
+ 
+    <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL表空间的使用/#comments" title="查看评论">
+        <i class="fa fa-comments-o" aria-hidden="true"></i>
+        <span class="count-comment"></span>
+        
+        
+            <span class="disqus-comment-count" data-disqus-identifier="2016/07/05/PostgreSQL-2016-07-05-PostgreSQL表空间的使用/"></span>
+        
+    </a>
+
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL表空间的使用/">PostgreSQL表空间的使用</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+              <h2 id="1-介绍"><a href="#1-介绍" class="headerlink" title="1. 介绍"></a>1. 介绍</h2><p>表空间的作用就是允许数据库管理员定义一个其他非数据目录的位置存储数据库对象。</p>
+<p>使用场景之一是,如果机器新加了ssd,但是又不够整个实例使用,可以将一些重要和使用频率高的表和索引放到ssd上,提高查询效率</p>
+          
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/PostgreSQL/">PostgreSQL</a>
+    </div>
+
+
+      
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PostgreSQL/">PostgreSQL</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/tablespace/">tablespace</a></li></ul>
+    </div>
+
+      
+        <p class="article-more-link">
+          <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL表空间的使用/#more">阅读全文 >></a>
+        </p>
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+
+  
     <article id="post-PostgreSQL-2016-07-05-PostgreSQL权限管理之创建可更新表的普通用户" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
@@ -601,8 +687,8 @@ ORDER BY 1,2;
         <i class="fa fa-comments-o" aria-hidden="true"></i>
         <span class="count-comment"></span>
         
-            <span class="ds-thread-count"  data-thread-key="2016/07/05/PostgreSQL-2016-07-05-PostgreSQL权限管理之创建可更新表的普通用户/" ></span>
         
+            <span class="disqus-comment-count" data-disqus-identifier="2016/07/05/PostgreSQL-2016-07-05-PostgreSQL权限管理之创建可更新表的普通用户/"></span>
         
     </a>
 
@@ -682,8 +768,8 @@ postgres=# select version();
         <i class="fa fa-comments-o" aria-hidden="true"></i>
         <span class="count-comment"></span>
         
-            <span class="ds-thread-count"  data-thread-key="2016/07/05/PostgreSQL-2016-07-05-PostgreSQL日志换行处理/" ></span>
         
+            <span class="disqus-comment-count" data-disqus-identifier="2016/07/05/PostgreSQL-2016-07-05-PostgreSQL日志换行处理/"></span>
         
     </a>
 
@@ -757,8 +843,8 @@ $ cat logfile | perl -e &apos;while(&lt;&gt;){ if($_ !~ /^\t/ig) { chomp; print 
         <i class="fa fa-comments-o" aria-hidden="true"></i>
         <span class="count-comment"></span>
         
-            <span class="ds-thread-count"  data-thread-key="2016/07/05/PostgreSQL-2016-07-05-PostgreSQL日志使用rsyslog/" ></span>
         
+            <span class="disqus-comment-count" data-disqus-identifier="2016/07/05/PostgreSQL-2016-07-05-PostgreSQL日志使用rsyslog/"></span>
         
     </a>
 
@@ -835,8 +921,8 @@ $ cat logfile | perl -e &apos;while(&lt;&gt;){ if($_ !~ /^\t/ig) { chomp; print 
         <i class="fa fa-comments-o" aria-hidden="true"></i>
         <span class="count-comment"></span>
         
-            <span class="ds-thread-count"  data-thread-key="2016/07/05/PostgreSQL-2016-07-05-PostgreSQL恢复到任意时间点/" ></span>
         
+            <span class="disqus-comment-count" data-disqus-identifier="2016/07/05/PostgreSQL-2016-07-05-PostgreSQL恢复到任意时间点/"></span>
         
     </a>
 
@@ -901,20 +987,20 @@ $ cat logfile | perl -e &apos;while(&lt;&gt;){ if($_ !~ /^\t/ig) { chomp; print 
 
 
   
-    <article id="post-PostgreSQL-2016-07-05-PostgreSQL主键膨胀维护" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-PostgreSQL-2016-07-05-PostgreSQL多线程备份与恢复" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL主键膨胀维护/" class="article-date">
+      <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL多线程备份与恢复/" class="article-date">
       <time datetime="2016-07-04T16:00:00.000Z" itemprop="datePublished">2016-07-05</time>
 </a>
 
  
-    <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL主键膨胀维护/#comments" title="查看评论">
+    <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL多线程备份与恢复/#comments" title="查看评论">
         <i class="fa fa-comments-o" aria-hidden="true"></i>
         <span class="count-comment"></span>
         
-            <span class="ds-thread-count"  data-thread-key="2016/07/05/PostgreSQL-2016-07-05-PostgreSQL主键膨胀维护/" ></span>
         
+            <span class="disqus-comment-count" data-disqus-identifier="2016/07/05/PostgreSQL-2016-07-05-PostgreSQL多线程备份与恢复/"></span>
         
     </a>
 
@@ -929,7 +1015,7 @@ $ cat logfile | perl -e &apos;while(&lt;&gt;){ if($_ !~ /^\t/ig) { chomp; print 
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL主键膨胀维护/">PostgreSQL主键膨胀维护</a>
+      <a class="article-title" href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL多线程备份与恢复/">PostgreSQL多线程备份与恢复</a>
     </h1>
   
 
@@ -939,18 +1025,13 @@ $ cat logfile | perl -e &apos;while(&lt;&gt;){ if($_ !~ /^\t/ig) { chomp; print 
     <div class="article-entry" itemprop="articleBody">
       
           
-              <h2 id="1-维护前"><a href="#1-维护前" class="headerlink" title="1. 维护前"></a>1. 维护前</h2><pre><code>postgres=# \d+ test
-                                                        Table
-&quot;public.test&quot;
-  Column |            Type             |                     Modifiers
-| Storage | Stats target | Description
---------+-----------------------------+----------------------------------------------------+---------+--------------+-------------
-  id     | integer                     | not null default
-nextval(&apos;test_id_seq&apos;::regclass) | plain   |              |
-  val    | timestamp without time zone | default now()
-| plain   |              |
-Indexes:
-     &quot;test_pkey&quot; PRIMARY KEY, btree (id)
+              <h2 id="1-环境"><a href="#1-环境" class="headerlink" title="1.环境"></a>1.环境</h2><p>CentOS7下8核的cpu,数据库的配置是initdb后默认的:</p>
+<pre><code>$ cat /etc/redhat-release
+CentOS Linux release 7.0.1406 (Core)
+$ uname -a
+Linux zhaopin-2-203 3.10.0-123.el7.x86_64 #1 SMP Mon Jun 30 12:09:22 UTC 2014 x86_64 x86_64 x86_64 GNU/Linux
+$  cat /proc/cpuinfo  | grep processor | wc -l
+8
 </code></pre>
           
       
@@ -966,89 +1047,12 @@ Indexes:
 
       
     <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PostgreSQL/">PostgreSQL</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/膨胀/">膨胀</a></li></ul>
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PostgreSQL/">PostgreSQL</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/backup/">backup</a></li></ul>
     </div>
 
       
         <p class="article-more-link">
-          <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL主键膨胀维护/#more">阅读全文 >></a>
-        </p>
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-
-
-  
-    <article id="post-PostgreSQL-2016-07-05-BDR0-9-0版本测试" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2016/07/05/PostgreSQL-2016-07-05-BDR0-9-0版本测试/" class="article-date">
-      <time datetime="2016-07-04T16:00:00.000Z" itemprop="datePublished">2016-07-05</time>
-</a>
-
- 
-    <a href="/2016/07/05/PostgreSQL-2016-07-05-BDR0-9-0版本测试/#comments" title="查看评论">
-        <i class="fa fa-comments-o" aria-hidden="true"></i>
-        <span class="count-comment"></span>
-        
-            <span class="ds-thread-count"  data-thread-key="2016/07/05/PostgreSQL-2016-07-05-BDR0-9-0版本测试/" ></span>
-        
-        
-    </a>
-
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2016/07/05/PostgreSQL-2016-07-05-BDR0-9-0版本测试/">BDR0.9.0版本测试</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-          
-              <h2 id="1-安装"><a href="#1-安装" class="headerlink" title="1. 安装"></a>1. 安装</h2><p>参考bdr官方文档<a href="bdr-project.org/docs/stable/installation.html">Chapter 3. Installation</a></p>
-          
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-    <div class="article-category tagcloud">
-    <a class="article-category-link" href="/categories/PostgreSQL/">PostgreSQL</a>
-    </div>
-
-
-      
-    <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/BDR/">BDR</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PostgreSQL/">PostgreSQL</a></li></ul>
-    </div>
-
-      
-        <p class="article-more-link">
-          <a href="/2016/07/05/PostgreSQL-2016-07-05-BDR0-9-0版本测试/#more">阅读全文 >></a>
+          <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL多线程备份与恢复/#more">阅读全文 >></a>
         </p>
       
       <div class="clearfix"></div>
@@ -1127,28 +1131,23 @@ Indexes:
 
 
     
+
+    
+        <script id="dsq-count-scr" src="//null.disqus.com/count.js" async></script>
         <script>
             if ($(".left-col").is(":visible")) {
-                var duoshuoQuery = {short_name:"null"};
-                (function() {
-                    var d = document, s = d.createElement('script');
-                    s.src = 'http://static.duoshuo.com/embed.js';
-                    s.async = true; s.charset = 'UTF-8';
-                    (d.head || d.body).appendChild(s);
-                })();
-
-                $(document).ready(function(){
-                    var $duoshuoCount = $(".ds-thread-count");
-                    $duoshuoCount.bind("DOMNodeInserted", function(e) {
-                        var num = $(this).text().replace(/[^0-9]/ig,"");
+                var $disqusCount = $(".disqus-comment-count");
+                $disqusCount.bind("DOMNodeInserted", function(e) {
+                    var num = $(this).text().replace(/[^0-9]/ig,"");
+                    if (num > 0) {
                         $(this).siblings(".count-comment").text(num);
-                        $(this).remove();
-                    })
+                    }
+                    $(this).remove();
                 })
+            } else {
+                $(".disqus-comment-count").remove();
             }
         </script>
-    
-
      
 
 
