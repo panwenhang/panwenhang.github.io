@@ -255,6 +255,561 @@
 </nav>
       <div class="body-wrap">
   
+    <article id="post-Linux-2016-06-30-DELL磁盘阵列控制卡（RAID卡）MegaCli常用管理命令汇总" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2016/06/30/Linux-2016-06-30-DELL磁盘阵列控制卡（RAID卡）MegaCli常用管理命令汇总/" class="article-date">
+      <time datetime="2016-06-29T16:00:00.000Z" itemprop="datePublished">2016-06-30</time>
+</a>
+
+
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/06/30/Linux-2016-06-30-DELL磁盘阵列控制卡（RAID卡）MegaCli常用管理命令汇总/">DELL磁盘阵列控制卡（RAID卡）MegaCli常用管理命令汇总</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+              <h2 id="准备"><a href="#准备" class="headerlink" title="准备"></a>准备</h2><p>  新版本的 MegaCli-1.01.24-0.i386.rpm （下载地址:<a href="http://www.lsi.com/downloads/Public/MegaRAID%20Common%20Files/8.02.16_MegaCLI.zip">http://www.lsi.com/downloads/Public/MegaRAID%20Common%20Files/8.02.16_MegaCLI.zip</a> ）该包会把程序安装在/opt下,当然也可以自定义安装目录,例如:rpm –relocate /opt/=/usr/sbin/ -i MegaCli-1.01.24-0.i386.rpm （即把安装目录 /opt 替换成 /usr/sbin）。</p>
+<p>(linux文件夹下有个MegaCli文件里面有I386 RPM）</p>
+          
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/Linux/">Linux</a>
+    </div>
+
+
+      
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/DELL/">DELL</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/RAID/">RAID</a></li></ul>
+    </div>
+
+      
+        <p class="article-more-link">
+          <a href="/2016/06/30/Linux-2016-06-30-DELL磁盘阵列控制卡（RAID卡）MegaCli常用管理命令汇总/#more">阅读全文 >></a>
+        </p>
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+
+  
+    <article id="post-Linux-2016-06-30-设置虚ip" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2016/06/30/Linux-2016-06-30-设置虚ip/" class="article-date">
+      <time datetime="2016-06-29T16:00:00.000Z" itemprop="datePublished">2016-06-30</time>
+</a>
+
+
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/06/30/Linux-2016-06-30-设置虚ip/">设置虚ip</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+              <h2 id="查看网卡设备"><a href="#查看网卡设备" class="headerlink" title="查看网卡设备"></a>查看网卡设备</h2><pre><code>$ ip a show up
+</code></pre>
+          
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/Linux/">Linux</a>
+    </div>
+
+
+      
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/虚ip/">虚ip</a></li></ul>
+    </div>
+
+      
+        <p class="article-more-link">
+          <a href="/2016/06/30/Linux-2016-06-30-设置虚ip/#more">阅读全文 >></a>
+        </p>
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+
+  
+    <article id="post-Linux-2016-06-30-格式化大盘" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2016/06/30/Linux-2016-06-30-格式化大盘/" class="article-date">
+      <time datetime="2016-06-29T16:00:00.000Z" itemprop="datePublished">2016-06-30</time>
+</a>
+
+
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/06/30/Linux-2016-06-30-格式化大盘/">格式化大盘</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+              <h2 id="设置分区为-GPT"><a href="#设置分区为-GPT" class="headerlink" title="设置分区为 GPT"></a>设置分区为 <a href="https://en.wikipedia.org/wiki/GUID_Partition_Table">GPT</a></h2><p>因为<a href="https://en.wikipedia.org/wiki/Master_boot_record">MBR</a>限制单盘的最大地址存储空间为2TB</p>
+          
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/Linux/">Linux</a>
+    </div>
+
+
+      
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/gpt/">gpt</a></li></ul>
+    </div>
+
+      
+        <p class="article-more-link">
+          <a href="/2016/06/30/Linux-2016-06-30-格式化大盘/#more">阅读全文 >></a>
+        </p>
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+
+  
+    <article id="post-Linux-2016-06-30-在Slackware64中安装rtx" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2016/06/30/Linux-2016-06-30-在Slackware64中安装rtx/" class="article-date">
+      <time datetime="2016-06-29T16:00:00.000Z" itemprop="datePublished">2016-06-30</time>
+</a>
+
+
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/06/30/Linux-2016-06-30-在Slackware64中安装rtx/">在Slackware64中安装rtx</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+              <h2 id="1-安装Multilib-of-Alien"><a href="#1-安装Multilib-of-Alien" class="headerlink" title="1. 安装Multilib of Alien"></a>1. 安装Multilib of Alien</h2><p>在slackware64下执行如下命令,下载和安装32位库,安装完后需要重启才能生效,因为修改了lib库:</p>
+<pre><code>$ mkdir multlib
+$ lftp -c &apos;open http://slackware.com/~alien/multilib/; mirror 14.1&apos;
+$ cd 14.1
+$ sudo upgradepkg --reinstall --install-new *.t?z
+$ sudo upgradepkg --install-new slackware64-compat32/*-compat32/*.t?z
+</code></pre>
+          
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/Linux/">Linux</a>
+    </div>
+
+
+      
+      
+        <p class="article-more-link">
+          <a href="/2016/06/30/Linux-2016-06-30-在Slackware64中安装rtx/#more">阅读全文 >></a>
+        </p>
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+
+  
+    <article id="post-Linux-2016-06-30-在CenOS6-4下安装Docker" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2016/06/30/Linux-2016-06-30-在CenOS6-4下安装Docker/" class="article-date">
+      <time datetime="2016-06-29T16:00:00.000Z" itemprop="datePublished">2016-06-30</time>
+</a>
+
+
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/06/30/Linux-2016-06-30-在CenOS6-4下安装Docker/">在CenOS6.4下安装Docker</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+              <h2 id="1-升级内核版本"><a href="#1-升级内核版本" class="headerlink" title="1.升级内核版本"></a>1.升级内核版本</h2><p>因为CentOS6.4自带内核版本是2.6.32-358.23.2.el6.x86_64,而Docker要求内核版本大于3.0,推荐3.8以上的内核:</p>
+<pre><code>$ sudo rpm -ivh http://elrepo.org/linux/kernel/el6/x86_64/RPMS/kernel-lt-3.10.101-1.el6.elrepo.x86_64.rpm
+</code></pre>
+          
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/Linux/">Linux</a>
+    </div>
+
+
+      
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Docker/">Docker</a></li></ul>
+    </div>
+
+      
+        <p class="article-more-link">
+          <a href="/2016/06/30/Linux-2016-06-30-在CenOS6-4下安装Docker/#more">阅读全文 >></a>
+        </p>
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+
+  
+    <article id="post-Linux-2016-06-30-ssd优化" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2016/06/30/Linux-2016-06-30-ssd优化/" class="article-date">
+      <time datetime="2016-06-29T16:00:00.000Z" itemprop="datePublished">2016-06-30</time>
+</a>
+
+
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/06/30/Linux-2016-06-30-ssd优化/">ssd优化</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+              <h2 id="1-Linux"><a href="#1-Linux" class="headerlink" title="1. Linux"></a>1. Linux</h2><p>参考: <a href="wiki.archlinux.org/index.php/Fstab#tmpfs">archlinux fstab</a>和<a href="wiki.archlinux.org/index.php/Solid_State_Drives#SSD_Memory_Cell_Clearing">Solid State Drives</a></p>
+          
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/Linux/">Linux</a>
+    </div>
+
+
+      
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ssd/">ssd</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/优化/">优化</a></li></ul>
+    </div>
+
+      
+        <p class="article-more-link">
+          <a href="/2016/06/30/Linux-2016-06-30-ssd优化/#more">阅读全文 >></a>
+        </p>
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+
+  
+    <article id="post-Linux-2016-06-30-crontab中PATH的坑" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2016/06/30/Linux-2016-06-30-crontab中PATH的坑/" class="article-date">
+      <time datetime="2016-06-29T16:00:00.000Z" itemprop="datePublished">2016-06-30</time>
+</a>
+
+
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/06/30/Linux-2016-06-30-crontab中PATH的坑/">crontab中PATH的坑</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+              <h2 id="1-现象"><a href="#1-现象" class="headerlink" title="1. 现象"></a>1. 现象</h2><p>在命令行里面能正常运行脚本,在crontab里面报错:</p>
+<p>lsof: No such file or directory</p>
+<p>看报错信息, 应该是找不到lsof这个命令</p>
+          
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/Linux/">Linux</a>
+    </div>
+
+
+      
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/crontab/">crontab</a></li></ul>
+    </div>
+
+      
+        <p class="article-more-link">
+          <a href="/2016/06/30/Linux-2016-06-30-crontab中PATH的坑/#more">阅读全文 >></a>
+        </p>
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+
+  
+    <article id="post-Linux-2016-06-30-部署Docker下打包环境" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2016/06/30/Linux-2016-06-30-部署Docker下打包环境/" class="article-date">
+      <time datetime="2016-06-29T16:00:00.000Z" itemprop="datePublished">2016-06-30</time>
+</a>
+
+
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/06/30/Linux-2016-06-30-部署Docker下打包环境/">部署Docker下打包环境</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+              <h2 id="1-镜像"><a href="#1-镜像" class="headerlink" title="1. 镜像"></a>1. 镜像</h2><h3 id="1-Dockerfile"><a href="#1-Dockerfile" class="headerlink" title="(1) Dockerfile"></a>(1) Dockerfile</h3><p>由于Docker Client会默认发送Dockerfile同级目录下的所有文件到Dockerdaemon中,所以建议把Dockerfile放在一个空文件夹或者比较小的文件夹中。</p>
+<pre><code>FROM centos:6
+MAINTAINER panwenhang &quot;panwenhang92@gmail.com&quot;
+</code></pre>
+          
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/Linux/">Linux</a>
+    </div>
+
+
+      
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Docker/">Docker</a></li></ul>
+    </div>
+
+      
+        <p class="article-more-link">
+          <a href="/2016/06/30/Linux-2016-06-30-部署Docker下打包环境/#more">阅读全文 >></a>
+        </p>
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+
+  
     <article id="post-Linux-2016-06-30-Shell脚本-良好的习惯" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
@@ -262,15 +817,6 @@
       <time datetime="2016-06-29T16:00:00.000Z" itemprop="datePublished">2016-06-30</time>
 </a>
 
- 
-    <a href="/2016/06/30/Linux-2016-06-30-Shell脚本-良好的习惯/#comments" title="查看评论">
-        <i class="fa fa-comments-o" aria-hidden="true"></i>
-        <span class="count-comment"></span>
-        
-        
-            <span class="disqus-comment-count" data-disqus-identifier="2016/06/30/Linux-2016-06-30-Shell脚本-良好的习惯/"></span>
-        
-    </a>
 
     </div>
   
@@ -544,555 +1090,6 @@ fi
 
 
   
-    <article id="post-Linux-2016-06-30-DELL磁盘阵列控制卡（RAID卡）MegaCli常用管理命令汇总" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2016/06/30/Linux-2016-06-30-DELL磁盘阵列控制卡（RAID卡）MegaCli常用管理命令汇总/" class="article-date">
-      <time datetime="2016-06-29T16:00:00.000Z" itemprop="datePublished">2016-06-30</time>
-</a>
-
- 
-    <a href="/2016/06/30/Linux-2016-06-30-DELL磁盘阵列控制卡（RAID卡）MegaCli常用管理命令汇总/#comments" title="查看评论">
-        <i class="fa fa-comments-o" aria-hidden="true"></i>
-        <span class="count-comment"></span>
-        
-        
-            <span class="disqus-comment-count" data-disqus-identifier="2016/06/30/Linux-2016-06-30-DELL磁盘阵列控制卡（RAID卡）MegaCli常用管理命令汇总/"></span>
-        
-    </a>
-
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2016/06/30/Linux-2016-06-30-DELL磁盘阵列控制卡（RAID卡）MegaCli常用管理命令汇总/">DELL磁盘阵列控制卡（RAID卡）MegaCli常用管理命令汇总</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-          
-              <h2 id="准备"><a href="#准备" class="headerlink" title="准备"></a>准备</h2><p>  新版本的 MegaCli-1.01.24-0.i386.rpm （下载地址:<a href="http://www.lsi.com/downloads/Public/MegaRAID%20Common%20Files/8.02.16_MegaCLI.zip">http://www.lsi.com/downloads/Public/MegaRAID%20Common%20Files/8.02.16_MegaCLI.zip</a> ）该包会把程序安装在/opt下,当然也可以自定义安装目录,例如:rpm –relocate /opt/=/usr/sbin/ -i MegaCli-1.01.24-0.i386.rpm （即把安装目录 /opt 替换成 /usr/sbin）。</p>
-<p>(linux文件夹下有个MegaCli文件里面有I386 RPM）</p>
-          
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-    <div class="article-category tagcloud">
-    <a class="article-category-link" href="/categories/Linux/">Linux</a>
-    </div>
-
-
-      
-    <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/DELL/">DELL</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/RAID/">RAID</a></li></ul>
-    </div>
-
-      
-        <p class="article-more-link">
-          <a href="/2016/06/30/Linux-2016-06-30-DELL磁盘阵列控制卡（RAID卡）MegaCli常用管理命令汇总/#more">阅读全文 >></a>
-        </p>
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-
-
-  
-    <article id="post-Linux-2016-06-30-格式化大盘" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2016/06/30/Linux-2016-06-30-格式化大盘/" class="article-date">
-      <time datetime="2016-06-29T16:00:00.000Z" itemprop="datePublished">2016-06-30</time>
-</a>
-
- 
-    <a href="/2016/06/30/Linux-2016-06-30-格式化大盘/#comments" title="查看评论">
-        <i class="fa fa-comments-o" aria-hidden="true"></i>
-        <span class="count-comment"></span>
-        
-        
-            <span class="disqus-comment-count" data-disqus-identifier="2016/06/30/Linux-2016-06-30-格式化大盘/"></span>
-        
-    </a>
-
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2016/06/30/Linux-2016-06-30-格式化大盘/">格式化大盘</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-          
-              <h2 id="设置分区为-GPT"><a href="#设置分区为-GPT" class="headerlink" title="设置分区为 GPT"></a>设置分区为 <a href="https://en.wikipedia.org/wiki/GUID_Partition_Table">GPT</a></h2><p>因为<a href="https://en.wikipedia.org/wiki/Master_boot_record">MBR</a>限制单盘的最大地址存储空间为2TB</p>
-          
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-    <div class="article-category tagcloud">
-    <a class="article-category-link" href="/categories/Linux/">Linux</a>
-    </div>
-
-
-      
-    <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/gpt/">gpt</a></li></ul>
-    </div>
-
-      
-        <p class="article-more-link">
-          <a href="/2016/06/30/Linux-2016-06-30-格式化大盘/#more">阅读全文 >></a>
-        </p>
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-
-
-  
-    <article id="post-Linux-2016-06-30-在Slackware64中安装rtx" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2016/06/30/Linux-2016-06-30-在Slackware64中安装rtx/" class="article-date">
-      <time datetime="2016-06-29T16:00:00.000Z" itemprop="datePublished">2016-06-30</time>
-</a>
-
- 
-    <a href="/2016/06/30/Linux-2016-06-30-在Slackware64中安装rtx/#comments" title="查看评论">
-        <i class="fa fa-comments-o" aria-hidden="true"></i>
-        <span class="count-comment"></span>
-        
-        
-            <span class="disqus-comment-count" data-disqus-identifier="2016/06/30/Linux-2016-06-30-在Slackware64中安装rtx/"></span>
-        
-    </a>
-
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2016/06/30/Linux-2016-06-30-在Slackware64中安装rtx/">在Slackware64中安装rtx</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-          
-              <h2 id="1-安装Multilib-of-Alien"><a href="#1-安装Multilib-of-Alien" class="headerlink" title="1. 安装Multilib of Alien"></a>1. 安装Multilib of Alien</h2><p>在slackware64下执行如下命令,下载和安装32位库,安装完后需要重启才能生效,因为修改了lib库:</p>
-<pre><code>$ mkdir multlib
-$ lftp -c &apos;open http://slackware.com/~alien/multilib/; mirror 14.1&apos;
-$ cd 14.1
-$ sudo upgradepkg --reinstall --install-new *.t?z
-$ sudo upgradepkg --install-new slackware64-compat32/*-compat32/*.t?z
-</code></pre>
-          
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-    <div class="article-category tagcloud">
-    <a class="article-category-link" href="/categories/Linux/">Linux</a>
-    </div>
-
-
-      
-      
-        <p class="article-more-link">
-          <a href="/2016/06/30/Linux-2016-06-30-在Slackware64中安装rtx/#more">阅读全文 >></a>
-        </p>
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-
-
-  
-    <article id="post-Linux-2016-06-30-在CenOS6-4下安装Docker" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2016/06/30/Linux-2016-06-30-在CenOS6-4下安装Docker/" class="article-date">
-      <time datetime="2016-06-29T16:00:00.000Z" itemprop="datePublished">2016-06-30</time>
-</a>
-
- 
-    <a href="/2016/06/30/Linux-2016-06-30-在CenOS6-4下安装Docker/#comments" title="查看评论">
-        <i class="fa fa-comments-o" aria-hidden="true"></i>
-        <span class="count-comment"></span>
-        
-        
-            <span class="disqus-comment-count" data-disqus-identifier="2016/06/30/Linux-2016-06-30-在CenOS6-4下安装Docker/"></span>
-        
-    </a>
-
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2016/06/30/Linux-2016-06-30-在CenOS6-4下安装Docker/">在CenOS6.4下安装Docker</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-          
-              <h2 id="1-升级内核版本"><a href="#1-升级内核版本" class="headerlink" title="1.升级内核版本"></a>1.升级内核版本</h2><p>因为CentOS6.4自带内核版本是2.6.32-358.23.2.el6.x86_64,而Docker要求内核版本大于3.0,推荐3.8以上的内核:</p>
-<pre><code>$ sudo rpm -ivh http://elrepo.org/linux/kernel/el6/x86_64/RPMS/kernel-lt-3.10.101-1.el6.elrepo.x86_64.rpm
-</code></pre>
-          
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-    <div class="article-category tagcloud">
-    <a class="article-category-link" href="/categories/Linux/">Linux</a>
-    </div>
-
-
-      
-    <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Docker/">Docker</a></li></ul>
-    </div>
-
-      
-        <p class="article-more-link">
-          <a href="/2016/06/30/Linux-2016-06-30-在CenOS6-4下安装Docker/#more">阅读全文 >></a>
-        </p>
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-
-
-  
-    <article id="post-Linux-2016-06-30-ssd优化" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2016/06/30/Linux-2016-06-30-ssd优化/" class="article-date">
-      <time datetime="2016-06-29T16:00:00.000Z" itemprop="datePublished">2016-06-30</time>
-</a>
-
- 
-    <a href="/2016/06/30/Linux-2016-06-30-ssd优化/#comments" title="查看评论">
-        <i class="fa fa-comments-o" aria-hidden="true"></i>
-        <span class="count-comment"></span>
-        
-        
-            <span class="disqus-comment-count" data-disqus-identifier="2016/06/30/Linux-2016-06-30-ssd优化/"></span>
-        
-    </a>
-
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2016/06/30/Linux-2016-06-30-ssd优化/">ssd优化</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-          
-              <h2 id="1-Linux"><a href="#1-Linux" class="headerlink" title="1. Linux"></a>1. Linux</h2><p>参考: <a href="wiki.archlinux.org/index.php/Fstab#tmpfs">archlinux fstab</a>和<a href="wiki.archlinux.org/index.php/Solid_State_Drives#SSD_Memory_Cell_Clearing">Solid State Drives</a></p>
-          
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-    <div class="article-category tagcloud">
-    <a class="article-category-link" href="/categories/Linux/">Linux</a>
-    </div>
-
-
-      
-    <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ssd/">ssd</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/优化/">优化</a></li></ul>
-    </div>
-
-      
-        <p class="article-more-link">
-          <a href="/2016/06/30/Linux-2016-06-30-ssd优化/#more">阅读全文 >></a>
-        </p>
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-
-
-  
-    <article id="post-Linux-2016-06-30-crontab中PATH的坑" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2016/06/30/Linux-2016-06-30-crontab中PATH的坑/" class="article-date">
-      <time datetime="2016-06-29T16:00:00.000Z" itemprop="datePublished">2016-06-30</time>
-</a>
-
- 
-    <a href="/2016/06/30/Linux-2016-06-30-crontab中PATH的坑/#comments" title="查看评论">
-        <i class="fa fa-comments-o" aria-hidden="true"></i>
-        <span class="count-comment"></span>
-        
-        
-            <span class="disqus-comment-count" data-disqus-identifier="2016/06/30/Linux-2016-06-30-crontab中PATH的坑/"></span>
-        
-    </a>
-
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2016/06/30/Linux-2016-06-30-crontab中PATH的坑/">crontab中PATH的坑</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-          
-              <h2 id="1-现象"><a href="#1-现象" class="headerlink" title="1. 现象"></a>1. 现象</h2><p>在命令行里面能正常运行脚本,在crontab里面报错:</p>
-<p>lsof: No such file or directory</p>
-<p>看报错信息, 应该是找不到lsof这个命令</p>
-          
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-    <div class="article-category tagcloud">
-    <a class="article-category-link" href="/categories/Linux/">Linux</a>
-    </div>
-
-
-      
-    <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/crontab/">crontab</a></li></ul>
-    </div>
-
-      
-        <p class="article-more-link">
-          <a href="/2016/06/30/Linux-2016-06-30-crontab中PATH的坑/#more">阅读全文 >></a>
-        </p>
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-
-
-  
-    <article id="post-Linux-2016-06-30-部署Docker下打包环境" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2016/06/30/Linux-2016-06-30-部署Docker下打包环境/" class="article-date">
-      <time datetime="2016-06-29T16:00:00.000Z" itemprop="datePublished">2016-06-30</time>
-</a>
-
- 
-    <a href="/2016/06/30/Linux-2016-06-30-部署Docker下打包环境/#comments" title="查看评论">
-        <i class="fa fa-comments-o" aria-hidden="true"></i>
-        <span class="count-comment"></span>
-        
-        
-            <span class="disqus-comment-count" data-disqus-identifier="2016/06/30/Linux-2016-06-30-部署Docker下打包环境/"></span>
-        
-    </a>
-
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2016/06/30/Linux-2016-06-30-部署Docker下打包环境/">部署Docker下打包环境</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-          
-              <h2 id="1-镜像"><a href="#1-镜像" class="headerlink" title="1. 镜像"></a>1. 镜像</h2><h3 id="1-Dockerfile"><a href="#1-Dockerfile" class="headerlink" title="(1) Dockerfile"></a>(1) Dockerfile</h3><p>由于Docker Client会默认发送Dockerfile同级目录下的所有文件到Dockerdaemon中,所以建议把Dockerfile放在一个空文件夹或者比较小的文件夹中。</p>
-<pre><code>FROM centos:6
-MAINTAINER panwenhang &quot;panwenhang92@gmail.com&quot;
-</code></pre>
-          
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-    <div class="article-category tagcloud">
-    <a class="article-category-link" href="/categories/Linux/">Linux</a>
-    </div>
-
-
-      
-    <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Docker/">Docker</a></li></ul>
-    </div>
-
-      
-        <p class="article-more-link">
-          <a href="/2016/06/30/Linux-2016-06-30-部署Docker下打包环境/#more">阅读全文 >></a>
-        </p>
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-
-
-  
     <article id="post-Linux-2016-06-30-Linux查看硬件信息" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
@@ -1100,15 +1097,6 @@ MAINTAINER panwenhang &quot;panwenhang92@gmail.com&quot;
       <time datetime="2016-06-29T16:00:00.000Z" itemprop="datePublished">2016-06-30</time>
 </a>
 
- 
-    <a href="/2016/06/30/Linux-2016-06-30-Linux查看硬件信息/#comments" title="查看评论">
-        <i class="fa fa-comments-o" aria-hidden="true"></i>
-        <span class="count-comment"></span>
-        
-        
-            <span class="disqus-comment-count" data-disqus-identifier="2016/06/30/Linux-2016-06-30-Linux查看硬件信息/"></span>
-        
-    </a>
 
     </div>
   
@@ -1152,84 +1140,6 @@ MAINTAINER panwenhang &quot;panwenhang92@gmail.com&quot;
       
         <p class="article-more-link">
           <a href="/2016/06/30/Linux-2016-06-30-Linux查看硬件信息/#more">阅读全文 >></a>
-        </p>
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-
-
-  
-    <article id="post-Linux-2016-06-30-Linux代理设置" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2016/06/30/Linux-2016-06-30-Linux代理设置/" class="article-date">
-      <time datetime="2016-06-29T16:00:00.000Z" itemprop="datePublished">2016-06-30</time>
-</a>
-
- 
-    <a href="/2016/06/30/Linux-2016-06-30-Linux代理设置/#comments" title="查看评论">
-        <i class="fa fa-comments-o" aria-hidden="true"></i>
-        <span class="count-comment"></span>
-        
-        
-            <span class="disqus-comment-count" data-disqus-identifier="2016/06/30/Linux-2016-06-30-Linux代理设置/"></span>
-        
-    </a>
-
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2016/06/30/Linux-2016-06-30-Linux代理设置/">Linux代理设置</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-          
-              <p>由于公司必须通过代理才能上外网,所以搞了下代理的设置</p>
-<h2 id="1-浏览器设置代理"><a href="#1-浏览器设置代理" class="headerlink" title="1. 浏览器设置代理"></a>1. 浏览器设置代理</h2>
-          
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-    <div class="article-category tagcloud">
-    <a class="article-category-link" href="/categories/Linux/">Linux</a>
-    </div>
-
-
-      
-    <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/proxy/">proxy</a></li></ul>
-    </div>
-
-      
-        <p class="article-more-link">
-          <a href="/2016/06/30/Linux-2016-06-30-Linux代理设置/#more">阅读全文 >></a>
         </p>
       
       <div class="clearfix"></div>
@@ -1309,22 +1219,6 @@ MAINTAINER panwenhang &quot;panwenhang92@gmail.com&quot;
 
     
 
-    
-        <script id="dsq-count-scr" src="//null.disqus.com/count.js" async></script>
-        <script>
-            if ($(".left-col").is(":visible")) {
-                var $disqusCount = $(".disqus-comment-count");
-                $disqusCount.bind("DOMNodeInserted", function(e) {
-                    var num = $(this).text().replace(/[^0-9]/ig,"");
-                    if (num > 0) {
-                        $(this).siblings(".count-comment").text(num);
-                    }
-                    $(this).remove();
-                })
-            } else {
-                $(".disqus-comment-count").remove();
-            }
-        </script>
      
 
 

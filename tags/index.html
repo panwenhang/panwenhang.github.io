@@ -406,21 +406,17 @@
 
 
     
-        <section id="comments">
-    <style> aside.comment-bar { margin: auto 30px; }</style>
-    <div id="disqus_thread"></div>
+        <section class="youyan" id="comments">
+    <!-- UY BEGIN -->
+    <div id="uyan_frame"></div>
     <script>
-        var disqus_config = function(){
-            this.page.url = 'http://panwenhang.github.io/tags/index.html';
-            this.page.identifier = 'tags/index.html';
-        };
         var loadComment = function(){
             var d = document, s = d.createElement('script');
-            s.src = '//null.disqus.com/embed.js';
-            s.setAttribute('data-timestamp', +new Date());
+            s.src = 'http://v2.uyan.cc/code/uyan.js?uid=2134782';
             (d.head || d.body).appendChild(s);
         }
     </script>
+    <!-- UY END -->
     
     <aside class="comment-bar">
         <a href="javascript:void(0);">
@@ -448,22 +444,6 @@
     </script>
 
 </section>
-
-
-    // Add comment count
-    <script id="dsq-count-scr" src="//null.disqus.com/count.js" async></script>
-    <span class="disqus-comment-count" data-disqus-identifier="tags/index.html"></span>
-    <span class="disqus-comment-count" data-disqus-url="http://panwenhang.github.io/tags/index.html"></span>
-    <script>
-        $(".disqus-comment-count").hide();
-        var $disqusCount = $(".disqus-comment-count");
-        $disqusCount.bind("DOMNodeInserted", function(e) {
-            $(".count-comment").text(
-                $(this).text().replace(/[^0-9]/ig,"")
-            )
-            DISQUSWIDGETS.getCount({reset: true});
-        })
-    </script>
 
     
 
