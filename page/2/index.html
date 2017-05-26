@@ -621,75 +621,6 @@ ush_location | replay_location | sync_priority | sync_state
 
 
   
-    <article id="post-PostgreSQL-2016-07-05-PostgreSQL同步复制搭建" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL同步复制搭建/" class="article-date">
-      <time datetime="2016-07-04T16:00:00.000Z" itemprop="datePublished">2016-07-05</time>
-</a>
-
-
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL同步复制搭建/">PostgreSQL同步复制搭建</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-          
-              <h2 id="1-初始化master节点"><a href="#1-初始化master节点" class="headerlink" title="1.初始化master节点"></a>1.初始化master节点</h2><h3 id="1-安装PostgreSQL"><a href="#1-安装PostgreSQL" class="headerlink" title="(1) 安装PostgreSQL"></a>(1) 安装PostgreSQL</h3><h3 id="2-初始化db"><a href="#2-初始化db" class="headerlink" title="(2) 初始化db"></a>(2) 初始化db</h3><pre><code>initdb -D /data/pg940_data
-</code></pre>
-          
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-    <div class="article-category tagcloud">
-    <a class="article-category-link" href="/categories/PostgreSQL/">PostgreSQL</a>
-    </div>
-
-
-      
-    <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PostgreSQL/">PostgreSQL</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/replication/">replication</a></li></ul>
-    </div>
-
-      
-        <p class="article-more-link">
-          <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL同步复制搭建/#more">阅读全文 >></a>
-        </p>
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-
-
-  
     <article id="post-PostgreSQL-2016-07-05-BDR0-9-0版本测试" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
@@ -838,10 +769,10 @@ Indexes:
 
 
   
-    <article id="post-PostgreSQL-2016-07-05-PostgreSQL事务特性之嵌套事务" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-PostgreSQL-2016-07-05-PostgreSQL同步复制搭建" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL事务特性之嵌套事务/" class="article-date">
+      <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL同步复制搭建/" class="article-date">
       <time datetime="2016-07-04T16:00:00.000Z" itemprop="datePublished">2016-07-05</time>
 </a>
 
@@ -857,7 +788,7 @@ Indexes:
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL事务特性之嵌套事务/">PostgreSQL事务特性之嵌套事务</a>
+      <a class="article-title" href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL同步复制搭建/">PostgreSQL同步复制搭建</a>
     </h1>
   
 
@@ -867,8 +798,8 @@ Indexes:
     <div class="article-entry" itemprop="articleBody">
       
           
-              <p>嵌套事务的实现是基于SAVEPOINT、ROLLBACK TO SAVEPOINT和RELEASE SAVEPOINT的,也就是设置一个保存点,可以回滚到保存点和释放保存点。</p>
-<p>测试表的初始状态如下:</p>
+              <h2 id="1-初始化master节点"><a href="#1-初始化master节点" class="headerlink" title="1.初始化master节点"></a>1.初始化master节点</h2><h3 id="1-安装PostgreSQL"><a href="#1-安装PostgreSQL" class="headerlink" title="(1) 安装PostgreSQL"></a>(1) 安装PostgreSQL</h3><h3 id="2-初始化db"><a href="#2-初始化db" class="headerlink" title="(2) 初始化db"></a>(2) 初始化db</h3><pre><code>initdb -D /data/pg940_data
+</code></pre>
           
       
     </div>
@@ -883,12 +814,12 @@ Indexes:
 
       
     <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PostgreSQL/">PostgreSQL</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/事务/">事务</a></li></ul>
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PostgreSQL/">PostgreSQL</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/replication/">replication</a></li></ul>
     </div>
 
       
         <p class="article-more-link">
-          <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL事务特性之嵌套事务/#more">阅读全文 >></a>
+          <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL同步复制搭建/#more">阅读全文 >></a>
         </p>
       
       <div class="clearfix"></div>
@@ -966,6 +897,75 @@ postgres=# \d test
       
         <p class="article-more-link">
           <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL之网络地址类型/#more">阅读全文 >></a>
+        </p>
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+
+  
+    <article id="post-PostgreSQL-2016-07-05-PostgreSQL事务特性之嵌套事务" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL事务特性之嵌套事务/" class="article-date">
+      <time datetime="2016-07-04T16:00:00.000Z" itemprop="datePublished">2016-07-05</time>
+</a>
+
+
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL事务特性之嵌套事务/">PostgreSQL事务特性之嵌套事务</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+              <p>嵌套事务的实现是基于SAVEPOINT、ROLLBACK TO SAVEPOINT和RELEASE SAVEPOINT的,也就是设置一个保存点,可以回滚到保存点和释放保存点。</p>
+<p>测试表的初始状态如下:</p>
+          
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/PostgreSQL/">PostgreSQL</a>
+    </div>
+
+
+      
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PostgreSQL/">PostgreSQL</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/事务/">事务</a></li></ul>
+    </div>
+
+      
+        <p class="article-more-link">
+          <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL事务特性之嵌套事务/#more">阅读全文 >></a>
         </p>
       
       <div class="clearfix"></div>
