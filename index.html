@@ -332,20 +332,20 @@
 
 
   
-    <article id="post-PostgreSQL-2016-07-05-BDR0-9-0版本测试" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-PostgreSQL-2016-07-05-PostgreSQL集群故障测试和解决方案之Pacemaker" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2016/07/05/PostgreSQL-2016-07-05-BDR0-9-0版本测试/" class="article-date">
+      <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL集群故障测试和解决方案之Pacemaker/" class="article-date">
       <time datetime="2016-07-04T16:00:00.000Z" itemprop="datePublished">2016-07-05</time>
 </a>
 
  
-    <a href="/2016/07/05/PostgreSQL-2016-07-05-BDR0-9-0版本测试/#comments" title="查看评论">
+    <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL集群故障测试和解决方案之Pacemaker/#comments" title="查看评论">
         <i class="fa fa-comments-o" aria-hidden="true"></i>
         <span class="count-comment"></span>
         
         
-            <span class="disqus-comment-count" data-disqus-identifier="2016/07/05/PostgreSQL-2016-07-05-BDR0-9-0版本测试/"></span>
+            <span class="disqus-comment-count" data-disqus-identifier="2016/07/05/PostgreSQL-2016-07-05-PostgreSQL集群故障测试和解决方案之Pacemaker/"></span>
         
     </a>
 
@@ -360,7 +360,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2016/07/05/PostgreSQL-2016-07-05-BDR0-9-0版本测试/">BDR0.9.0版本测试</a>
+      <a class="article-title" href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL集群故障测试和解决方案之Pacemaker/">PostgreSQL集群故障测试和解决方案之Pacemaker</a>
     </h1>
   
 
@@ -370,7 +370,19 @@
     <div class="article-entry" itemprop="articleBody">
       
           
-              <h2 id="1-安装"><a href="#1-安装" class="headerlink" title="1. 安装"></a>1. 安装</h2><p>参考bdr官方文档<a href="bdr-project.org/docs/stable/installation.html">Chapter 3. Installation</a></p>
+              <h2 id="1-环境"><a href="#1-环境" class="headerlink" title="1.环境"></a>1.环境</h2><pre><code>$ cat /etc/redhat-release
+CentOS Linux release 7.0.1406 (Core)
+$ uname -a
+Linux zhaopin-5-90 3.10.0-123.el7.x86_64 #1 SMP Mon Jun 30 12:09:22 UTC 2014 x86_64 x86_64 x86_64 GNU/Linux
+$ sudo pcs status
+Cluster name: pgcluster
+WARNING: corosync and pacemaker node names do not match (IPs used in setup?)
+Last updated: Tue Oct 20 11:02:08 2015Last change: Tue Oct 20 10:57:37 2015 by root via crm_attribute on zhaopin-5-92
+Stack: corosync
+Current DC: zhaopin-5-92 (version 1.1.13-a14efad) - partition with quorum
+3 nodes and 5 resources configured
+Online: [ zhaopin-5-90 zhaopin-5-91 zhaopin-5-92 ]
+</code></pre>
           
       
     </div>
@@ -385,12 +397,12 @@
 
       
     <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/BDR/">BDR</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PostgreSQL/">PostgreSQL</a></li></ul>
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Pacemaker/">Pacemaker</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PostgreSQL/">PostgreSQL</a></li></ul>
     </div>
 
       
         <p class="article-more-link">
-          <a href="/2016/07/05/PostgreSQL-2016-07-05-BDR0-9-0版本测试/#more">阅读全文 >></a>
+          <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL集群故障测试和解决方案之Pacemaker/#more">阅读全文 >></a>
         </p>
       
       <div class="clearfix"></div>
@@ -477,84 +489,6 @@ vip-slave:  172.17.5.98
       
         <p class="article-more-link">
           <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL集群搭建之Pacemaker/#more">阅读全文 >></a>
-        </p>
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-
-
-  
-    <article id="post-PostgreSQL-2016-07-05-PostgreSQL表空间的使用" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL表空间的使用/" class="article-date">
-      <time datetime="2016-07-04T16:00:00.000Z" itemprop="datePublished">2016-07-05</time>
-</a>
-
- 
-    <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL表空间的使用/#comments" title="查看评论">
-        <i class="fa fa-comments-o" aria-hidden="true"></i>
-        <span class="count-comment"></span>
-        
-        
-            <span class="disqus-comment-count" data-disqus-identifier="2016/07/05/PostgreSQL-2016-07-05-PostgreSQL表空间的使用/"></span>
-        
-    </a>
-
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL表空间的使用/">PostgreSQL表空间的使用</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-          
-              <h2 id="1-介绍"><a href="#1-介绍" class="headerlink" title="1. 介绍"></a>1. 介绍</h2><p>表空间的作用就是允许数据库管理员定义一个其他非数据目录的位置存储数据库对象。</p>
-<p>使用场景之一是,如果机器新加了ssd,但是又不够整个实例使用,可以将一些重要和使用频率高的表和索引放到ssd上,提高查询效率</p>
-          
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-    <div class="article-category tagcloud">
-    <a class="article-category-link" href="/categories/PostgreSQL/">PostgreSQL</a>
-    </div>
-
-
-      
-    <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PostgreSQL/">PostgreSQL</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/tablespace/">tablespace</a></li></ul>
-    </div>
-
-      
-        <p class="article-more-link">
-          <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL表空间的使用/#more">阅读全文 >></a>
         </p>
       
       <div class="clearfix"></div>
@@ -663,6 +597,84 @@ ORDER BY 1,2;
 
 
   
+    <article id="post-PostgreSQL-2016-07-05-PostgreSQL表空间的使用" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL表空间的使用/" class="article-date">
+      <time datetime="2016-07-04T16:00:00.000Z" itemprop="datePublished">2016-07-05</time>
+</a>
+
+ 
+    <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL表空间的使用/#comments" title="查看评论">
+        <i class="fa fa-comments-o" aria-hidden="true"></i>
+        <span class="count-comment"></span>
+        
+        
+            <span class="disqus-comment-count" data-disqus-identifier="2016/07/05/PostgreSQL-2016-07-05-PostgreSQL表空间的使用/"></span>
+        
+    </a>
+
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL表空间的使用/">PostgreSQL表空间的使用</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+              <h2 id="1-介绍"><a href="#1-介绍" class="headerlink" title="1. 介绍"></a>1. 介绍</h2><p>表空间的作用就是允许数据库管理员定义一个其他非数据目录的位置存储数据库对象。</p>
+<p>使用场景之一是,如果机器新加了ssd,但是又不够整个实例使用,可以将一些重要和使用频率高的表和索引放到ssd上,提高查询效率</p>
+          
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/PostgreSQL/">PostgreSQL</a>
+    </div>
+
+
+      
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PostgreSQL/">PostgreSQL</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/tablespace/">tablespace</a></li></ul>
+    </div>
+
+      
+        <p class="article-more-link">
+          <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL表空间的使用/#more">阅读全文 >></a>
+        </p>
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+
+  
     <article id="post-PostgreSQL-2016-07-05-PostgreSQL权限管理之创建可更新表的普通用户" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
@@ -744,6 +756,84 @@ postgres=# select version();
 
 
   
+    <article id="post-PostgreSQL-2016-07-05-PostgreSQL恢复到任意时间点" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL恢复到任意时间点/" class="article-date">
+      <time datetime="2016-07-04T16:00:00.000Z" itemprop="datePublished">2016-07-05</time>
+</a>
+
+ 
+    <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL恢复到任意时间点/#comments" title="查看评论">
+        <i class="fa fa-comments-o" aria-hidden="true"></i>
+        <span class="count-comment"></span>
+        
+        
+            <span class="disqus-comment-count" data-disqus-identifier="2016/07/05/PostgreSQL-2016-07-05-PostgreSQL恢复到任意时间点/"></span>
+        
+    </a>
+
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL恢复到任意时间点/">PostgreSQL恢复到任意时间点</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+              <p>参考: <a href="http://www.postgresql.org/docs/9.4/static/recovery-config.html">Recovery Configuration</a></p>
+<h2 id="1-获取基础备份"><a href="#1-获取基础备份" class="headerlink" title="1. 获取基础备份"></a>1. 获取基础备份</h2><p>  你可以使用 pg_basebackup 或者其他工具获取Postgres的基础备份, 还要有基础备份到恢复时间点之前的 xlog 文件</p>
+          
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/PostgreSQL/">PostgreSQL</a>
+    </div>
+
+
+      
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PostgreSQL/">PostgreSQL</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/recovery/">recovery</a></li></ul>
+    </div>
+
+      
+        <p class="article-more-link">
+          <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL恢复到任意时间点/#more">阅读全文 >></a>
+        </p>
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+
+  
     <article id="post-PostgreSQL-2016-07-05-PostgreSQL日志换行处理" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
@@ -802,84 +892,6 @@ $ cat logfile | perl -e &apos;while(&lt;&gt;){ if($_ !~ /^\t/ig) { chomp; print 
         <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PostgreSQL/">PostgreSQL</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/日志/">日志</a></li></ul>
     </div>
 
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-
-
-  
-    <article id="post-PostgreSQL-2016-07-05-PostgreSQL日志使用rsyslog" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL日志使用rsyslog/" class="article-date">
-      <time datetime="2016-07-04T16:00:00.000Z" itemprop="datePublished">2016-07-05</time>
-</a>
-
- 
-    <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL日志使用rsyslog/#comments" title="查看评论">
-        <i class="fa fa-comments-o" aria-hidden="true"></i>
-        <span class="count-comment"></span>
-        
-        
-            <span class="disqus-comment-count" data-disqus-identifier="2016/07/05/PostgreSQL-2016-07-05-PostgreSQL日志使用rsyslog/"></span>
-        
-    </a>
-
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL日志使用rsyslog/">PostgreSQL日志使用rsyslog</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-          
-              <h2 id="1-服务端"><a href="#1-服务端" class="headerlink" title="1. 服务端"></a>1. 服务端</h2><h3 id="1-安装syslog包"><a href="#1-安装syslog包" class="headerlink" title="(1) 安装syslog包"></a>(1) 安装syslog包</h3><pre><code>$ sudo yum install -y rsyslog
-</code></pre>
-          
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-    <div class="article-category tagcloud">
-    <a class="article-category-link" href="/categories/PostgreSQL/">PostgreSQL</a>
-    </div>
-
-
-      
-    <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PostgreSQL/">PostgreSQL</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/syslog/">syslog</a></li></ul>
-    </div>
-
-      
-        <p class="article-more-link">
-          <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL日志使用rsyslog/#more">阅读全文 >></a>
-        </p>
       
       <div class="clearfix"></div>
     </div>
@@ -981,20 +993,20 @@ $  cat /proc/cpuinfo  | grep processor | wc -l
 
 
   
-    <article id="post-PostgreSQL-2016-07-05-PostgreSQL恢复到任意时间点" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-PostgreSQL-2016-07-05-PostgreSQL日志使用rsyslog" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL恢复到任意时间点/" class="article-date">
+      <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL日志使用rsyslog/" class="article-date">
       <time datetime="2016-07-04T16:00:00.000Z" itemprop="datePublished">2016-07-05</time>
 </a>
 
  
-    <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL恢复到任意时间点/#comments" title="查看评论">
+    <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL日志使用rsyslog/#comments" title="查看评论">
         <i class="fa fa-comments-o" aria-hidden="true"></i>
         <span class="count-comment"></span>
         
         
-            <span class="disqus-comment-count" data-disqus-identifier="2016/07/05/PostgreSQL-2016-07-05-PostgreSQL恢复到任意时间点/"></span>
+            <span class="disqus-comment-count" data-disqus-identifier="2016/07/05/PostgreSQL-2016-07-05-PostgreSQL日志使用rsyslog/"></span>
         
     </a>
 
@@ -1009,7 +1021,7 @@ $  cat /proc/cpuinfo  | grep processor | wc -l
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL恢复到任意时间点/">PostgreSQL恢复到任意时间点</a>
+      <a class="article-title" href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL日志使用rsyslog/">PostgreSQL日志使用rsyslog</a>
     </h1>
   
 
@@ -1019,8 +1031,8 @@ $  cat /proc/cpuinfo  | grep processor | wc -l
     <div class="article-entry" itemprop="articleBody">
       
           
-              <p>参考: <a href="http://www.postgresql.org/docs/9.4/static/recovery-config.html">Recovery Configuration</a></p>
-<h2 id="1-获取基础备份"><a href="#1-获取基础备份" class="headerlink" title="1. 获取基础备份"></a>1. 获取基础备份</h2><p>  你可以使用 pg_basebackup 或者其他工具获取Postgres的基础备份, 还要有基础备份到恢复时间点之前的 xlog 文件</p>
+              <h2 id="1-服务端"><a href="#1-服务端" class="headerlink" title="1. 服务端"></a>1. 服务端</h2><h3 id="1-安装syslog包"><a href="#1-安装syslog包" class="headerlink" title="(1) 安装syslog包"></a>(1) 安装syslog包</h3><pre><code>$ sudo yum install -y rsyslog
+</code></pre>
           
       
     </div>
@@ -1035,12 +1047,12 @@ $  cat /proc/cpuinfo  | grep processor | wc -l
 
       
     <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PostgreSQL/">PostgreSQL</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/recovery/">recovery</a></li></ul>
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PostgreSQL/">PostgreSQL</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/syslog/">syslog</a></li></ul>
     </div>
 
       
         <p class="article-more-link">
-          <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL恢复到任意时间点/#more">阅读全文 >></a>
+          <a href="/2016/07/05/PostgreSQL-2016-07-05-PostgreSQL日志使用rsyslog/#more">阅读全文 >></a>
         </p>
       
       <div class="clearfix"></div>

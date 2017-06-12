@@ -255,20 +255,20 @@
 </nav>
       <div class="body-wrap">
   
-    <article id="post-MongoDB-2016-06-23-MongoDB副本集故障测试和解决方案" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-MongoDB-2016-06-23-MongoDB分片搭建" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2016/06/23/MongoDB-2016-06-23-MongoDB副本集故障测试和解决方案/" class="article-date">
+      <a href="/2016/06/23/MongoDB-2016-06-23-MongoDB分片搭建/" class="article-date">
       <time datetime="2016-06-22T16:00:00.000Z" itemprop="datePublished">2016-06-23</time>
 </a>
 
  
-    <a href="/2016/06/23/MongoDB-2016-06-23-MongoDB副本集故障测试和解决方案/#comments" title="查看评论">
+    <a href="/2016/06/23/MongoDB-2016-06-23-MongoDB分片搭建/#comments" title="查看评论">
         <i class="fa fa-comments-o" aria-hidden="true"></i>
         <span class="count-comment"></span>
         
         
-            <span class="disqus-comment-count" data-disqus-identifier="2016/06/23/MongoDB-2016-06-23-MongoDB副本集故障测试和解决方案/"></span>
+            <span class="disqus-comment-count" data-disqus-identifier="2016/06/23/MongoDB-2016-06-23-MongoDB分片搭建/"></span>
         
     </a>
 
@@ -283,7 +283,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2016/06/23/MongoDB-2016-06-23-MongoDB副本集故障测试和解决方案/">MongoDB副本集故障测试和解决方案</a>
+      <a class="article-title" href="/2016/06/23/MongoDB-2016-06-23-MongoDB分片搭建/">MongoDB分片搭建</a>
     </h1>
   
 
@@ -297,9 +297,6 @@
 CentOS Linux release 7.0.1406 (Core)
 $ uname -a
 Linux zhaopin-2-201 3.10.0-123.el7.x86_64 #1 SMP Mon Jun 30 12:09:22 UTC 2014 x86_64 x86_64 x86_64 GNU/Linux
-$ mongo
-MongoDB shell version: 3.0.6
-connecting to: test
 </code></pre>
           
       
@@ -315,12 +312,12 @@ connecting to: test
 
       
     <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/MongoDB/">MongoDB</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/副本集/">副本集</a></li></ul>
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/MongoDB/">MongoDB</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Sharding/">Sharding</a></li></ul>
     </div>
 
       
         <p class="article-more-link">
-          <a href="/2016/06/23/MongoDB-2016-06-23-MongoDB副本集故障测试和解决方案/#more">阅读全文 >></a>
+          <a href="/2016/06/23/MongoDB-2016-06-23-MongoDB分片搭建/#more">阅读全文 >></a>
         </p>
       
       <div class="clearfix"></div>
@@ -339,20 +336,20 @@ connecting to: test
 
 
   
-    <article id="post-MongoDB-2016-06-23-MongoDB主从集群" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-MongoDB-2016-06-23-MongoDB分片故障测试和解决方案" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2016/06/23/MongoDB-2016-06-23-MongoDB主从集群/" class="article-date">
+      <a href="/2016/06/23/MongoDB-2016-06-23-MongoDB分片故障测试和解决方案/" class="article-date">
       <time datetime="2016-06-22T16:00:00.000Z" itemprop="datePublished">2016-06-23</time>
 </a>
 
  
-    <a href="/2016/06/23/MongoDB-2016-06-23-MongoDB主从集群/#comments" title="查看评论">
+    <a href="/2016/06/23/MongoDB-2016-06-23-MongoDB分片故障测试和解决方案/#comments" title="查看评论">
         <i class="fa fa-comments-o" aria-hidden="true"></i>
         <span class="count-comment"></span>
         
         
-            <span class="disqus-comment-count" data-disqus-identifier="2016/06/23/MongoDB-2016-06-23-MongoDB主从集群/"></span>
+            <span class="disqus-comment-count" data-disqus-identifier="2016/06/23/MongoDB-2016-06-23-MongoDB分片故障测试和解决方案/"></span>
         
     </a>
 
@@ -367,7 +364,7 @@ connecting to: test
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2016/06/23/MongoDB-2016-06-23-MongoDB主从集群/">MongoDB主从集群</a>
+      <a class="article-title" href="/2016/06/23/MongoDB-2016-06-23-MongoDB分片故障测试和解决方案/">MongoDB分片故障测试和解决方案</a>
     </h1>
   
 
@@ -381,7 +378,7 @@ connecting to: test
 CentOS Linux release 7.0.1406 (Core)
 $ uname -a
 Linux zhaopin-2-201 3.10.0-123.el7.x86_64 #1 SMP Mon Jun 30 12:09:22 UTC 2014 x86_64 x86_64 x86_64 GNU/Linux
-$ mongo --version
+$ mongo --port 30000
 MongoDB shell version: 3.0.6
 </code></pre>
           
@@ -398,12 +395,12 @@ MongoDB shell version: 3.0.6
 
       
     <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Cluster/">Cluster</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/MongoDB/">MongoDB</a></li></ul>
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/MongoDB/">MongoDB</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Sharding/">Sharding</a></li></ul>
     </div>
 
       
         <p class="article-more-link">
-          <a href="/2016/06/23/MongoDB-2016-06-23-MongoDB主从集群/#more">阅读全文 >></a>
+          <a href="/2016/06/23/MongoDB-2016-06-23-MongoDB分片故障测试和解决方案/#more">阅读全文 >></a>
         </p>
       
       <div class="clearfix"></div>
@@ -510,20 +507,20 @@ $ pip list
 
 
   
-    <article id="post-MongoDB-2016-06-23-Linux下MongoDB安装和配置" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-MongoDB-2016-06-23-MongoDB副本集搭建" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2016/06/23/MongoDB-2016-06-23-Linux下MongoDB安装和配置/" class="article-date">
+      <a href="/2016/06/23/MongoDB-2016-06-23-MongoDB副本集搭建/" class="article-date">
       <time datetime="2016-06-22T16:00:00.000Z" itemprop="datePublished">2016-06-23</time>
 </a>
 
  
-    <a href="/2016/06/23/MongoDB-2016-06-23-Linux下MongoDB安装和配置/#comments" title="查看评论">
+    <a href="/2016/06/23/MongoDB-2016-06-23-MongoDB副本集搭建/#comments" title="查看评论">
         <i class="fa fa-comments-o" aria-hidden="true"></i>
         <span class="count-comment"></span>
         
         
-            <span class="disqus-comment-count" data-disqus-identifier="2016/06/23/MongoDB-2016-06-23-Linux下MongoDB安装和配置/"></span>
+            <span class="disqus-comment-count" data-disqus-identifier="2016/06/23/MongoDB-2016-06-23-MongoDB副本集搭建/"></span>
         
     </a>
 
@@ -538,7 +535,7 @@ $ pip list
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2016/06/23/MongoDB-2016-06-23-Linux下MongoDB安装和配置/">Linux下MongoDB安装和配置</a>
+      <a class="article-title" href="/2016/06/23/MongoDB-2016-06-23-MongoDB副本集搭建/">MongoDB副本集搭建</a>
     </h1>
   
 
@@ -552,6 +549,8 @@ $ pip list
 CentOS Linux release 7.0.1406 (Core)
 $ uname -a
 Linux zhaopin-2-201 3.10.0-123.el7.x86_64 #1 SMP Mon Jun 30 12:09:22 UTC 2014 x86_64 x86_64 x86_64 GNU/Linux
+$ mongo --version
+MongoDB shell version: 3.0.6
 </code></pre>
           
       
@@ -567,12 +566,12 @@ Linux zhaopin-2-201 3.10.0-123.el7.x86_64 #1 SMP Mon Jun 30 12:09:22 UTC 2014 x8
 
       
     <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/MongoDB/">MongoDB</a></li></ul>
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/MongoDB/">MongoDB</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/副本集/">副本集</a></li></ul>
     </div>
 
       
         <p class="article-more-link">
-          <a href="/2016/06/23/MongoDB-2016-06-23-Linux下MongoDB安装和配置/#more">阅读全文 >></a>
+          <a href="/2016/06/23/MongoDB-2016-06-23-MongoDB副本集搭建/#more">阅读全文 >></a>
         </p>
       
       <div class="clearfix"></div>
